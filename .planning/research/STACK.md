@@ -1,0 +1,204 @@
+# Stack Research
+
+**Domain:** TypeScript/Node knowledge-base MCP server (local-first RAG scaffold)
+**Researched:** 2026-06-29
+**Confidence:** HIGH (MCP SDK, Chroma, Fastify, OpenAI-compatible embeddings verified via npm + official docs); MEDIUM (exact monorepo package split — strong precedent, not one canonical layout)
+
+## Recommended Stack
+
+### Core Technologies
+
+| Technology | Version | Purpose | Why Recommended | Confidence |
+|------------|---------|---------|-----------------|------------|
+| **Node.js** | `24.x` LTS (Active LTS through Apr 2028) | Runtime | Current Active LTS as of mid-2026; Node 26 is Current but not LTS until Oct 2026 — too early for a conservative scaffold default | HIGH |
+| **TypeScript** | `6.0.3` | Language | Latest stable; pairs with Node 24's mature ESM/TS toolchain; MCP SDK examples are TS-first | HIGH |
+| **pnpm** | `11.9.0` | Package manager | Fastest workspace installs, strict dependency graph, standard for TS monorepos in 2025–2026 | HIGH |
+| **Turborepo** | `2.10.0` | Monorepo orchestration | Caches builds/tests across `apps/*` and `packages/*`; Turborepo now ships official MCP-server monorepo examples | HIGH |
+| **@modelcontextprotocol/sdk** | `1.29.0` | MCP server (stdio + HTTP) | Stable unified package with `McpServer`, `StdioServerTransport`, `StreamableHTTPServerTransport`, and legacy SSE compat examples; v2 split packages (`@modelcontextprotocol/server` @ `2.0.0-alpha.3`) are not GA yet | HIGH |
+| **Fastify** | `5.9.0` | Backend REST API | Greenfield default over Express in 2025–2026: native TS, JSON Schema validation, Pino logging, 2–5× throughput; matches user's Fastify/Express requirement with clear winner | HIGH |
+| **chromadb** | `3.4.3` | Vector store client | Official JS/TS client v3 (rewritten, smaller bundle); connects to local Chroma server for persistent storage; supports precomputed embeddings (required for CherryIn) | HIGH |
+| **Chroma server (sidecar)** | CLI bundled with `chromadb@3.4.3` | Vector persistence | JS client is REST-only — no in-process embedded DB; `npx chroma run --path ./data/chroma` gives local-first persistence without cloud deps | HIGH |
+| **openai** | `6.45.0` | Embeddings client | De-facto SDK for OpenAI-compatible `/v1/embeddings`; set `baseURL` + `apiKey` for CherryIn (`https://open.cherryin.cc`) | HIGH |
+| **Vite** | `8.1.0` | Web admin bundler | Standard TS frontend dev server; fast HMR for a simple admin SPA served by Fastify in production | HIGH |
+| **React** | `19.2.7` | Web admin UI | Minimal component model for upload/list/search admin; ecosystem default for TS scaffolds (Preact is lighter but less familiar) | MEDIUM |
+| **Commander** | `15.0.0` | CLI framework | Lightweight, zero-dep CLI parsing; standard for Node CLIs that mirror REST ingest endpoints | HIGH |
+| **Zod** | `4.4.3` | Config + API validation | Shared env schema, MCP tool input validation, Fastify route schemas via `fastify-type-provider-zod` | HIGH |
+| **better-sqlite3** | `12.11.1` | Document metadata registry | Local doc list, ingest status, source paths — Chroma stores chunks, not admin-friendly doc catalog | MEDIUM |
+
+### Supporting Libraries
+
+| Library | Version | Purpose | When to Use | Confidence |
+|---------|---------|---------|-------------|------------|
+| **tsx** | `4.22.4` | TS execution (dev) | Run MCP/backend/CLI entrypoints without a build step during development | HIGH |
+| **dotenv** | `17.4.2` | Env loading | Load `.env` in dev/CLI; production uses real env vars | HIGH |
+| **@fastify/multipart** | `9.1.3` | File uploads | Web admin + REST ingest of txt/md/PDF | HIGH |
+| **@fastify/static** | `9.0.0` | Serve admin SPA | Production: serve Vite build output from Fastify | HIGH |
+| **@fastify/cors** | `11.2.0` | CORS | Dev web admin on separate Vite port talking to backend | HIGH |
+| **@fastify/swagger** + **@fastify/swagger-ui** | `9.7.0` / `6.0.0` | OpenAPI docs | Auto-generated REST docs from Zod/JSON Schema — valuable for scaffold discoverability | MEDIUM |
+| **@fastify/env** | `7.0.0` | Typed env plugin | Optional Fastify-native env validation (alternative to manual Zod parse at boot) | MEDIUM |
+| **@fastify/bearer-auth** | `10.1.2` | Optional API key gate | When `API_KEY` env is set; localhost dev runs without auth | HIGH |
+| **fastify-type-provider-zod** | `7.0.0` | Route typing | Zod schemas → Fastify handler types + validation | HIGH |
+| **@langchain/textsplitters** | `1.0.22` | Text chunking | `RecursiveCharacterTextSplitter` with overlap; focused package without full LangChain | HIGH |
+| **pdf-parse** | `2.4.5` | PDF text extraction | Text-layer PDF only (v1 scope); lighter than full `pdfjs-dist` renderer | MEDIUM |
+| **gray-matter** | `4.0.3` | Markdown frontmatter | Strip YAML frontmatter before chunking markdown docs | MEDIUM |
+| **@tanstack/react-query** | `5.101.2` | Admin data fetching | Upload/list/search API calls with loading/error states | MEDIUM |
+| **concurrently** | `10.0.3` | Dev orchestration | Run Chroma + backend + MCP + Vite in one `pnpm dev` script | HIGH |
+| **vitest** | `4.1.9` | Unit/integration tests | Fast, ESM-native, Turborepo-friendly | HIGH |
+| **typescript-eslint** + **@eslint/js** | `8.62.0` / `10.0.1` | Linting | Flat-config ESLint 9 standard for TS monorepos | HIGH |
+| **@types/node** | `^24.13.2` | Node type defs | Match Node 24 LTS APIs | HIGH |
+
+### Development Tools
+
+| Tool | Purpose | Notes |
+|------|---------|-------|
+| **pnpm workspaces** | Monorepo layout | `apps/{mcp-server,backend,web,cli}` + `packages/{core,config}` |
+| **Turborepo** | Task pipeline | `dependsOn: ["^build"]` ensures `packages/core` builds before apps |
+| **tsx watch** | Hot reload | Dev entrypoints for backend/MCP without tsc --watch complexity |
+| **Vitest** | Testing | Test `packages/core` search/chunk/embed logic in isolation |
+| **ESLint 10 + typescript-eslint 8** | Code quality | Shared flat config in `packages/eslint-config` or root |
+| **`.nvmrc` / `engines`** | Node pin | Pin `"node": ">=24 <25"` in root `package.json` |
+
+### Monorepo Layout (Recommended)
+
+```
+kb-mcp-server/
+├── apps/
+│   ├── mcp-server/      # stdio + HTTP MCP entrypoints
+│   ├── backend/         # Fastify REST API
+│   ├── web/             # Vite + React admin
+│   └── cli/             # kb ingest/search CLI
+├── packages/
+│   ├── core/            # SearchService, IngestionService, Chroma + embed adapters
+│   └── config/          # Zod env schema, shared constants (embedding dims, collection name)
+├── pnpm-workspace.yaml
+├── turbo.json
+└── package.json
+```
+
+**Why this split:** MCP transport, REST, web, and CLI are thin shells over `packages/core`. Embedding model, chunk IDs, and collection schema live once — indexing and retrieval pipelines share the same code path (see ARCHITECTURE.md).
+
+## Installation
+
+```bash
+# Root monorepo
+pnpm init
+pnpm add -D turbo typescript tsx vitest eslint @eslint/js typescript-eslint @types/node
+
+# Shared core (domain logic)
+pnpm add --filter @kb/core chromadb openai zod @langchain/textsplitters pdf-parse gray-matter better-sqlite3 dotenv
+
+# MCP server app
+pnpm add --filter @kb/mcp-server @modelcontextprotocol/sdk @kb/core
+
+# Backend API
+pnpm add --filter @kb/backend fastify @fastify/multipart @fastify/static @fastify/cors @fastify/swagger @fastify/swagger-ui @fastify/bearer-auth fastify-type-provider-zod @kb/core
+
+# CLI
+pnpm add --filter @kb/cli commander @kb/core
+
+# Web admin
+pnpm add --filter @kb/web react react-dom @tanstack/react-query
+pnpm add -D --filter @kb/web vite @vitejs/plugin-react
+
+# Dev orchestration (root)
+pnpm add -D concurrently
+```
+
+**Chroma sidecar (not an npm dependency — run as process):**
+
+```bash
+npx chroma run --path ./data/chroma
+# Or: docker run -p 8000:8000 -v ./data/chroma:/chroma/chroma chromadb/chroma
+```
+
+## Alternatives Considered
+
+| Recommended | Alternative | When to Use Alternative |
+|-------------|-------------|-------------------------|
+| **Fastify 5.9** | Express 5.2 | Team already standardized on Express middleware; maintaining existing Express codebase |
+| **@modelcontextprotocol/sdk 1.29** | `@modelcontextprotocol/server` + `@modelcontextprotocol/node` v2 alpha | Early adoption of SDK v2 GA when split packages stabilize; official main-branch docs already use v2 imports |
+| **Streamable HTTP + legacy SSE** | Streamable HTTP only | Greenfield clients only; drop legacy SSE once all MCP clients support Streamable HTTP |
+| **Legacy SSE only** | — | **Do not choose** — deprecated in MCP spec; kept only as compat layer |
+| **pnpm + Turborepo** | npm workspaces only | Ultra-minimal repo with 1–2 packages and no build caching needs |
+| **React + Vite admin** | HTMX + Fastify templates | Ultra-minimal admin with zero frontend build; acceptable if upload/list UI stays trivial |
+| **pdf-parse** | pdfjs-dist 6.1 | Complex PDF layouts, need page-aware extraction, or pdf-parse fails on specific files |
+| **@langchain/textsplitters** | Custom chunker / tiktoken | Avoid LangChain brand entirely; need token-accurate chunk boundaries |
+| **better-sqlite3 metadata** | Drizzle ORM 0.45 + SQLite | Schema migrations, richer queries, or multi-table doc versioning from day one |
+| **Precomputed embeddings → Chroma** | `@chroma-core/default-embed` | Never for this project — embeddings come from CherryIn API, not local models |
+
+## What NOT to Use
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| **Python FastMCP / LangChain Python stack** | User chose TypeScript/Node; splits ecosystem from Cursor MCP SDK | `@modelcontextprotocol/sdk` + `packages/core` |
+| **Full LangChain.js (`langchain` package)** | Heavy dependency tree for a scaffold that only needs chunking + embed call | `@langchain/textsplitters` only, or custom splitter |
+| **LlamaIndex.TS** | Opinionated RAG framework; overkill when Chroma + OpenAI SDK cover v1 needs | Thin `SearchService` / `IngestionService` in `packages/core` |
+| **In-process Chroma in Node** | JS `chromadb` client is REST-only; no `PersistentClient` like Python | Sidecar Chroma server via CLI or Docker |
+| **@chroma-core/default-embed** | Bundles local embedding models; conflicts with CherryIn API requirement | Precompute embeddings with `openai` SDK, pass to `collection.add({ embeddings })` |
+| **Hosted vector DBs (Pinecone, Qdrant Cloud, pgvector)** | Out of scope per PROJECT.md; adds cloud credentials and ops | Local Chroma sidecar |
+| **NestJS** | Ceremony (modules, decorators, DI) disproportionate to a personal/dev scaffold | Fastify plugins + plain services |
+| **Express for greenfield backend** | Slower, no native schema validation, weaker TS ergonomics vs Fastify in 2026 | Fastify 5 |
+| **MCP SDK v2 alpha as sole dependency** | `2.0.0-alpha.3` — API still moving; breaks copy-paste from most community examples | Stable `@modelcontextprotocol/sdk@1.29` with documented v2 migration path |
+| **SSE as primary remote transport** | Deprecated in MCP spec (2025+); Streamable HTTP is the standard remote transport | Streamable HTTP primary; legacy SSE as optional compat |
+| **OCR libraries (Tesseract, etc.)** | Explicitly out of scope — text-layer PDF only | `pdf-parse` with clear error when no text layer |
+| **LangChain MCP adapters / auto-tool wrappers** | Hides MCP tool contracts; project wants explicit `search_knowledge` tool | Direct `server.registerTool()` in `apps/mcp-server` |
+| **Prisma + Postgres for v1** | Over-engineered metadata store for single-user local scaffold | `better-sqlite3` file alongside Chroma data dir |
+| **Next.js for admin UI** | Full-stack framework unnecessary when Fastify already serves API + static SPA | Vite + React SPA |
+
+## Stack Patterns by Variant
+
+**If Cursor local MCP only (stdio):**
+- Run `apps/mcp-server` with `StdioServerTransport`; no HTTP server needed
+- Backend + Chroma still required for ingestion; MCP reads from shared `SearchService`
+
+**If remote MCP clients (SSE/HTTP):**
+- Expose Streamable HTTP at `/mcp` via `StreamableHTTPServerTransport` (SDK v1) or `NodeStreamableHTTPServerTransport` (SDK v2)
+- Add legacy SSE endpoint only if target clients require it (`sseAndStreamableHttpCompatibleServer` pattern)
+- Bind to `127.0.0.1` by default; optional API key on HTTP layer
+
+**If embedding provider changes later:**
+- Keep `dimensions` fixed in config and Chroma collection metadata — changing dims requires re-index
+- Swap only the adapter in `packages/core` implementing `embed(texts: string[]): Promise<number[][]>`
+
+**If Chroma is unavailable at dev time:**
+- Fail fast at startup with health check (`client.heartbeat()`)
+- Document `pnpm dev` script that starts Chroma via `concurrently` before backend/MCP
+
+## Version Compatibility
+
+| Package A | Compatible With | Notes |
+|-----------|-----------------|-------|
+| `@modelcontextprotocol/sdk@1.29.0` | `zod@^3.24` or `^4` | SDK v1 examples use Zod for tool schemas; v2 main branch uses `zod/v4` |
+| `chromadb@3.4.3` | Chroma server ≥ 3.x | Client/server major versions should match; run `npx chroma run` from same `chromadb` version |
+| `chromadb@3.4.3` | Custom embeddings only | Do **not** install `@chroma-core/default-embed`; pass `embeddings` + `documents` to `add()`, `queryEmbeddings` to `query()` |
+| `openai@6.45.0` | CherryIn API | Set `baseURL: process.env.CHERRYIN_BASE_URL`, `model: 'qwen/qwen3-embedding-8b'`, `dimensions: <fixed>` (1024 recommended; model supports 32–4096 via MRL) |
+| `fastify@5.9.0` | `fastify-type-provider-zod@7.0.0` | Register type provider before routes |
+| `better-sqlite3@12.11.1` | Node 24 LTS | Native addon — run `pnpm rebuild` after Node upgrades |
+| `Node 24.x` | `@types/node@^24.13` | Avoid `@types/node@26` until runtime moves to Node 26 LTS |
+| `qwen3-embedding-8b dims` | Chroma collection | Pick one dimension (e.g. `1024`) at init; all upserts/queries must use same length |
+
+### Embedding Configuration (Fixed for v1)
+
+| Setting | Value | Rationale |
+|---------|-------|-----------|
+| Provider | CherryIn OpenAI-compatible API | PROJECT.md requirement |
+| Model | `qwen/qwen3-embedding-8b` | User-specified; instruction-aware — use English retrieval instruction prefix |
+| Dimensions | `1024` (config constant) | Balance of quality vs storage; MRL allows 32–4096 — pick once, never mix in one collection |
+| Distance | Cosine (`hnsw:space: cosine`) | Standard for normalized embedding retrieval |
+
+## Sources
+
+- [MCP TypeScript SDK server guide](https://github.com/modelcontextprotocol/typescript-sdk/blob/main/docs/server.md) — Streamable HTTP recommended, stdio for local, legacy SSE deprecated (HIGH)
+- [Context7 `/modelcontextprotocol/typescript-sdk`](https://github.com/modelcontextprotocol/typescript-sdk) — transport patterns, `McpServer`, stdio/HTTP examples (HIGH)
+- [Chroma clients docs](https://docs.trychroma.com/docs/run-chroma/clients) — JS client requires server; `npx chroma run --path` for persistence (HIGH)
+- [Chroma add data docs](https://docs.trychroma.com/docs/collections/add-data) — precomputed embeddings pattern (HIGH)
+- [Chroma JS client v3 changelog](https://www.trychroma.com/changelog/js-client-v3) — v3 rewrite, external embedding functions (HIGH)
+- [npm registry](https://www.npmjs.com/) — version pins verified 2026-06-29 via `npm view` (HIGH)
+- [Node.js Release LTS schedule](https://github.com/nodejs/Release) — Node 24 Active LTS, Node 26 Current (HIGH)
+- [Qwen3-Embedding-8B model card](https://huggingface.co/Qwen/Qwen3-Embedding-8B) — 4096 max dims, MRL 32–4096, 32k context (HIGH)
+- [OpenAI embeddings API reference](https://platform.openai.com/docs/api-reference/embeddings) — `dimensions` parameter for MRL models (MEDIUM — CherryIn compat assumed per PROJECT.md)
+- [Turborepo MCP monorepo discussion](https://github.com/vercel/turborepo/discussions/12938) — pnpm + turbo + `@modelcontextprotocol/sdk` layout precedent (MEDIUM)
+
+---
+*Stack research for: kb-mcp-server (TypeScript knowledge-base MCP scaffold)*
+*Researched: 2026-06-29*
