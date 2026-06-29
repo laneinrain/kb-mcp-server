@@ -1,0 +1,5 @@
+This is a sample text document for kb-mcp-server ingestion testing.
+
+It contains multiple sentences so the chunker can split it into at least one chunk when ingested through the CLI.
+
+Use this file with: pnpm ingest scripts/fixtures/sample.txt
