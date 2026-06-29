@@ -13,10 +13,19 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "test": "vitest run --passWithNoTests"
+    "build": "tsc -p tsconfig.json && node --input-type=module -e \"import { copyFileSync, mkdirSync } from 'node:fs'; import { dirname } from 'node:path'; mkdirSync('dist/registry', { recursive: true }); copyFileSync('src/registry/schema.sql', 'dist/registry/schema.sql');\"",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@kb/config": "workspace:*",
+    "@langchain/textsplitters": "^1.0.1",
+    "better-sqlite3": "^12.11.1",
+    "chromadb": "^3.4.3",
+    "openai": "^5.12.2"
   },
   "devDependencies": {
-    "typescript": "^6.0.3"
+    "@types/better-sqlite3": "^7.6.13",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   }
 }
