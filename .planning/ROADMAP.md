@@ -29,7 +29,12 @@
 4. Re-ingesting a document replaces prior chunks without orphan vectors; default single collection is used with optional `collection` parameter reserved for future use
 5. All secrets and service URLs load from environment / `.env` (never committed); backend uses localhost-friendly dev defaults when auth is disabled
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Monorepo scaffold, Zod config, .env.example, Chroma wait script
+- [ ] 01-02-PLAN.md — SQLite registry, ChunkConfig, EmbeddingClient, ChromaVectorStore, token chunker
+- [ ] 01-03-PLAN.md — Parsers, IngestionService, health backend, ingest CLI, dev orchestration
 
 **Research flags:** CherryIn API batch/rate limits and Qwen3 retrieval prefix — validate during planning
 
@@ -102,7 +107,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Platform Foundation & Ingestion | 0/TBD | Not started | - |
+| 1. Platform Foundation & Ingestion | 0/3 | Not started | - |
 | 2. REST Backend & Search | 0/TBD | Not started | - |
 | 3. MCP Search Server | 0/TBD | Not started | - |
 | 4. Admin Surfaces & Security | 0/TBD | Not started | - |
