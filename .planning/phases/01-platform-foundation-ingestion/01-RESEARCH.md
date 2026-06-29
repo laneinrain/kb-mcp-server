@@ -521,22 +521,13 @@ fastify.get("/health/embeddings", async () => {
 | A5 | `pdf-parse@2.4.5` exposes `{ text, numpages }` or equivalent | PDF validation | Parser API mismatch on implementation |
 | A6 | Minimal Fastify health app satisfies API-05 without full REST | Open Questions | Requirement interpretation dispute |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **API-05 vs "no REST until Phase 2"**
-   - What we know: ROADMAP maps API-05 to Phase 1; CONTEXT limits REST to health-only implied by dev focus
-   - What's unclear: Whether standalone health CLI could satisfy API-05 wording ("Backend exposes health/status endpoints")
-   - Recommendation: Ship `apps/backend` with **health routes only** — satisfies API-05 without CRUD scope creep
+1. **API-05 vs "no REST until Phase 2"** — **RESOLVED:** Plan 01-03 ships `apps/backend` with health routes only (`/health`, `/health/chroma`, `/health/embeddings`); satisfies API-05 without Phase 2 CRUD scope creep.
 
-2. **CherryIn batch/rate limits**
-   - What we know: OpenAI API allows 2048 inputs / 300k tokens per request [CITED: OpenAI API]
-   - What's unclear: CherryIn-specific caps and whether instruction prefix is honored via OpenAI-compatible API
-   - Recommendation: Wave 0 smoke test during first implementation task; default batch size 64, concurrency 3
+2. **CherryIn batch/rate limits** — **RESOLVED:** Plan 01-02 implements batch size ≤64 with exponential backoff on 429; smoke test during Plan 01-03 human checkpoint with live `CHERRYIN_API_KEY`.
 
-3. **Qwen tokenizer vs cl100k_base for chunk sizing**
-   - What we know: User equates 1024 tokens ≈ 4000 characters
-   - What's unclear: Exact token count under Qwen tokenizer
-   - Recommendation: Use `TokenTextSplitter` with `chunkSize: 1024`, `chunkOverlap: 154`; add unit test asserting chunks ≤ 8192 tokens before embed
+3. **Qwen tokenizer vs cl100k_base for chunk sizing** — **RESOLVED:** Plan 01-02 uses `TokenTextSplitter` with `chunkSize: 1024`, `chunkOverlap: 154` and `encodingName: "cl100k_base"` as acceptable v1 proxy per user ~4000 char equivalence.
 
 ## Environment Availability
 
