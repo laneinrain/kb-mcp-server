@@ -8,10 +8,13 @@
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",
-    "dev": "echo 'wired in plan 03'"
+    "dev": "echo 'wired in plan 03'",
+    "wait:chroma": "tsx scripts/wait-for-chroma.ts"
   },
   "devDependencies": {
+    "@kb/config": "workspace:*",
     "@types/node": "^24.13.2",
+    "chromadb": "^3.4.3",
     "concurrently": "^10.0.3",
     "tsx": "^4.22.4",
     "turbo": "^2.10.0",
