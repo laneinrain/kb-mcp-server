@@ -75,7 +75,7 @@ Each task was committed atomically:
 2. **Task 2: EmbeddingClient for CherryIn** - `13d4fc3` (feat)
 3. **Task 3: ChromaVectorStore and token chunker** - `9f06837` (feat)
 
-**Plan metadata:** pending (docs commit)
+**Plan metadata:** `0f17a0c` (docs)
 
 ## Files Created/Modified
 
