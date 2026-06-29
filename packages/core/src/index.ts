@@ -1,1 +1,24 @@
-export {};
+export {
+  getChunkConfig,
+  getSettingsStore,
+  initSettingsStore,
+  type SettingsStore,
+} from "./registry/settings-store.js";
+export {
+  getDocumentRegistry,
+  type DocumentRegistry,
+} from "./registry/document-registry.js";
+export type {
+  ChunkConfig,
+  DocumentRecord,
+  DocumentStatus,
+  RegisterDocumentInput,
+} from "./registry/types.js";
+export { EmbeddingClient } from "./embeddings/embedding-client.js";
+export {
+  ChromaVectorStore,
+  buildChunkId,
+  type UpsertChunksParams,
+} from "./vector-store/chroma-store.js";
+export { chunkText } from "./ingestion/chunker.js";
+export type { TextChunk } from "./ingestion/types.js";
