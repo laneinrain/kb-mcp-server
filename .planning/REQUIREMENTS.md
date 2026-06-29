@@ -20,11 +20,11 @@
 - [ ] **INGE-02**: Operator can ingest markdown files into the vector knowledge base
 - [ ] **INGE-03**: Operator can ingest text-layer PDF files into the vector knowledge base
 - [ ] **INGE-04**: System rejects PDFs with insufficient extractable text (no OCR)
-- [ ] **INGE-05**: Ingested documents are chunked with configurable size and overlap
-- [ ] **INGE-06**: Chunks are embedded via CherryIn API using `qwen/qwen3-embedding-8b`
-- [ ] **INGE-07**: Vectors persist in local Chroma and survive process restart
+- [x] **INGE-05**: Ingested documents are chunked with configurable size and overlap
+- [x] **INGE-06**: Chunks are embedded via CherryIn API using `qwen/qwen3-embedding-8b`
+- [x] **INGE-07**: Vectors persist in local Chroma and survive process restart
 - [ ] **INGE-08**: Re-ingesting a document replaces prior chunks without orphan vectors
-- [ ] **INGE-09**: Default single collection is used with optional `collection` parameter reserved for future multi-collection support
+- [x] **INGE-09**: Default single collection is used with optional `collection` parameter reserved for future multi-collection support
 
 ### Backend API
 
@@ -95,11 +95,11 @@ Deferred to future release. Tracked but not in current roadmap.
 | INGE-02 | Phase 1 | Pending |
 | INGE-03 | Phase 1 | Pending |
 | INGE-04 | Phase 1 | Pending |
-| INGE-05 | Phase 1 | Pending |
-| INGE-06 | Phase 1 | Pending |
-| INGE-07 | Phase 1 | Pending |
+| INGE-05 | Phase 1 | Complete |
+| INGE-06 | Phase 1 | Complete |
+| INGE-07 | Phase 1 | Complete |
 | INGE-08 | Phase 1 | Pending |
-| INGE-09 | Phase 1 | Pending |
+| INGE-09 | Phase 1 | Complete |
 | API-01 | Phase 2 | Pending |
 | API-02 | Phase 2 | Pending |
 | API-03 | Phase 2 | Pending |
