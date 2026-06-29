@@ -43,6 +43,10 @@ export class ChromaVectorStore {
     await this.client.heartbeat();
   }
 
+  async heartbeat(): Promise<void> {
+    await this.client.heartbeat();
+  }
+
   async getOrCreateCollection(name?: string): Promise<Collection> {
     const collectionName = name ?? DEFAULT_COLLECTION;
     const cached = this.collections.get(collectionName);

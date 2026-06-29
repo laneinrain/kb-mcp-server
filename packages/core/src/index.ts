@@ -22,3 +22,16 @@ export {
 } from "./vector-store/chroma-store.js";
 export { chunkText } from "./ingestion/chunker.js";
 export type { TextChunk } from "./ingestion/types.js";
+export {
+  parseDocument,
+  parseTxt,
+  parseMd,
+  parsePdf,
+  INSUFFICIENT_TEXT_ERROR,
+  type ParsedDocument,
+} from "./ingestion/parsers/index.js";
+export {
+  IngestionService,
+  type IngestOptions,
+  type IngestResult,
+} from "./ingestion/ingestion-service.js";
