@@ -27,9 +27,9 @@ progress:
 | Field | Value |
 |-------|-------|
 | **Phase** | 1 — Platform Foundation & Ingestion |
-| **Plan** | 02 complete — next 01-03 |
-| **Status** | Plan 01-02 executed |
-| **Progress** | ██░░░░░░░░ 0/4 phases (2/3 Phase 1 plans) |
+| **Plan** | 03 — Tasks 1–3 complete; Task 4 checkpoint pending |
+| **Status** | Awaiting human E2E verification (01-03 Task 4) |
+| **Progress** | ██░░░░░░░░ 0/4 phases (2/3 Phase 1 plans + 01-03 partial) |
 
 ## Performance Metrics
 
@@ -71,8 +71,8 @@ progress:
 ## Session Continuity
 
 **Last updated:** 2026-06-29  
-**Last action:** Completed 01-02-PLAN.md — SQLite registry, EmbeddingClient, ChromaVectorStore, chunker  
-**Next step:** Execute 01-03-PLAN.md (IngestionService, parsers, health backend, dev orchestration)
+**Last action:** Executed 01-03 Tasks 1–3 — parsers, IngestionService, health backend, dev CLI; checkpoint pending  
+**Next step:** Human verify Task 4 (pnpm dev + ingest + health curls); reply "approved" to complete plan
 
 ---
 *State initialized: 2026-06-29*
