@@ -8,7 +8,8 @@
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",
-    "dev": "echo 'wired in plan 03'",
+    "dev": "concurrently -k \"npx chroma run --path ./data/chroma\" \"pnpm wait:chroma && turbo run dev --filter=@kb/backend\"",
+    "ingest": "tsx scripts/ingest.ts",
     "wait:chroma": "tsx scripts/wait-for-chroma.ts"
   },
   "devDependencies": {
