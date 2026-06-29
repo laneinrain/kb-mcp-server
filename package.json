@@ -1,0 +1,21 @@
+{
+  "name": "kb-mcp-server",
+  "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "dev": "echo 'wired in plan 03'"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.2",
+    "concurrently": "^10.0.3",
+    "tsx": "^4.22.4",
+    "turbo": "^2.10.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}
