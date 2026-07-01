@@ -18,11 +18,27 @@ export interface UpsertChunksParams {
   collection?: string;
 }
 
+export interface QueryParams {
+  embedding: number[];
+  topK: number;
+  collection?: string;
+}
+
+export interface QueryHit {
+  documentId: string;
+  filename: string;
+  chunkIndex: number;
+  text: string;
+  distance: number;
+}
+
 interface ChromaClientLike {
   heartbeat(): Promise<number>;
   getOrCreateCollection(args: {
     name: string;
     metadata?: Record<string, string | number>;
+    /** Explicit null disables Chroma's default embed function (we supply vectors). */
+    embeddingFunction: null;
   }): Promise<Collection>;
 }
 
@@ -56,6 +72,7 @@ export class ChromaVectorStore {
 
     const collection = await this.client.getOrCreateCollection({
       name: collectionName,
+      embeddingFunction: null,
       metadata: {
         embedding_model: EMBEDDING_MODEL,
         embedding_dim: EMBEDDING_DIMENSIONS,
@@ -97,5 +114,29 @@ export class ChromaVectorStore {
   ): Promise<void> {
     const col = await this.getOrCreateCollection(collection);
     await col.delete({ where: { document_id: documentId } });
+  }
+
+  async query(params: QueryParams): Promise<QueryHit[]> {
+    const { embedding, topK, collection } = params;
+    const col = await this.getOrCreateCollection(collection);
+
+    const result = await col.query({
+      queryEmbeddings: [embedding],
+      nResults: topK,
+      include: ["documents", "metadatas", "distances"],
+    });
+
+    const ids = result.ids[0] ?? [];
+    const documents = result.documents[0] ?? [];
+    const metadatas = result.metadatas[0] ?? [];
+    const distances = result.distances[0] ?? [];
+
+    return ids.map((_, index) => ({
+      documentId: String(metadatas[index]?.document_id ?? ""),
+      filename: String(metadatas[index]?.filename ?? ""),
+      chunkIndex: Number(metadatas[index]?.chunk_index ?? 0),
+      text: documents[index] ?? "",
+      distance: distances[index] ?? 0,
+    }));
   }
 }

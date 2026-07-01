@@ -19,6 +19,8 @@ export {
   ChromaVectorStore,
   buildChunkId,
   type UpsertChunksParams,
+  type QueryParams,
+  type QueryHit,
 } from "./vector-store/chroma-store.js";
 export { chunkText } from "./ingestion/chunker.js";
 export type { TextChunk } from "./ingestion/types.js";
@@ -35,3 +37,5 @@ export {
   type IngestOptions,
   type IngestResult,
 } from "./ingestion/ingestion-service.js";
+export { SearchService } from "./search/search-service.js";
+export type { SearchOptions, SearchResult } from "./search/types.js";
