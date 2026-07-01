@@ -1,8 +1,27 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { config as loadDotenv } from "dotenv";
 import { z } from "zod";
 
+function findEnvFile(): string | undefined {
+  let dir = process.cwd();
+  for (let depth = 0; depth < 8; depth++) {
+    const candidate = path.join(dir, ".env");
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) {
+      break;
+    }
+    dir = parent;
+  }
+  return undefined;
+}
+
 if (process.env.NODE_ENV !== "production") {
-  loadDotenv();
+  const envPath = findEnvFile();
+  loadDotenv(envPath ? { path: envPath } : undefined);
 }
 
 const envSchema = z.object({
@@ -10,7 +29,11 @@ const envSchema = z.object({
   CHERRYIN_BASE_URL: z
     .string()
     .url()
-    .default("https://open.cherryin.cc"),
+    .default("https://open.cherryin.cc")
+    .transform((url) => {
+      const trimmed = url.replace(/\/+$/, "");
+      return trimmed.endsWith("/v1") ? trimmed : `${trimmed}/v1`;
+    }),
   CHROMA_HOST: z.string().default("localhost"),
   CHROMA_PORT: z.coerce.number().default(8000),
   CHUNK_SIZE: z.coerce.number().default(1024),

@@ -7,6 +7,6 @@ describe("loadConfig", () => {
     const config = loadConfig();
     expect(config.CHUNK_SIZE).toBe(1024);
     expect(config.CHUNK_OVERLAP).toBe(154);
-    expect(config.CHERRYIN_BASE_URL).toBe("https://open.cherryin.cc");
+    expect(config.CHERRYIN_BASE_URL).toBe("https://open.cherryin.cc/v1");
   });
 });

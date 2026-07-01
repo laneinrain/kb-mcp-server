@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import type OpenAI from "openai";
-import type { AppConfig } from "@kb/config";
+import { loadConfig, type AppConfig } from "@kb/config";
 import { EmbeddingClient } from "./embedding-client.js";
 
 function makeConfig(): AppConfig {
   return {
     CHERRYIN_API_KEY: "test-key",
-    CHERRYIN_BASE_URL: "https://open.cherryin.cc",
+    CHERRYIN_BASE_URL: "https://open.cherryin.cc/v1",
     CHROMA_HOST: "localhost",
     CHROMA_PORT: 8000,
     CHUNK_SIZE: 1024,
@@ -87,7 +87,7 @@ describe("EmbeddingClient integration", () => {
   it.skipIf(!process.env.CHERRYIN_API_KEY)(
     "embeds live when CHERRYIN_API_KEY is set",
     async () => {
-      const client = new EmbeddingClient(makeConfig());
+      const client = new EmbeddingClient(loadConfig());
       const [vector] = await client.embedDocuments(["integration smoke"]);
       expect(vector).toHaveLength(1024);
     },

@@ -74,6 +74,12 @@ export class EmbeddingClient {
           dimensions: EMBEDDING_DIMENSIONS,
         });
 
+        if (!response.data) {
+          throw new Error(
+            "Embedding API returned an unexpected response (missing data). Check CHERRYIN_BASE_URL (should end with /v1).",
+          );
+        }
+
         return response.data
           .sort((a, b) => a.index - b.index)
           .map((item) => item.embedding);
