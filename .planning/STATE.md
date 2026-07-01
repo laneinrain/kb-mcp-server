@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: ready_to_plan
-last_updated: 2026-07-01T12:52:19.199Z
+status: awaiting_uat
+last_updated: 2026-06-29T21:45:00.000Z
 progress:
   total_phases: 4
-  completed_phases: 0
-  total_plans: 3
-  completed_plans: 3
-  percent: 0
-stopped_at: Phase 1 complete (3/3) — ready to discuss Phase 2
+  completed_phases: 1
+  total_plans: 6
+  completed_plans: 5
+  percent: 25
+stopped_at: Phase 2 plan 03 — human E2E checkpoint pending
 ---
 
 # Project State: kb-mcp-server
@@ -27,10 +27,10 @@ stopped_at: Phase 1 complete (3/3) — ready to discuss Phase 2
 
 | Field | Value |
 |-------|-------|
-| **Phase** | 1 — Platform Foundation & Ingestion |
-| **Plan** | 03 — Tasks 1–3 complete; Task 4 checkpoint pending |
-| **Status** | Awaiting human E2E verification (01-03 Task 4) |
-| **Progress** | ██░░░░░░░░ 0/4 phases (2/3 Phase 1 plans + 01-03 partial) |
+| **Phase** | 2 — REST Backend & Search |
+| **Plan** | 03 — Tasks 1–2 complete; Task 3 checkpoint pending |
+| **Status** | Awaiting human E2E verification (02-03 Task 3) |
+| **Progress** | ███░░░░░░░ 1/4 phases (5/6 plans executed) |
 
 ## Performance Metrics
 
@@ -38,9 +38,8 @@ stopped_at: Phase 1 complete (3/3) — ready to discuss Phase 2
 |--------|-------|
 | v1 requirements | 30 |
 | Requirements mapped | 30/30 |
-| Phases complete | 0/4 |
-| Plans complete | 2/3 (Phase 1) |
-| 01-02 execution | 35 min, 3 tasks, 18 files |
+| Phases complete | 1/4 |
+| Phase 2 plans | 3/3 executed (checkpoint pending) |
 
 ## Accumulated Context
 
@@ -48,32 +47,25 @@ stopped_at: Phase 1 complete (3/3) — ready to discuss Phase 2
 
 | Decision | Source | Status |
 |----------|--------|--------|
-| MCP retrieval-only; ingestion via backend | PROJECT.md | Pending implementation |
-| Chroma local sidecar (HTTP server mode) | PROJECT.md / research | Pending implementation |
-| Single default collection, multi-collection-ready APIs | PROJECT.md | Pending implementation |
-| TypeScript/Node monorepo | PROJECT.md | Pending implementation |
-| Text-layer PDF only (no OCR) | PROJECT.md | Pending implementation |
-| Optional API key auth via env (off by default) | PROJECT.md | Pending implementation |
-| Build order: foundation → ingest → REST → MCP stdio/SSE → admin → auth | ROADMAP.md / research | Active |
-| pnpm 11 allowBuilds for esbuild required for strictDepBuilds install | 01-01 execution | Active |
-| All services use @kb/config loadConfig() — no ad-hoc process.env | 01-01 execution | Active |
-| better-sqlite3@12.11.1 for Node 24 prebuilt binaries | 01-02 execution | Active |
-| Per-package vitest.config.ts for workspace test resolution | 01-02 execution | Active |
+| SearchService sole retrieval path for REST and MCP | Phase 2 D-13 | Implemented |
+| Score = clamp(1 - distance), snippet 500 chars | Phase 2 D-15/D-16 | Implemented |
+| Chroma delete before registry delete | Phase 2 D-18 | Implemented |
+| Swagger at /docs, health at /health* | Phase 2 D-20/D-21 | Implemented |
 
 ### Todos
 
-- [x] Plan Phase 1: Platform Foundation & Ingestion (3 plans, 3 waves)
-- [ ] Validate CherryIn embedding API during Phase 1 planning (batch limits, rate limits)
+- [x] Execute Phase 2 plans 02-01, 02-02, 02-03 (code)
+- [ ] Human E2E verify Phase 2 REST flow (02-03 Task 3)
 
 ### Blockers
 
-(None)
+(None — awaiting operator checkpoint)
 
 ## Session Continuity
 
 **Last updated:** 2026-06-29  
-**Last action:** Executed 01-03 Tasks 1–3 — parsers, IngestionService, health backend, dev CLI; checkpoint pending  
-**Next step:** Human verify Task 4 (pnpm dev + ingest + health curls); reply "approved" to complete plan
+**Last action:** Executed Phase 2 plans 02-01 through 02-03 Tasks 1–2  
+**Next step:** Human verify upload → list → search → delete; reply "approved"
 
 ---
-*State initialized: 2026-06-29*
+*State updated: 2026-06-29*
