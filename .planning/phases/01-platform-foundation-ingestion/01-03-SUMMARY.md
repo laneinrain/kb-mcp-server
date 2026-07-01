@@ -40,11 +40,11 @@ patterns-established:
   - "parseDocument allowlist: .txt, .md, .markdown, .pdf only"
   - "PDF rejection threshold max(50, ceil(pageCount * 0.1))"
 
-requirements-completed: []  # Pending Task 4 human verification
+requirements-completed: [INGE-01, INGE-02, INGE-03, INGE-04, INGE-05, INGE-06, INGE-07, INGE-08, INGE-09, API-05, CONF-04]
 
 duration: 25min
 completed: 2026-06-29
-checkpoint_status: pending_task_4
+checkpoint_status: approved_task_4
 ---
 
 # Phase 1 Plan 03: Ingestion Pipeline Summary
