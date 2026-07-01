@@ -8,8 +8,11 @@
 
 - [x] **Phase 1: Platform Foundation & Ingestion** - Monorepo, config, Chroma sidecar, and full ingest pipeline into persistent vectors
  (completed 2026-07-01)
-- [x] **Phase 2: REST Backend & Search** - Document CRUD and test search via Fastify REST using shared SearchService (completed 2026-07-01)
-- [ ] **Phase 3: MCP Search Server** - stdio and SSE transports exposing bounded retrieval-only search tools
+
+- [x] **Phase 2: REST Backend & Search** - Document CRUD and test search via Fastify REST using shared SearchService
+ (completed 2026-07-01)
+
+- [ ] **Phase 3: MCP Search Server** - stdio and Streamable HTTP transports exposing bounded retrieval-only search tools
 - [ ] **Phase 4: Admin Surfaces & Security** - Web admin, CLI, and optional API key auth with localhost dev defaults
 
 ## Phase Details
@@ -33,6 +36,7 @@
 **Plans:** 3/3 plans complete
 
 Plans:
+
 - [x] 01-01-PLAN.md — Monorepo scaffold, Zod config, .env.example, Chroma wait script
 - [x] 01-02-PLAN.md — SQLite registry, ChunkConfig, EmbeddingClient, ChromaVectorStore, token chunker
 - [x] 01-03-PLAN.md — Parsers, IngestionService, health backend, ingest CLI, dev orchestration
@@ -59,6 +63,7 @@ Plans:
 **Plans:** 3/3 plans complete
 
 Plans:
+
 - [x] 02-01-PLAN.md — ChromaVectorStore.query(), SearchService, unit tests (API-04 core)
 - [x] 02-02-PLAN.md — Backend bootstrap: Zod provider, Swagger /docs, multipart, service wiring
 - [x] 02-03-PLAN.md — REST routes documents + search (API-01–04), E2E checkpoint
@@ -67,7 +72,7 @@ Plans:
 
 ### Phase 3: MCP Search Server
 
-**Goal:** MCP clients can semantically search the knowledge base via stdio and SSE using a stable, retrieval-only tool interface.
+**Goal:** MCP clients can semantically search the knowledge base via stdio and Streamable HTTP using a stable, retrieval-only tool interface.
 
 **Depends on:** Phase 2
 
@@ -76,14 +81,25 @@ Plans:
 **Success Criteria** (what must be TRUE):
 
 1. MCP client can connect via stdio transport, invoke `search_knowledge`, and receive ranked semantic results
-2. MCP client can connect via SSE/HTTP transport and invoke the same tools with identical schemas and behavior
+2. MCP client can connect via Streamable HTTP transport and invoke the same tools with identical schemas and behavior
 3. Search results include score, text snippet, document ID, filename, and chunk index
 4. MCP server exposes retrieval tools only — no upload, delete, or index tools
 5. Search responses are bounded with configurable top_k, safe defaults, and truncated snippets; stdio entrypoint logs to stderr only (no stdout pollution)
 
-**Plans:** TBD
+**Plans:** 3 plans in 3 waves
 
-**Research flags:** Streamable HTTP vs legacy SSE in MCP SDK 1.29 — confirm supported path during planning
+Plans:
+**Wave 1**
+
+- [ ] 03-01-PLAN.md — MCP scaffold, createMcpServices(), buildMcpServer(), search_knowledge, unit tests (MCP-03–06)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03-02-PLAN.md — stdio entrypoint, stderr-only logging, kb-mcp-server bin (MCP-01)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 03-03-PLAN.md — Streamable HTTP at POST /mcp, config env, dev script, route tests, E2E checkpoint (MCP-02)
 
 ---
 
@@ -115,7 +131,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation & Ingestion | 3/3 | Complete    | 2026-07-01 |
 | 2. REST Backend & Search | 3/3 | Complete    | 2026-07-01 |
-| 3. MCP Search Server | 0/TBD | Not started | - |
+| 3. MCP Search Server | 0/3 | Planned | - |
 | 4. Admin Surfaces & Security | 0/TBD | Not started | - |
 
 ## Coverage

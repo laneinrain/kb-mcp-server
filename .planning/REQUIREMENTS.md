@@ -28,10 +28,10 @@
 
 ### Backend API
 
-- [ ] **API-01**: Operator can upload documents via REST API for ingestion
-- [ ] **API-02**: Operator can list indexed documents via REST API
-- [ ] **API-03**: Operator can delete a document and its vectors via REST API
-- [ ] **API-04**: Operator can run test semantic search via REST API (same query path as MCP)
+- [x] **API-01**: Operator can upload documents via REST API for ingestion
+- [x] **API-02**: Operator can list indexed documents via REST API
+- [x] **API-03**: Operator can delete a document and its vectors via REST API
+- [x] **API-04**: Operator can run test semantic search via REST API (same query path as MCP)
 - [x] **API-05**: Backend exposes health/status endpoints for Chroma and embedding connectivity
 
 ### Web Admin
@@ -100,10 +100,10 @@ Deferred to future release. Tracked but not in current roadmap.
 | INGE-07 | Phase 1 | Complete |
 | INGE-08 | Phase 1 | Complete |
 | INGE-09 | Phase 1 | Complete |
-| API-01 | Phase 2 | Pending |
-| API-02 | Phase 2 | Pending |
-| API-03 | Phase 2 | Pending |
-| API-04 | Phase 2 | Pending |
+| API-01 | Phase 2 | Complete |
+| API-02 | Phase 2 | Complete |
+| API-03 | Phase 2 | Complete |
+| API-04 | Phase 2 | Complete |
 | API-05 | Phase 1 | Complete |
 | WEB-01 | Phase 4 | Pending |
 | WEB-02 | Phase 4 | Pending |
