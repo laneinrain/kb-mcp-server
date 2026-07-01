@@ -15,6 +15,8 @@ function makeConfig(): AppConfig {
     DATA_DIR: "./data",
     BACKEND_HOST: "127.0.0.1",
     BACKEND_PORT: 3000,
+    MCP_HTTP_HOST: "127.0.0.1",
+    MCP_HTTP_PORT: 3100,
     DEFAULT_COLLECTION: "default",
     EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
     EMBEDDING_DIMENSIONS: 1024,

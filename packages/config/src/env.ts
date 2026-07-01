@@ -42,6 +42,8 @@ const envSchema = z.object({
   DATA_DIR: z.string().default("./data"),
   BACKEND_HOST: z.string().default("127.0.0.1"),
   BACKEND_PORT: z.coerce.number().default(3000),
+  MCP_HTTP_HOST: z.string().default("127.0.0.1"),
+  MCP_HTTP_PORT: z.coerce.number().default(3100),
   DEFAULT_COLLECTION: z.string().default("default"),
   EMBEDDING_MODEL: z.string().default("qwen/qwen3-embedding-8b"),
   EMBEDDING_DIMENSIONS: z.coerce.number().default(1024),

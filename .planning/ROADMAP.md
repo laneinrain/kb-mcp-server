@@ -86,20 +86,20 @@ Plans:
 4. MCP server exposes retrieval tools only — no upload, delete, or index tools
 5. Search responses are bounded with configurable top_k, safe defaults, and truncated snippets; stdio entrypoint logs to stderr only (no stdout pollution)
 
-**Plans:** 3 plans in 3 waves
+**Plans:** 3/3 plans executed (E2E checkpoint pending)
 
 Plans:
 **Wave 1**
 
-- [ ] 03-01-PLAN.md — MCP scaffold, createMcpServices(), buildMcpServer(), search_knowledge, unit tests (MCP-03–06)
+- [x] 03-01-PLAN.md — MCP scaffold, createMcpServices(), buildMcpServer(), search_knowledge, unit tests (MCP-03–06)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 03-02-PLAN.md — stdio entrypoint, stderr-only logging, kb-mcp-server bin (MCP-01)
+- [x] 03-02-PLAN.md — stdio entrypoint, stderr-only logging, kb-mcp-server bin (MCP-01)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 03-03-PLAN.md — Streamable HTTP at POST /mcp, config env, dev script, route tests, E2E checkpoint (MCP-02)
+- [x] 03-03-PLAN.md — Streamable HTTP at POST /mcp, config env, dev script, route tests, E2E checkpoint (MCP-02)
 
 ---
 
@@ -131,7 +131,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation & Ingestion | 3/3 | Complete    | 2026-07-01 |
 | 2. REST Backend & Search | 3/3 | Complete    | 2026-07-01 |
-| 3. MCP Search Server | 0/3 | Planned | - |
+| 3. MCP Search Server | 3/3 | E2E checkpoint | - |
 | 4. Admin Surfaces & Security | 0/TBD | Not started | - |
 
 ## Coverage
