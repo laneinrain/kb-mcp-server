@@ -8,7 +8,7 @@
 
 - [x] **Phase 1: Platform Foundation & Ingestion** - Monorepo, config, Chroma sidecar, and full ingest pipeline into persistent vectors
  (completed 2026-07-01)
-- [ ] **Phase 2: REST Backend & Search** - Document CRUD and test search via Fastify REST using shared SearchService
+- [x] **Phase 2: REST Backend & Search** - Document CRUD and test search via Fastify REST using shared SearchService (completed 2026-07-01)
 - [ ] **Phase 3: MCP Search Server** - stdio and SSE transports exposing bounded retrieval-only search tools
 - [ ] **Phase 4: Admin Surfaces & Security** - Web admin, CLI, and optional API key auth with localhost dev defaults
 
@@ -56,7 +56,7 @@ Plans:
 3. Operator can run test semantic search via REST and receive ranked results with score, text snippet, document ID, filename, and chunk index
 4. REST search uses the same SearchService query path that MCP will call — results are consistent across admin and retrieval surfaces
 
-**Plans:** 3/3 plans executed (E2E checkpoint pending)
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 02-01-PLAN.md — ChromaVectorStore.query(), SearchService, unit tests (API-04 core)
@@ -114,7 +114,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation & Ingestion | 3/3 | Complete    | 2026-07-01 |
-| 2. REST Backend & Search | 3/3 | E2E checkpoint | - |
+| 2. REST Backend & Search | 3/3 | Complete    | 2026-07-01 |
 | 3. MCP Search Server | 0/TBD | Not started | - |
 | 4. Admin Surfaces & Security | 0/TBD | Not started | - |
 
