@@ -6,7 +6,8 @@
 
 ## Phases
 
-- [x] **Phase 1: Platform Foundation & Ingestion** - Monorepo, config, Chroma sidecar, and full ingest pipeline into persistent vectors (completed 2026-07-01)
+- [x] **Phase 1: Platform Foundation & Ingestion** - Monorepo, config, Chroma sidecar, and full ingest pipeline into persistent vectors
+ (completed 2026-07-01)
 - [ ] **Phase 2: REST Backend & Search** - Document CRUD and test search via Fastify REST using shared SearchService
 - [ ] **Phase 3: MCP Search Server** - stdio and SSE transports exposing bounded retrieval-only search tools
 - [ ] **Phase 4: Admin Surfaces & Security** - Web admin, CLI, and optional API key auth with localhost dev defaults
@@ -55,7 +56,12 @@ Plans:
 3. Operator can run test semantic search via REST and receive ranked results with score, text snippet, document ID, filename, and chunk index
 4. REST search uses the same SearchService query path that MCP will call — results are consistent across admin and retrieval surfaces
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — ChromaVectorStore.query(), SearchService, unit tests (API-04 core)
+- [ ] 02-02-PLAN.md — Backend bootstrap: Zod provider, Swagger /docs, multipart, service wiring
+- [ ] 02-03-PLAN.md — REST routes documents + search (API-01–04), E2E checkpoint
 
 ---
 
@@ -108,7 +114,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation & Ingestion | 3/3 | Complete    | 2026-07-01 |
-| 2. REST Backend & Search | 0/TBD | Not started | - |
+| 2. REST Backend & Search | 0/3 | Not started | - |
 | 3. MCP Search Server | 0/TBD | Not started | - |
 | 4. Admin Surfaces & Security | 0/TBD | Not started | - |
 

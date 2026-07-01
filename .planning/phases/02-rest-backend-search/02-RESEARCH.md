@@ -611,17 +611,11 @@ Phase 1 used **3 plans / 3 waves** (foundation → adapters → ingestion+backen
 | A3 | Chroma sidecar matches JS client 3.4.x API | query() | Runtime errors on query — align versions in start script |
 | A4 | `document_id` metadata filter delete remains valid for query results | Delete flow | Already verified in Phase 1 tests |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Chroma sidecar version vs npm client**
-   - What we know: Project pins `chromadb@^3.4.3`; system `chroma` CLI reports `1.4.4` [VERIFIED: shell probe]
-   - What's unclear: Whether `scripts/start-chroma.ts` uses npm chromadb CLI or Python package
-   - Recommendation: Planner should verify `pnpm dev` starts sidecar compatible with 3.4 client before 02-01 integration tests
+1. **Chroma sidecar version vs npm client** — **RESOLVED:** Phase 1 validated Python `chroma run` + `chromadb@3.4.3` JS client on Windows; `pnpm dev` uses `scripts/start-chroma.ts`. Human E2E in 02-03 Task 3 re-confirms before phase sign-off.
 
-2. **Fastify global error handler vs per-route try/catch**
-   - What we know: D-12 requires `{ error, message }` JSON shape
-   - What's unclear: Whether to use `setErrorHandler` or route wrappers
-   - Recommendation: Central `setErrorHandler` mapping `AppError` subclasses — less duplication
+2. **Fastify global error handler vs per-route try/catch** — **RESOLVED:** Per-route try/catch + shared `mapIngestError()` in `errors.ts` (02-03 Task 1); optional `setErrorHandler` for unhandled errors. Matches D-12 `{ error, message }` shape without global handler required for v1.
 
 ## Environment Availability
 
@@ -715,7 +709,7 @@ Phase 1 used **3 plans / 3 waves** (foundation → adapters → ingestion+backen
 | Pitfalls | HIGH | Chroma cosine semantics from official docs; path guard verified in source |
 
 ### Open Questions
-- Confirm Chroma sidecar startup script matches `chromadb@3.4.x` client API during 02-01 integration testing
+- All resolved — see `## Open Questions (RESOLVED)` above.
 
 ### Ready for Planning
 Research complete. Planner can now create PLAN.md files.
