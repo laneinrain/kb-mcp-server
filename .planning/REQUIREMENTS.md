@@ -16,14 +16,14 @@
 
 ### Ingestion & Storage
 
-- [ ] **INGE-01**: Operator can ingest txt files into the vector knowledge base
-- [ ] **INGE-02**: Operator can ingest markdown files into the vector knowledge base
-- [ ] **INGE-03**: Operator can ingest text-layer PDF files into the vector knowledge base
-- [ ] **INGE-04**: System rejects PDFs with insufficient extractable text (no OCR)
+- [x] **INGE-01**: Operator can ingest txt files into the vector knowledge base
+- [x] **INGE-02**: Operator can ingest markdown files into the vector knowledge base
+- [x] **INGE-03**: Operator can ingest text-layer PDF files into the vector knowledge base
+- [x] **INGE-04**: System rejects PDFs with insufficient extractable text (no OCR)
 - [x] **INGE-05**: Ingested documents are chunked with configurable size and overlap
 - [x] **INGE-06**: Chunks are embedded via CherryIn API using `qwen/qwen3-embedding-8b`
 - [x] **INGE-07**: Vectors persist in local Chroma and survive process restart
-- [ ] **INGE-08**: Re-ingesting a document replaces prior chunks without orphan vectors
+- [x] **INGE-08**: Re-ingesting a document replaces prior chunks without orphan vectors
 - [x] **INGE-09**: Default single collection is used with optional `collection` parameter reserved for future multi-collection support
 
 ### Backend API
@@ -32,7 +32,7 @@
 - [ ] **API-02**: Operator can list indexed documents via REST API
 - [ ] **API-03**: Operator can delete a document and its vectors via REST API
 - [ ] **API-04**: Operator can run test semantic search via REST API (same query path as MCP)
-- [ ] **API-05**: Backend exposes health/status endpoints for Chroma and embedding connectivity
+- [x] **API-05**: Backend exposes health/status endpoints for Chroma and embedding connectivity
 
 ### Web Admin
 
@@ -51,7 +51,7 @@
 - [x] **CONF-01**: All secrets and service URLs load from environment variables / `.env` (never committed)
 - [x] **CONF-02**: `.env.example` documents required configuration without secrets
 - [ ] **CONF-03**: Optional API key authentication can be enabled via environment variable
-- [ ] **CONF-04**: When auth is disabled, backend binds to localhost-friendly dev defaults
+- [x] **CONF-04**: When auth is disabled, backend binds to localhost-friendly dev defaults
 
 ## v2 Requirements
 
@@ -91,20 +91,20 @@ Deferred to future release. Tracked but not in current roadmap.
 | MCP-04 | Phase 3 | Pending |
 | MCP-05 | Phase 3 | Pending |
 | MCP-06 | Phase 3 | Pending |
-| INGE-01 | Phase 1 | Pending |
-| INGE-02 | Phase 1 | Pending |
-| INGE-03 | Phase 1 | Pending |
-| INGE-04 | Phase 1 | Pending |
+| INGE-01 | Phase 1 | Complete |
+| INGE-02 | Phase 1 | Complete |
+| INGE-03 | Phase 1 | Complete |
+| INGE-04 | Phase 1 | Complete |
 | INGE-05 | Phase 1 | Complete |
 | INGE-06 | Phase 1 | Complete |
 | INGE-07 | Phase 1 | Complete |
-| INGE-08 | Phase 1 | Pending |
+| INGE-08 | Phase 1 | Complete |
 | INGE-09 | Phase 1 | Complete |
 | API-01 | Phase 2 | Pending |
 | API-02 | Phase 2 | Pending |
 | API-03 | Phase 2 | Pending |
 | API-04 | Phase 2 | Pending |
-| API-05 | Phase 1 | Pending |
+| API-05 | Phase 1 | Complete |
 | WEB-01 | Phase 4 | Pending |
 | WEB-02 | Phase 4 | Pending |
 | WEB-03 | Phase 4 | Pending |
@@ -114,7 +114,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | CONF-01 | Phase 1 | Complete |
 | CONF-02 | Phase 1 | Complete |
 | CONF-03 | Phase 4 | Pending |
-| CONF-04 | Phase 1 | Pending |
+| CONF-04 | Phase 1 | Complete |
 
 **Coverage:**
 - v1 requirements: 30 total

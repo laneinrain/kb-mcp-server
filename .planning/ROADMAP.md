@@ -6,7 +6,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Platform Foundation & Ingestion** - Monorepo, config, Chroma sidecar, and full ingest pipeline into persistent vectors
+- [x] **Phase 1: Platform Foundation & Ingestion** - Monorepo, config, Chroma sidecar, and full ingest pipeline into persistent vectors (completed 2026-07-01)
 - [ ] **Phase 2: REST Backend & Search** - Document CRUD and test search via Fastify REST using shared SearchService
 - [ ] **Phase 3: MCP Search Server** - stdio and SSE transports exposing bounded retrieval-only search tools
 - [ ] **Phase 4: Admin Surfaces & Security** - Web admin, CLI, and optional API key auth with localhost dev defaults
@@ -29,12 +29,12 @@
 4. Re-ingesting a document replaces prior chunks without orphan vectors; default single collection is used with optional `collection` parameter reserved for future use
 5. All secrets and service URLs load from environment / `.env` (never committed); backend uses localhost-friendly dev defaults when auth is disabled
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 01-01-PLAN.md — Monorepo scaffold, Zod config, .env.example, Chroma wait script
 - [x] 01-02-PLAN.md — SQLite registry, ChunkConfig, EmbeddingClient, ChromaVectorStore, token chunker
-- [ ] 01-03-PLAN.md — Parsers, IngestionService, health backend, ingest CLI, dev orchestration
+- [x] 01-03-PLAN.md — Parsers, IngestionService, health backend, ingest CLI, dev orchestration
 
 **Research flags:** CherryIn API batch/rate limits and Qwen3 retrieval prefix — validate during planning
 
@@ -107,7 +107,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Platform Foundation & Ingestion | 2/3 | In Progress|  |
+| 1. Platform Foundation & Ingestion | 3/3 | Complete    | 2026-07-01 |
 | 2. REST Backend & Search | 0/TBD | Not started | - |
 | 3. MCP Search Server | 0/TBD | Not started | - |
 | 4. Admin Surfaces & Security | 0/TBD | Not started | - |
