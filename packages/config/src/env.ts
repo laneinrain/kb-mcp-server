@@ -1,27 +1,44 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { config as loadDotenv } from "dotenv";
 import { z } from "zod";
 
 function findEnvFile(): string | undefined {
-  let dir = process.cwd();
+  const searchRoots = new Set<string>([process.cwd()]);
+
+  // Cursor MCP may spawn with cwd outside the repo; walk up from this module too.
+  let moduleDir = path.dirname(fileURLToPath(import.meta.url));
   for (let depth = 0; depth < 8; depth++) {
-    const candidate = path.join(dir, ".env");
-    if (existsSync(candidate)) {
-      return candidate;
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) {
+    searchRoots.add(moduleDir);
+    const parent = path.dirname(moduleDir);
+    if (parent === moduleDir) {
       break;
     }
-    dir = parent;
+    moduleDir = parent;
   }
+
+  for (const root of searchRoots) {
+    let dir = root;
+    for (let depth = 0; depth < 8; depth++) {
+      const candidate = path.join(dir, ".env");
+      if (existsSync(candidate)) {
+        return candidate;
+      }
+      const parent = path.dirname(dir);
+      if (parent === dir) {
+        break;
+      }
+      dir = parent;
+    }
+  }
+
   return undefined;
 }
 
 if (process.env.NODE_ENV !== "production") {
   const envPath = findEnvFile();
-  loadDotenv(envPath ? { path: envPath } : undefined);
+  loadDotenv(envPath ? { path: envPath, quiet: true } : { quiet: true });
 }
 
 const envSchema = z.object({
