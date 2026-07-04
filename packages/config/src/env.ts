@@ -64,6 +64,24 @@ const envSchema = z.object({
   DEFAULT_COLLECTION: z.string().default("default"),
   EMBEDDING_MODEL: z.string().default("qwen/qwen3-embedding-8b"),
   EMBEDDING_DIMENSIONS: z.coerce.number().default(1024),
+  AUTH_ENABLED: z
+    .union([z.boolean(), z.string()])
+    .optional()
+    .transform((val) => {
+      if (val === undefined || val === "") return false;
+      if (typeof val === "boolean") return val;
+      return val === "true" || val === "1";
+    })
+    .default(false),
+  API_KEY: z.string().min(1).optional(),
+}).superRefine((data, ctx) => {
+  if (data.AUTH_ENABLED && !data.API_KEY) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["API_KEY"],
+      message: "API_KEY is required when AUTH_ENABLED is true",
+    });
+  }
 });
 
 export type AppConfig = z.infer<typeof envSchema>;
