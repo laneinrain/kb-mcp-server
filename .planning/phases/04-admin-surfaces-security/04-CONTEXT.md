@@ -1,8 +1,8 @@
 # Phase 4: Admin Surfaces & Security - Context
 
-**Gathered:** 2026-07-04
-**Status:** Ready for planning
-**Source:** Research defaults locked for planning (discuss-phase deferred)
+**Gathered:** 2026-07-04 (updated 2026-07-04 discuss Wave 2 CLI)
+**Status:** Ready for planning (CLI decisions locked — replan recommended)
+**Source:** Research defaults + discuss-phase Wave 2 CLI session
 
 <domain>
 ## Phase Boundary
@@ -28,8 +28,14 @@ Ingestion and search logic stay in `@kb/core`; admin surfaces are thin REST clie
 
 ### CLI Stack
 - Commander 15 in `apps/cli` with subcommands: `ingest`, `list`, `delete`
-- Replace `scripts/ingest.ts` as primary entry; root `pnpm ingest` aliases to CLI
+- **Command entry (discuss 2026-07-04):** both `kb` bin in `@kb/cli` AND root `pnpm ingest` alias → `@kb/cli ingest`
 - Directory ingest: recursive walk, filter `.txt`, `.md`, `.markdown`, `.pdf`
+- **`--collection` (discuss 2026-07-04):** supported on `ingest`; default `default` when omitted (same as current `scripts/ingest.ts`)
+
+### CLI UX (discuss 2026-07-04 — Wave 2)
+- **`list` output:** human-readable **table** — columns: `id`, `filename`, `status`, `chunkCount`, `collection`, `updatedAt` (no `--json` in v1)
+- **Directory ingest progress:** **verbose** — one line per file (`ingesting <path> … ok` or `… fail: <message>`); final summary line with success/fail counts
+- Exit codes unchanged: 0 success, 1 usage/validation, 2 API/network error
 
 ### Data Path
 - **REST-first** for web list/delete/upload/search — guarantees corpus parity (roadmap criterion 5)
