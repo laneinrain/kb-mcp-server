@@ -1,8 +1,8 @@
 # Phase 4: Admin Surfaces & Security - Context
 
-**Gathered:** 2026-07-04 (updated 2026-07-04 discuss Wave 2 CLI)
-**Status:** Ready for planning (CLI decisions locked — replan recommended)
-**Source:** Research defaults + discuss-phase Wave 2 CLI session
+**Gathered:** 2026-07-04 (updated 2026-07-04 discuss Wave 3 Web)
+**Status:** Ready for execution — Web UX decisions locked (zh-CN + 使用说明 tab)
+**Source:** Research defaults + discuss Wave 2 CLI + discuss Wave 3 Web session
 
 <domain>
 ## Phase Boundary
@@ -25,6 +25,18 @@ Ingestion and search logic stay in `@kb/core`; admin surfaces are thin REST clie
 - Vite 8 + React 19 + TanStack Query 5 in `apps/web`
 - Dev: Vite `:5173` with `server.proxy` `/api` → `http://127.0.0.1:3000`
 - Prod: build to `apps/web/dist`, serve via `@fastify/static` from `@kb/backend` (same origin)
+
+### Web UX (discuss 2026-07-04 — Wave 3)
+- **Audience:** 小团队内部推广原型 — 面向非前端/运维同事，强调「能用、看得懂」
+- **界面语言:** **简体中文** — 所有可见文案（按钮、空状态、错误、模态框、Tab 名）使用 zh-CN；实现时以 `04-UI-SPEC.md` 结构为准，**翻译** Copywriting Contract，不沿用英文原文
+- **导航:** 三个 Tab — **文档** | **搜索** | **使用说明**（在 UI-SPEC 两 Tab 基础上增加第三 Tab，不新增路由）
+- **使用说明 Tab:** 静态内嵌快速步骤（非外链 README），内容包括：
+  1. 启动：`pnpm dev`，确认 Chroma / Backend / Web 就绪
+  2. 上传：在「文档」页上传 `.txt` / `.md` / `.pdf`（文本层）
+  3. 搜索：在「搜索」页输入问题、选择 topK、查看结果
+  4. MCP：Cursor 配置 stdio 或 HTTP `3100` 调用 `search_knowledge`
+- **不做的 Web 项（本波）:** 多文件上传队列、collection 选择器、processing 轮询、AUTH 详细教程（使用说明仅 quick steps）
+- **视觉:** 仍遵循 UI-SPEC 间距/颜色/无 shadcn；仅语言与 Tab 结构按上调整
 
 ### CLI Stack
 - Commander 15 in `apps/cli` with subcommands: `ingest`, `list`, `delete`
@@ -78,7 +90,11 @@ Ingestion and search logic stay in `@kb/core`; admin surfaces are thin REST clie
 ## Specific Ideas
 
 - Document list shows: `id`, `filename`, `status`, `chunkCount`, `collection`, timestamps
+- CLI `list` renders as fixed-width table (terminal-friendly)
+- Directory ingest prints per-file progress lines before summary
 - Search UI renders: `score`, `text`, `documentId`, `filename`, `chunkIndex`
+- Web UI copy in **Simplified Chinese** (see Web UX section)
+- Help tab title: **使用说明** with embedded quick-start steps for team onboarding
 - Delete requires confirm dialog in web UI
 - CLI exit codes: 0 success, 1 usage/validation, 2 API/network error
 </specifics>
