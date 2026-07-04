@@ -12,7 +12,8 @@
 - [x] **Phase 2: REST Backend & Search** - Document CRUD and test search via Fastify REST using shared SearchService
  (completed 2026-07-01)
 
-- [ ] **Phase 3: MCP Search Server** - stdio and Streamable HTTP transports exposing bounded retrieval-only search tools
+- [x] **Phase 3: MCP Search Server** - stdio and Streamable HTTP transports exposing bounded retrieval-only search tools
+ (completed 2026-07-04)
 - [ ] **Phase 4: Admin Surfaces & Security** - Web admin, CLI, and optional API key auth with localhost dev defaults
 
 ## Phase Details
@@ -86,7 +87,7 @@ Plans:
 4. MCP server exposes retrieval tools only — no upload, delete, or index tools
 5. Search responses are bounded with configurable top_k, safe defaults, and truncated snippets; stdio entrypoint logs to stderr only (no stdout pollution)
 
-**Plans:** 3/3 plans executed (E2E checkpoint pending)
+**Plans:** 3/3 plans complete
 
 Plans:
 **Wave 1**
@@ -131,7 +132,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Platform Foundation & Ingestion | 3/3 | Complete    | 2026-07-01 |
 | 2. REST Backend & Search | 3/3 | Complete    | 2026-07-01 |
-| 3. MCP Search Server | 3/3 | E2E checkpoint | - |
+| 3. MCP Search Server | 3/3 | Complete | 2026-07-04 |
 | 4. Admin Surfaces & Security | 0/TBD | Not started | - |
 
 ## Coverage
