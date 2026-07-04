@@ -120,13 +120,13 @@ Plans:
 4. When optional API key auth is enabled via environment variable, backend rejects unauthenticated requests; web and CLI respect the same auth configuration
 5. Web and CLI reflect the same document state as REST — no divergent corpus views
 
-**Plans:** 4 plans
+**Plans:** 1/4 plans executed
 
 Plans:
 
 **Wave 1**
 
-- [ ] 04-01-PLAN.md — CONF-03 optional bearer auth: config, @fastify/bearer-auth, route preHandlers, tests
+- [x] 04-01-PLAN.md — CONF-03 optional bearer auth: config, @fastify/bearer-auth, route preHandlers, tests
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -151,7 +151,7 @@ Plans:
 | 1. Platform Foundation & Ingestion | 3/3 | Complete    | 2026-07-01 |
 | 2. REST Backend & Search | 3/3 | Complete    | 2026-07-01 |
 | 3. MCP Search Server | 3/3 | Complete | 2026-07-04 |
-| 4. Admin Surfaces & Security | 0/4 | Not started | - |
+| 4. Admin Surfaces & Security | 1/4 | In Progress|  |
 
 ## Coverage
 

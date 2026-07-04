@@ -50,7 +50,7 @@
 
 - [x] **CONF-01**: All secrets and service URLs load from environment variables / `.env` (never committed)
 - [x] **CONF-02**: `.env.example` documents required configuration without secrets
-- [ ] **CONF-03**: Optional API key authentication can be enabled via environment variable
+- [x] **CONF-03**: Optional API key authentication can be enabled via environment variable
 - [x] **CONF-04**: When auth is disabled, backend binds to localhost-friendly dev defaults
 
 ## v2 Requirements
@@ -113,7 +113,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | CLI-02 | Phase 4 | Pending |
 | CONF-01 | Phase 1 | Complete |
 | CONF-02 | Phase 1 | Complete |
-| CONF-03 | Phase 4 | Pending |
+| CONF-03 | Phase 4 | Complete |
 | CONF-04 | Phase 1 | Complete |
 
 **Coverage:**
