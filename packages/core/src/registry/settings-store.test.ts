@@ -23,6 +23,7 @@ function makeConfig(dbPath: string, overrides: Partial<AppConfig> = {}): AppConf
     DEFAULT_COLLECTION: "default",
     EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
     EMBEDDING_DIMENSIONS: 1024,
+    AUTH_ENABLED: false,
     ...overrides,
   };
 }

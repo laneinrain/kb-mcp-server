@@ -3,6 +3,7 @@ import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod/v4";
 import type { SearchService } from "@kb/core";
 import { mapSearchError } from "../lib/errors.js";
+import type { ApiRouteOpts } from "../auth.js";
 
 const SearchBodySchema = z.object({
   query: z.string().min(1).max(2000),
@@ -24,7 +25,7 @@ const SearchResponseSchema = z.object({
 
 export interface SearchDeps {
   searchService: SearchService;
-  routeOpts?: { preHandler?: unknown[] };
+  routeOpts?: ApiRouteOpts;
 }
 
 export async function registerSearchRoutes(

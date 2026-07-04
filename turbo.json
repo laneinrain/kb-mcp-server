@@ -5,6 +5,9 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "@kb/backend#build": {
+      "dependsOn": ["@kb/web#build", "^build"]
+    },
     "test": {
       "dependsOn": ["^build"]
     },

@@ -27,6 +27,7 @@ describe("ChromaVectorStore", () => {
         DEFAULT_COLLECTION: "default",
         EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
         EMBEDDING_DIMENSIONS: 1024,
+        AUTH_ENABLED: false,
       },
       {
         heartbeat: vi.fn(),
@@ -65,6 +66,7 @@ describe("ChromaVectorStore", () => {
         DEFAULT_COLLECTION: "default",
         EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
         EMBEDDING_DIMENSIONS: 1024,
+        AUTH_ENABLED: false,
       },
       {
         heartbeat: vi.fn(),
@@ -105,6 +107,7 @@ describe("ChromaVectorStore", () => {
         DEFAULT_COLLECTION: "default",
         EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
         EMBEDDING_DIMENSIONS: 1024,
+        AUTH_ENABLED: false,
       },
       {
         heartbeat: vi.fn(),
@@ -159,6 +162,7 @@ describe("ChromaVectorStore", () => {
         DEFAULT_COLLECTION: "default",
         EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
         EMBEDDING_DIMENSIONS: 1024,
+        AUTH_ENABLED: false,
       },
       {
         heartbeat: vi.fn(),
@@ -203,6 +207,7 @@ describe("ChromaVectorStore", () => {
         DEFAULT_COLLECTION: "default",
         EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
         EMBEDDING_DIMENSIONS: 1024,
+        AUTH_ENABLED: false,
       },
       {
         heartbeat: vi.fn(),

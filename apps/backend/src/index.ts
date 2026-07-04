@@ -13,6 +13,7 @@ import { registerHealthRoutes } from "./routes/health.js";
 import { registerSearchRoutes } from "./routes/search.js";
 import { createAppServices } from "./services.js";
 import { apiRouteOpts, registerBearerAuthIfEnabled } from "./auth.js";
+import { registerWebStatic } from "./static.js";
 
 async function main(): Promise<void> {
   const services = await createAppServices();
@@ -58,6 +59,8 @@ async function main(): Promise<void> {
     searchService: services.searchService,
     routeOpts,
   });
+
+  await registerWebStatic(app);
 
   app.setErrorHandler((error, _request, reply) => {
     const err = error as Error & { validation?: unknown; statusCode?: number };

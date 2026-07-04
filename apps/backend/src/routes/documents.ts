@@ -12,6 +12,7 @@ import type {
   IngestionService,
 } from "@kb/core";
 import { mapIngestError, notFound } from "../lib/errors.js";
+import type { ApiRouteOpts } from "../auth.js";
 
 const ALLOWED_MIME = new Set([
   "text/plain",
@@ -32,7 +33,7 @@ export interface DocumentsDeps {
   vectorStore: ChromaVectorStore;
   uploadsDir: string;
   defaultCollection: string;
-  routeOpts?: { preHandler?: unknown[] };
+  routeOpts?: ApiRouteOpts;
 }
 
 function toPublicDocument(doc: DocumentRecord) {
