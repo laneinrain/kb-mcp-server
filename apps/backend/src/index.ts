@@ -12,6 +12,7 @@ import { registerDocumentRoutes } from "./routes/documents.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerSearchRoutes } from "./routes/search.js";
 import { createAppServices } from "./services.js";
+import { apiRouteOpts, registerBearerAuthIfEnabled } from "./auth.js";
 
 async function main(): Promise<void> {
   const services = await createAppServices();
@@ -43,15 +44,19 @@ async function main(): Promise<void> {
   });
 
   await registerHealthRoutes(app, { vectorStore, embeddingClient });
+  await registerBearerAuthIfEnabled(app, config);
+  const routeOpts = apiRouteOpts(config, app);
   await registerDocumentRoutes(app, {
     ingestionService: services.ingestionService,
     registry: services.registry,
     vectorStore: services.vectorStore,
     uploadsDir: services.uploadsDir,
     defaultCollection: services.config.DEFAULT_COLLECTION,
+    routeOpts,
   });
   await registerSearchRoutes(app, {
     searchService: services.searchService,
+    routeOpts,
   });
 
   app.setErrorHandler((error, _request, reply) => {

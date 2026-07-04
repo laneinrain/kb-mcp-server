@@ -24,6 +24,7 @@ const SearchResponseSchema = z.object({
 
 export interface SearchDeps {
   searchService: SearchService;
+  routeOpts?: { preHandler?: unknown[] };
 }
 
 export async function registerSearchRoutes(
@@ -33,6 +34,7 @@ export async function registerSearchRoutes(
   app.withTypeProvider<ZodTypeProvider>().post(
     "/api/v1/search",
     {
+      ...(deps.routeOpts ?? {}),
       schema: {
         body: SearchBodySchema,
         response: {

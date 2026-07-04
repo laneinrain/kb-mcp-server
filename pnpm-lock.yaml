@@ -35,6 +35,9 @@ importers:
 
   apps/backend:
     dependencies:
+      '@fastify/bearer-auth':
+        specifier: 10.1.2
+        version: 10.1.2
       '@fastify/multipart':
         specifier: ^10.0.0
         version: 10.0.0
@@ -338,6 +341,9 @@ packages:
 
   '@fastify/ajv-compiler@4.0.5':
     resolution: {integrity: sha512-KoWKW+MhvfTRWL4qrhUwAAZoaChluo0m0vbiJlGMt2GXvL4LVPQEjt8kSpHI3IBq5Rez8fg+XeH3cneztq+C7A==}
+
+  '@fastify/bearer-auth@10.1.2':
+    resolution: {integrity: sha512-9WaHql+IdH03doWS1pNDcO/AcAVskoESAC+sI56+euTWMW12ZUz+xTMNPvIwr8jMJlnTnrU9aI+lD7LMWf9POA==}
 
   '@fastify/busboy@3.2.0':
     resolution: {integrity: sha512-m9FVDXU3GT2ITSe0UaMA5rU3QkfC/UXtCU8y0gSN/GugTqtVldOBWIB5V6V3sbmenVZUIpU6f+mPEO2+m5iTaA==}
@@ -1962,6 +1968,11 @@ snapshots:
       ajv: 8.20.0
       ajv-formats: 3.0.1(ajv@8.20.0)
       fast-uri: 3.1.2
+
+  '@fastify/bearer-auth@10.1.2':
+    dependencies:
+      '@fastify/error': 4.2.0
+      fastify-plugin: 5.1.0
 
   '@fastify/busboy@3.2.0': {}
 

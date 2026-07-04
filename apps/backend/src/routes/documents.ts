@@ -32,6 +32,7 @@ export interface DocumentsDeps {
   vectorStore: ChromaVectorStore;
   uploadsDir: string;
   defaultCollection: string;
+  routeOpts?: { preHandler?: unknown[] };
 }
 
 function toPublicDocument(doc: DocumentRecord) {
@@ -48,7 +49,9 @@ export async function registerDocumentRoutes(
   app: FastifyInstance,
   deps: DocumentsDeps,
 ): Promise<void> {
-  app.post("/api/v1/documents", async (request, reply) => {
+  const opts = deps.routeOpts ?? {};
+
+  app.post("/api/v1/documents", opts, async (request, reply) => {
     let collection: string | undefined;
     let tempPath: string | undefined;
 
@@ -96,11 +99,11 @@ export async function registerDocumentRoutes(
     }
   });
 
-  app.get("/api/v1/documents", async () => {
+  app.get("/api/v1/documents", opts, async () => {
     return deps.registry.listDocuments().map(toPublicDocument);
   });
 
-  app.get("/api/v1/documents/:documentId", async (request, reply) => {
+  app.get("/api/v1/documents/:documentId", opts, async (request, reply) => {
     const { documentId } = request.params as { documentId: string };
     const doc = deps.registry.getDocument(documentId);
 
@@ -112,7 +115,7 @@ export async function registerDocumentRoutes(
     return toPublicDocument(doc);
   });
 
-  app.delete("/api/v1/documents/:documentId", async (request, reply) => {
+  app.delete("/api/v1/documents/:documentId", opts, async (request, reply) => {
     const { documentId } = request.params as { documentId: string };
     const doc = deps.registry.getDocument(documentId);
 
