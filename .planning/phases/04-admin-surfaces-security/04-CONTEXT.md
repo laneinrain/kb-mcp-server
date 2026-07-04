@@ -105,6 +105,8 @@ Ingestion and search logic stay in `@kb/core`; admin surfaces are thin REST clie
 - MCP HTTP authentication
 - Web UI for chunk settings override
 - REST-only CLI ingest always (dual-path chosen for auth-off dev speed)
+- English-only web UI (superseded by zh-CN discuss decision)
+- External README link as primary onboarding (superseded by 使用说明 tab)
 </deferred>
 
 ---

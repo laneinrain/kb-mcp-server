@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-04T12:19:00.000Z"
+last_updated: "2026-07-04T21:30:00.000Z"
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 13
-  completed_plans: 10
-  percent: 75
+  completed_plans: 11
+  percent: 85
 ---
 
 # Project State: kb-mcp-server
@@ -27,9 +27,9 @@ progress:
 | Field | Value |
 |-------|-------|
 | **Phase** | 4 — Admin Surfaces & Security |
-| **Plan** | 04-01 (first of 4) |
-| **Status** | Ready to execute |
-| **Progress** | ████████░░ 3/4 phases complete |
+| **Plan** | 04-03 (third of 4) |
+| **Status** | Executing — 04-03 complete |
+| **Progress** | ████████░░ 3/4 phases complete; 3/4 Phase 4 plans |
 
 ## Performance Metrics
 
@@ -51,13 +51,17 @@ progress:
 | search_knowledge only; top_k snake_case → topK | D-23/D-26 | Implemented |
 | stderr-only stdio logging | D-30 | Implemented |
 | MCP HTTP 127.0.0.1:3100 default | D-31 | Implemented |
+| addHook false + routeOpts for scoped Bearer auth on /api/v1 | 04-01 | Implemented |
 
 ### Todos
 
 - [x] Execute Phase 3 plans 01–03 (code + tests)
 - [x] Phase 3 UAT (8/8 passed)
 - [x] Plan Phase 4 Admin Surfaces & Security (4 plans)
-- [ ] Execute Phase 4 plans 01–04
+- [ ] Execute Phase 4 plan 04 (static serve + dev + E2E)
+- [x] Execute Phase 4 plan 03 (Web admin SPA)
+- [x] Execute Phase 4 plan 02 (CLI)
+- [x] Execute Phase 4 plan 01 (CONF-03 bearer auth)
 
 ### Blockers
 
@@ -66,8 +70,8 @@ progress:
 ## Session Continuity
 
 **Last updated:** 2026-07-04  
-**Last action:** Phase 4 planned — 4 plans, research + UI-SPEC + patterns  
-**Next step:** `/gsd-execute-phase 4`
+**Last action:** Completed 04-03-PLAN.md — Web admin SPA (@kb/web)  
+**Next step:** Execute 04-04-PLAN.md (static serve + dev + E2E)
 
 ---
 *State updated: 2026-06-29*
