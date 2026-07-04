@@ -1,0 +1,26 @@
+{
+  "name": "@kb/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "kb": "./dist/index.js"
+  },
+  "scripts": {
+    "cli": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@kb/config": "workspace:*",
+    "@kb/core": "workspace:*",
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.2",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}
