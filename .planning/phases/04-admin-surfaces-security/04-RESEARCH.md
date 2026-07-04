@@ -26,7 +26,7 @@ The highest-risk integration points are: (1) **auth scope** — `@fastify/bearer
 | CONF-03 | Optional API key authentication can be enabled via environment variable | `AUTH_ENABLED` + `API_KEY` in `@kb/config`; `@fastify/bearer-auth` on `/api/v1/*`; web + CLI send `Authorization: Bearer` header |
 </phase_requirements>
 
-## Proposed Defaults (no CONTEXT.md — pending `/gsd-discuss-phase 4`)
+## Proposed Defaults (locked in 04-CONTEXT.md)
 
 These are research recommendations until discuss-phase locks decisions:
 
@@ -504,20 +504,16 @@ if (process.env.NODE_ENV === "production") {
 | A4 | `sessionStorage` for web API key is acceptable | Pattern 5 | User may prefer env-only or basic browser prompt |
 | A5 | CLI direct-core ingest when auth off matches "respect auth configuration" | CLI ingest | Strict reading may require REST-only always |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **MCP HTTP bearer auth**
-   - What we know: PITFALLS.md recommends localhost bind + optional API key for MCP HTTP; CONF-03 wording targets backend/web/CLI.
-   - What's unclear: Whether Phase 4 includes `apps/mcp-server` HTTP auth.
-   - Recommendation: **Defer MCP HTTP auth** to a follow-up unless user expands scope in discuss-phase.
+   - **RESOLVED:** Deferred to follow-up phase — CONF-03 scopes backend/web/CLI only (see CONTEXT.md deferred).
 
 2. **REST-only CLI vs dual-path ingest**
-   - What we know: `scripts/ingest.ts` uses direct core; CONF-03 requires auth parity.
-   - Recommendation: Dual-path with explicit branch on `AUTH_ENABLED`; document behavior in README.
+   - **RESOLVED:** Dual-path per CONTEXT.md — direct `@kb/core` when `AUTH_ENABLED=false`; REST multipart when auth on.
 
 3. **Chunk size/overlap settings UI**
-   - What we know: `SettingsStore.getChunkConfig()` exists; no REST endpoint.
-   - Recommendation: Defer to v1.x; Phase 4 uses env/bootstrap defaults only.
+   - **RESOLVED:** Deferred — no REST endpoint for SettingsStore; Phase 4 uses env/bootstrap defaults only.
 
 ## Environment Availability
 
