@@ -44,12 +44,13 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/v1.0-ROADMAP.md](milestones/v
 4. Unknown document ID or invalid chunk index returns structured error without leaking partial content
 5. Unit tests cover happy path, bounds, and error cases with mocked Chroma
 
-**Plans:** 0/2 plans complete
+**Plans:** 0/3 plans complete
 
 Plans:
 
-- [ ] 05-01-PLAN.md — ContextService, Chroma fetch-by-document, chunk ordering
-- [ ] 05-02-PLAN.md — read_around / read_file logic, bounds, unit tests (CORE-01, CORE-02)
+- [ ] 05-01-PLAN.md — Chroma getByIds, settings schema migration, ContextConfig store (CORE-01)
+- [ ] 05-02-PLAN.md — ContextService readAround/readFile, bounds D-01–D-08, unit tests (CORE-01, CORE-02)
+- [ ] 05-03-PLAN.md — GET/PATCH settings API, ContextService wiring, Web 设置 tab (D-09–D-13)
 
 ---
 
@@ -83,7 +84,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1–4 | v1.0 | 13/13 | Complete | 2026-07-05 |
-| 5. Context Retrieval Core | v1.1 | 0/2 | Not started | — |
+| 5. Context Retrieval Core | v1.1 | 0/3 | Not started | — |
 | 6. MCP Read Tools | v1.1 | 0/2 | Not started | — |
 
 ## Coverage
