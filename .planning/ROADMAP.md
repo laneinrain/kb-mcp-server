@@ -97,7 +97,21 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 3. Re-upload changed content returns `replaced`; old vectors removed
 4. Tests cover created / unchanged / replaced paths
 
-**Plans:** TBD via `/gsd-plan-phase 9`
+**Plans:** 3 plans in 3 waves
+
+**Wave 1** *(foundation)*
+- [ ] 09-01: Registry content_hash + findByUserAndFilename + hash helpers (INGE-10)
+
+**Wave 2** *(blocked on Wave 1)*
+- [ ] 09-02: IngestionService created/unchanged/replaced outcomes (INGE-11, INGE-12, INGE-13)
+
+**Wave 3** *(blocked on Wave 2)*
+- [ ] 09-03: REST/Web/CLI outcome surfacing (INGE-13)
+
+**Cross-cutting constraints:**
+- Dedup key `(user_id, filename)`; hash on normalized parsed text (D-01–D-04)
+- Legacy documents keep existing ids until re-upload (D-12)
+- MCP unchanged (D-15)
 
 ---
 
@@ -109,8 +123,8 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 | 5. Context Retrieval Core | v1.1 | 3/3 | Complete | 2026-07-05 |
 | 6. MCP Read Tools | v1.1 | 2/2 | Complete | 2026-07-05 |
 | 7. Auth Center Module | v1.2 | 3/3 | Complete | 2026-07-05 |
-| 8. Multi-User Backend & Web Auth | v1.2 | 0/3 | Planned | — |
-| 9. Filename Content-Hash Dedup | v1.2 | 0/? | Not started | — |
+| 8. Multi-User Backend & Web Auth | v1.2 | 3/3 | Verified | 2026-07-05 |
+| 9. Filename Content-Hash Dedup | v1.2 | 0/3 | Planned | — |
 
 ---
-*Last updated: 2026-07-05 — v1.2 milestone roadmap created*
+*Last updated: 2026-07-05 — Phase 9 planned (3 plans)*
