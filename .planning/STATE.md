@@ -21,14 +21,14 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 **Core value:** An MCP client can reliably semantic-search ingested documents through a stable tool interface.
 
-**Current focus:** v1.2 planning complete — ready for Phase 7 execution
+**Current focus:** Phase 7 planned — ready to execute
 
 ## Current Position
 
-Phase: 7 (not started)
-Plan: —
+Phase: 7 — Auth Center Module
+Plan: 07-01 (first)
 Status: Ready to execute
-Last activity: 2026-07-05 -- Phase 7 planning complete
+Last activity: 2026-07-05 -- Phase 7 planning complete (2 plans)
 
 ## Performance Metrics
 
