@@ -16,8 +16,8 @@
 
 ### Core Services
 
-- [ ] **CORE-01**: Context retrieval reads chunk text from the same Chroma collection and document registry as `SearchService` (no divergent corpus)
-- [ ] **CORE-02**: Invalid or unknown `document_id` / out-of-range `chunk_index` returns clear errors without partial data
+- [x] **CORE-01**: Context retrieval reads chunk text from the same Chroma collection and document registry as `SearchService` (no divergent corpus)
+- [x] **CORE-02**: Invalid or unknown `document_id` / out-of-range `chunk_index` returns clear errors without partial data
 
 ## Future Requirements
 
