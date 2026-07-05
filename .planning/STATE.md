@@ -38,7 +38,7 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 |--------|-------|
 | v1.0 | Shipped 2026-07-05 (30/30 reqs) |
 | v1.1 requirements | 7 mapped |
-| Pending PR | `fix/mcp-http-streamable` (v1.0 post-ship fix) |
+| Pending PR | — (PR #1 merged) |
 
 ## Accumulated Context
 
@@ -52,7 +52,8 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 ### Todos
 
-- [ ] Merge `fix/mcp-http-streamable` PR before or during Phase 6 UAT
+- [x] Merge PR #1 `fix/mcp-http-streamable` (MCP HTTP fix on master)
+- [ ] Push v1.1 planning commit to origin/master
 - [ ] `/gsd-discuss-phase 5` or `/gsd-plan-phase 5`
 
 ### Blockers

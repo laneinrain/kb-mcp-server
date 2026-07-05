@@ -48,6 +48,7 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 ## Context
 
 - **Shipped v1.0** (2026-07-05): 4 phases, 13 plans, 30/30 requirements
+- **Started v1.1** (2026-07-05): MCP context tools — Phases 5–6, 7 requirements
 - **Stack:** pnpm + Turborepo monorepo; packages `@kb/config`, `@kb/core`; apps `@kb/backend`, `@kb/mcp-server`, `@kb/web`, `@kb/cli`
 - **Ports:** Chroma 8000, Backend 3000 (+ SPA when `SERVE_WEB=true`), Web dev 5173, MCP HTTP 3100
 - **Dev:** `pnpm dev` starts full stack; daily web UI at http://127.0.0.1:5173
@@ -94,4 +95,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-05 after v1.0 milestone*
+*Last updated: 2026-07-05 after v1.1 milestone started*
