@@ -42,7 +42,13 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 3. Unit tests cover register, login, invalid credentials, token validation
 4. README documents how to replace `LocalAuthProvider` with external IdP
 
-**Plans:** TBD via `/gsd-plan-phase 7`
+**Plans:** 2 plans in 2 waves
+
+**Wave 1** *(foundation — no dependencies)*
+- [ ] 07-01: `@kb/auth` package — AuthProvider, LocalAuthProvider, SQLite users, JWT, config env vars (AUTH-01, AUTH-02)
+
+**Wave 2** *(blocked on Wave 1)*
+- [ ] 07-02: Auth REST routes + backend wiring + README swap docs (AUTH-03, AUTH-06)
 
 ---
 
@@ -85,7 +91,7 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 | 1–4 | v1.0 | 13/13 | Complete | 2026-07-05 |
 | 5. Context Retrieval Core | v1.1 | 3/3 | Complete | 2026-07-05 |
 | 6. MCP Read Tools | v1.1 | 2/2 | Complete | 2026-07-05 |
-| 7. Auth Center Module | v1.2 | 0/? | Not started | — |
+| 7. Auth Center Module | v1.2 | 0/2 | Planned | — |
 | 8. Multi-User Backend & Web Auth | v1.2 | 0/? | Not started | — |
 | 9. Filename Content-Hash Dedup | v1.2 | 0/? | Not started | — |
 
