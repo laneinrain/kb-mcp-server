@@ -23,8 +23,9 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/v1.0-ROADMAP.md](milestones/v
 
 ### 🚧 v1.1 MCP Context Tools (In Progress)
 
-- [x] **Phase 5: Context Retrieval Core** — ContextService reads neighboring and full-document chunks from Chroma with bounds and errors (completed 2026-07-05)
-- [ ] **Phase 6: MCP Read Tools** — `read_around` and `read_file` on stdio + HTTP; UAT with search → expand workflow
+- [x] **Phase 5: Context Retrieval Core** — ContextService reads neighboring and full-document chunks from Chroma with bounds and errors
+ (completed 2026-07-05)
+- [x] **Phase 6: MCP Read Tools** — `read_around` and `read_file` on stdio + HTTP; UAT with search → expand workflow (completed 2026-07-05)
 
 ## Phase Details
 
@@ -70,17 +71,17 @@ Plans:
 4. Large documents are truncated with clear indication in response
 5. Phase UAT: search → read_around workflow passes on live stack
 
-**Plans:** 0/2 plans complete
+**Plans:** 2/2 plans complete
 
 Plans:
 
 **Wave 1**
 
-- [ ] 06-01-PLAN.md — Register read_around + read_file on buildMcpServer, Zod schemas, unit tests
+- [x] 06-01-PLAN.md — Register read_around + read_file on buildMcpServer, Zod schemas, unit tests
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 06-02-PLAN.md — stdio/HTTP parity, MCP tool list verification, UAT checkpoint
+- [x] 06-02-PLAN.md — stdio/HTTP parity, MCP tool list verification, UAT checkpoint
 
 ---
 
@@ -90,7 +91,7 @@ Plans:
 |-------|-----------|----------------|--------|-----------|
 | 1–4 | v1.0 | 13/13 | Complete | 2026-07-05 |
 | 5. Context Retrieval Core | v1.1 | 3/3 | Complete    | 2026-07-05 |
-| 6. MCP Read Tools | v1.1 | 0/2 | Not started | — |
+| 6. MCP Read Tools | v1.1 | 2/2 | Complete    | 2026-07-05 |
 
 ## Coverage
 

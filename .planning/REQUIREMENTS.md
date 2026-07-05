@@ -8,11 +8,11 @@
 
 ### MCP Context Retrieval
 
-- [ ] **MCP-07**: MCP client can invoke `read_around` with `document_id`, `chunk_index`, and optional `window` to retrieve neighboring chunk texts from the same document
-- [ ] **MCP-08**: MCP client can invoke `read_file` with `document_id` to retrieve document content (all chunks in order, with safe size bounds)
-- [ ] **MCP-09**: `read_around` and `read_file` responses are bounded (configurable max chunks/chars, safe defaults) and include document metadata (filename, chunk indices)
-- [ ] **MCP-10**: New read tools are available on stdio and Streamable HTTP transports with identical schemas and behavior as `search_knowledge`
-- [ ] **MCP-11**: MCP server exposes retrieval tools only — read tools do not mutate index or corpus
+- [x] **MCP-07**: MCP client can invoke `read_around` with `document_id`, `chunk_index`, and optional `window` to retrieve neighboring chunk texts from the same document
+- [x] **MCP-08**: MCP client can invoke `read_file` with `document_id` to retrieve document content (all chunks in order, with safe size bounds)
+- [x] **MCP-09**: `read_around` and `read_file` responses are bounded (configurable max chunks/chars, safe defaults) and include document metadata (filename, chunk indices)
+- [x] **MCP-10**: New read tools are available on stdio and Streamable HTTP transports with identical schemas and behavior as `search_knowledge`
+- [x] **MCP-11**: MCP server exposes retrieval tools only — read tools do not mutate index or corpus
 
 ### Core Services
 
@@ -54,11 +54,11 @@ Deferred beyond v1.1. Tracked but not in current roadmap.
 |-------------|-------|--------|
 | CORE-01 | Phase 5 | Complete (05-01, 05-02) |
 | CORE-02 | Phase 5 | Complete (05-02) |
-| MCP-07 | Phase 6 | Pending |
-| MCP-08 | Phase 6 | Pending |
-| MCP-09 | Phase 6 | Pending |
-| MCP-10 | Phase 6 | Pending |
-| MCP-11 | Phase 6 | Pending |
+| MCP-07 | Phase 6 | Complete (06-01) |
+| MCP-08 | Phase 6 | Complete (06-01) |
+| MCP-09 | Phase 6 | Complete (06-01) |
+| MCP-10 | Phase 6 | Complete (06-02) |
+| MCP-11 | Phase 6 | Complete (06-01) |
 
 **Coverage:**
 - v1.1 requirements: 7 total
