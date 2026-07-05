@@ -74,7 +74,12 @@ Plans:
 
 Plans:
 
+**Wave 1**
+
 - [ ] 06-01-PLAN.md — Register read_around + read_file on buildMcpServer, Zod schemas, unit tests
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 06-02-PLAN.md — stdio/HTTP parity, MCP tool list verification, UAT checkpoint
 
 ---
