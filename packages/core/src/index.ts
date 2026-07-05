@@ -43,3 +43,17 @@ export {
 } from "./ingestion/ingestion-service.js";
 export { SearchService } from "./search/search-service.js";
 export type { SearchOptions, SearchResult } from "./search/types.js";
+export {
+  ContextService,
+  truncateAroundCenter,
+  truncateFromEnd,
+} from "./context/context-service.js";
+export { ContextError, contextError } from "./context/errors.js";
+export type { ContextErrorCode } from "./context/errors.js";
+export type {
+  ContextChunk,
+  ReadAroundOptions,
+  ReadAroundResult,
+  ReadFileOptions,
+  ReadFileResult,
+} from "./context/types.js";
