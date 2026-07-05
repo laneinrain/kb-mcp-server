@@ -52,8 +52,8 @@ Deferred beyond v1.1. Tracked but not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CORE-01 | Phase 5 | Pending |
-| CORE-02 | Phase 5 | Pending |
+| CORE-01 | Phase 5 | Complete (05-01, 05-02) |
+| CORE-02 | Phase 5 | Complete (05-02) |
 | MCP-07 | Phase 6 | Pending |
 | MCP-08 | Phase 6 | Pending |
 | MCP-09 | Phase 6 | Pending |

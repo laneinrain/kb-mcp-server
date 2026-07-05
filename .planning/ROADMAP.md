@@ -23,7 +23,7 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/v1.0-ROADMAP.md](milestones/v
 
 ### 🚧 v1.1 MCP Context Tools (In Progress)
 
-- [ ] **Phase 5: Context Retrieval Core** — ContextService reads neighboring and full-document chunks from Chroma with bounds and errors
+- [x] **Phase 5: Context Retrieval Core** — ContextService reads neighboring and full-document chunks from Chroma with bounds and errors (completed 2026-07-05)
 - [ ] **Phase 6: MCP Read Tools** — `read_around` and `read_file` on stdio + HTTP; UAT with search → expand workflow
 
 ## Phase Details
@@ -44,13 +44,13 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/v1.0-ROADMAP.md](milestones/v
 4. Unknown document ID or invalid chunk index returns structured error without leaking partial content
 5. Unit tests cover happy path, bounds, and error cases with mocked Chroma
 
-**Plans:** 2/3 plans complete
+**Plans:** 3/3 plans complete
 
 Plans:
 
 - [x] 05-01-PLAN.md — Chroma getByIds, settings schema migration, ContextConfig store (CORE-01)
 - [x] 05-02-PLAN.md — ContextService readAround/readFile, bounds D-01–D-08, unit tests (CORE-01, CORE-02)
-- [ ] 05-03-PLAN.md — GET/PATCH settings API, ContextService wiring, Web 设置 tab (D-09–D-13)
+- [x] 05-03-PLAN.md — GET/PATCH settings API, ContextService wiring, Web 设置 tab (D-09–D-13)
 
 ---
 
@@ -84,7 +84,7 @@ Plans:
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1–4 | v1.0 | 13/13 | Complete | 2026-07-05 |
-| 5. Context Retrieval Core | v1.1 | 0/3 | Not started | — |
+| 5. Context Retrieval Core | v1.1 | 3/3 | Complete    | 2026-07-05 |
 | 6. MCP Read Tools | v1.1 | 0/2 | Not started | — |
 
 ## Coverage

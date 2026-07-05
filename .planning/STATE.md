@@ -2,14 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MCP Context Tools
-status: executing
-last_updated: "2026-07-05T06:59:00.000Z"
+status: ready_to_plan
+last_updated: 2026-07-05T07:10:00.000Z
 progress:
   total_phases: 2
-  completed_phases: 0
-  total_plans: 5
-  completed_plans: 2
-  percent: 40
+  completed_phases: 1
+  total_plans: 3
+  completed_plans: 3
+  percent: 50
+stopped_at: Phase 5 complete (3/3) — ready for Phase 6
 ---
 
 # Project State: kb-mcp-server
@@ -20,25 +21,25 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 **Core value:** An MCP client can reliably semantic-search ingested documents through a stable tool interface.
 
-**Current focus:** v1.1 — MCP context tools (`read_around`, `read_file`)
+**Current focus:** Phase 6 — MCP Read Tools (`read_around`, `read_file`)
 
 ## Current Position
 
 | Field | Value |
 |-------|-------|
 | **Milestone** | v1.1 MCP Context Tools |
-| **Phase** | 5 — Context Retrieval Core (planned) |
-| **Plan** | 05-03 (Wave 3) |
-| **Status** | Executing Phase 5 — 2/3 plans complete |
-| **Progress** | ░░░░░░░░░░ 0/2 phases (v1.1) · Phase 5: ██░░ 2/3 plans |
+| **Phase** | 6 — MCP Read Tools (next) |
+| **Plan** | — |
+| **Status** | Phase 5 complete ✓ |
+| **Progress** | v1.1: █░░░░ 1/2 phases · Phase 5: 3/3 plans |
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
 | v1.0 | Shipped 2026-07-05 (30/30 reqs) |
-| v1.1 requirements | 7 mapped |
-| Phase 5 plan 05-02 | 8 min, 2 tasks, 5 files |
+| v1.1 requirements | 2/7 complete (CORE-01, CORE-02) |
+| Phase 5 | 3 plans, UAT approved 2026-07-05 |
 | Pending PR | — (PR #1 merged) |
 
 ## Accumulated Context
@@ -49,17 +50,15 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 |----------|--------|--------|
 | v1.1 scope = Option B (context tools only) | new-milestone | Locked |
 | No hybrid BM25 / rerank in v1.1 | new-milestone | Deferred to v1.2+ |
-| Phase numbering continues from 5 | new-milestone | Phase 5–6 |
 | chunks_missing on Chroma drift | 05-02 | ContextError before partial return |
 | Collection: doc.collection before default | 05-02 | Differs from SearchService |
+| Admin 设置 tab grouped config | 05-03 | UAT approved |
 
 ### Todos
 
-- [x] Merge PR #1 `fix/mcp-http-streamable` (MCP HTTP fix on master)
-- [ ] Push v1.1 planning commit to origin/master
-- [x] `/gsd-plan-phase 5`
-- [x] Execute 05-02 ContextService
-- [ ] Execute 05-03 admin settings API/UI
+- [x] Execute Phase 5 (05-01, 05-02, 05-03 + UAT)
+- [ ] Push local commits to origin/master
+- [ ] `/gsd-discuss-phase 6` or `/gsd-plan-phase 6`
 
 ### Blockers
 
@@ -67,9 +66,8 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 ## Session Continuity
 
-**Last updated:** 2026-07-05  
-**Last action:** Completed 05-02 — ContextService readAround/readFile  
-**Next step:** Execute 05-03 — settings API + Web 设置 tab
+**Last action:** Phase 5 UAT approved — VERIFICATION passed  
+**Next step:** `/gsd-plan-phase 6` or `/gsd-discuss-phase 6`
 
 ---
-*State updated: 2026-07-05 — milestone v1.1 started*
+*State updated: 2026-07-05 — Phase 5 complete*
