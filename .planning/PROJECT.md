@@ -24,7 +24,19 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 
 ### Active
 
-(None — run `/gsd-new-milestone` to define v1.1+ scope. See archived v2 candidates in `milestones/v1.0-REQUIREMENTS.md`.)
+(None — v1.1 requirements in `.planning/REQUIREMENTS.md`.)
+
+## Current Milestone: v1.1 MCP Context Tools
+
+**Goal:** Let MCP clients expand search hits into neighboring chunks or bounded full-document reads — without changing the search algorithm.
+
+**Target features:**
+- `read_around` — fetch chunks before/after a hit by `document_id` + `chunk_index`
+- `read_file` — fetch ordered document content with safe size limits
+- stdio + Streamable HTTP parity for new read tools
+- Shared Chroma/registry path with existing `SearchService`
+
+**Explicitly NOT in v1.1:** hybrid BM25, cross-encoder rerank, multi-collection UI
 
 ### Out of Scope
 

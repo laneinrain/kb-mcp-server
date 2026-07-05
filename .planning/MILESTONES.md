@@ -38,3 +38,14 @@ A self-hosted knowledge-base scaffold: ingest txt/markdown/text-layer PDF into l
 
 ---
 *Milestone completed via `/gsd-complete-milestone`*
+
+## v1.1 MCP Context Tools
+
+**Started:** 2026-07-05  
+**Status:** Planning complete — Phases 5–6  
+**Goal:** `read_around` + `read_file` MCP tools for context expansion after `search_knowledge`
+
+**Scope (Option B):** Context tools only — no hybrid search or rerank in this milestone.
+
+---
+*Milestone started via `/gsd-new-milestone`*

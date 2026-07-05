@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: Initial Release
-status: shipped
-last_updated: "2026-07-05T01:34:00.000Z"
+milestone: v1.1
+milestone_name: MCP Context Tools
+status: planning
+last_updated: "2026-07-05T14:10:00.000Z"
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 13
-  completed_plans: 13
-  percent: 100
+  total_phases: 2
+  completed_phases: 0
+  total_plans: 4
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State: kb-mcp-server
@@ -20,38 +20,40 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 **Core value:** An MCP client can reliably semantic-search ingested documents through a stable tool interface.
 
-**Current focus:** Planning next milestone (`/gsd-new-milestone`)
+**Current focus:** v1.1 — MCP context tools (`read_around`, `read_file`)
 
 ## Current Position
 
 | Field | Value |
 |-------|-------|
-| **Milestone** | v1.0 Initial Release — **SHIPPED** 2026-07-05 |
-| **Phase** | All 4 phases complete |
-| **Status** | Milestone archived; ready for v1.1 planning |
-| **Progress** | ██████████ 4/4 phases (v1.0) |
+| **Milestone** | v1.1 MCP Context Tools |
+| **Phase** | Not started (requirements + roadmap defined) |
+| **Plan** | — |
+| **Status** | Planning complete — ready for Phase 5 |
+| **Progress** | ░░░░░░░░░░ 0/2 phases (v1.1) |
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| v1 requirements | 30/30 complete |
-| Phase 3 UAT | 8/8 passed |
-| Phase 4 UAT | 7/8 passed (1 skipped: auth) |
-| Timeline | 2026-06-29 → 2026-07-05 |
-| Git tag | v1.0 |
+| v1.0 | Shipped 2026-07-05 (30/30 reqs) |
+| v1.1 requirements | 7 mapped |
+| Pending PR | `fix/mcp-http-streamable` (v1.0 post-ship fix) |
 
 ## Accumulated Context
 
 ### Decisions
 
-Full decision log in PROJECT.md Key Decisions table.
+| Decision | Source | Status |
+|----------|--------|--------|
+| v1.1 scope = Option B (context tools only) | new-milestone | Locked |
+| No hybrid BM25 / rerank in v1.1 | new-milestone | Deferred to v1.2+ |
+| Phase numbering continues from 5 | new-milestone | Phase 5–6 |
 
 ### Todos
 
-- [x] Execute Phase 4 plans 01–04
-- [x] Phase 4 UAT (7 pass, 1 skip)
-- [x] Commit UAT fixes and archive v1.0 milestone
+- [ ] Merge `fix/mcp-http-streamable` PR before or during Phase 6 UAT
+- [ ] `/gsd-discuss-phase 5` or `/gsd-plan-phase 5`
 
 ### Blockers
 
@@ -60,8 +62,8 @@ Full decision log in PROJECT.md Key Decisions table.
 ## Session Continuity
 
 **Last updated:** 2026-07-05  
-**Last action:** `/gsd-complete-milestone` — v1.0 archived and tagged  
-**Next step:** `/gsd-new-milestone` or `git push origin master --tags`
+**Last action:** `/gsd-new-milestone` — v1.1 Option B scoped  
+**Next step:** `/gsd-discuss-phase 5` or `/gsd-plan-phase 5`
 
 ---
-*State updated: 2026-07-05 after v1.0 milestone*
+*State updated: 2026-07-05 — milestone v1.1 started*
