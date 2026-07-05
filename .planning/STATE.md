@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MCP Context Tools
 status: ready_to_plan
-last_updated: 2026-07-05T07:10:00.000Z
+last_updated: "2026-07-05T07:22:00.000Z"
+stopped_at: Phase 6 context gathered
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 3
   completed_plans: 3
   percent: 50
-stopped_at: Phase 5 complete (3/3) — ready for Phase 6
 ---
 
 # Project State: kb-mcp-server
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 | **Milestone** | v1.1 MCP Context Tools |
 | **Phase** | 6 — MCP Read Tools (next) |
 | **Plan** | — |
-| **Status** | Phase 5 complete ✓ |
+| **Status** | Phase 6 context gathered ✓ |
 | **Progress** | v1.1: █░░░░ 1/2 phases · Phase 5: 3/3 plans |
 
 ## Performance Metrics
@@ -53,12 +53,15 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 | chunks_missing on Chroma drift | 05-02 | ContextError before partial return |
 | Collection: doc.collection before default | 05-02 | Differs from SearchService |
 | Admin 设置 tab grouped config | 05-03 | UAT approved |
+| read_around inline search-hit example in tool desc | 06-discuss | Locked |
+| Tool desc verbosity matches search_knowledge | 06-discuss | Locked |
 
 ### Todos
 
 - [x] Execute Phase 5 (05-01, 05-02, 05-03 + UAT)
 - [ ] Push local commits to origin/master
-- [ ] `/gsd-discuss-phase 6` or `/gsd-plan-phase 6`
+- [x] `/gsd-discuss-phase 6`
+- [ ] `/gsd-plan-phase 6`
 
 ### Blockers
 
@@ -66,8 +69,9 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 ## Session Continuity
 
-**Last action:** Phase 5 UAT approved — VERIFICATION passed  
-**Next step:** `/gsd-plan-phase 6` or `/gsd-discuss-phase 6`
+**Last action:** Phase 6 discuss — 06-CONTEXT.md captured  
+**Next step:** `/gsd-plan-phase 6`  
+**Resume file:** `.planning/phases/06-mcp-read-tools/06-CONTEXT.md`
 
 ---
-*State updated: 2026-07-05 — Phase 5 complete*
+*State updated: 2026-07-05 — Phase 6 context gathered*
