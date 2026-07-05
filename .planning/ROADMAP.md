@@ -45,13 +45,13 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 **Plans:** 3 plans in 3 waves
 
 **Wave 1** *(foundation)*
-- [ ] 07-01: `@kb/auth` + MockCasAuthProvider + employeeId store + config (AUTH-01, AUTH-02)
+- [x] 07-01: `@kb/auth` + MockCasAuthProvider + employeeId store + config (AUTH-01, AUTH-02)
 
 **Wave 2** *(blocked on Wave 1)*
-- [ ] 07-02: Login API + README (AUTH-03, AUTH-06)
+- [x] 07-02: Login API + README (AUTH-03, AUTH-06)
 
 **Wave 3** *(blocked on Wave 2)*
-- [ ] 07-03: Web LoginPage + JWT client (WEB-01)
+- [x] 07-03: Web LoginPage + JWT client (WEB-01)
 
 ---
 
@@ -94,7 +94,7 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 | 1–4 | v1.0 | 13/13 | Complete | 2026-07-05 |
 | 5. Context Retrieval Core | v1.1 | 3/3 | Complete | 2026-07-05 |
 | 6. MCP Read Tools | v1.1 | 2/2 | Complete | 2026-07-05 |
-| 7. Auth Center Module | v1.2 | 0/3 | Planned | — |
+| 7. Auth Center Module | v1.2 | 3/3 | Complete | 2026-07-05 |
 | 8. Multi-User Backend & Web Auth | v1.2 | 0/? | Not started | — |
 | 9. Filename Content-Hash Dedup | v1.2 | 0/? | Not started | — |
 
