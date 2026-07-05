@@ -7,6 +7,7 @@ export interface DocumentRecord {
   status: DocumentStatus;
   chunkCount: number;
   collection: string;
+  userId?: string;
   createdAt: string;
   updatedAt: string;
 }

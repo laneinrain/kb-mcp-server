@@ -8,13 +8,15 @@ import {
   validatorCompiler,
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
+import { registerAuthRoutes } from "./routes/auth.js";
 import { registerDocumentRoutes } from "./routes/documents.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerSearchRoutes } from "./routes/search.js";
 import { registerSettingsRoutes } from "./routes/settings.js";
 import { createAppServices } from "./services.js";
-import { apiRouteOpts, registerBearerAuthIfEnabled } from "./auth.js";
+import { createProtectedRouteOpts, registerBearerAuthIfEnabled } from "./auth.js";
 import { registerWebStatic } from "./static.js";
+import "./types.js";
 
 async function main(): Promise<void> {
   const services = await createAppServices();
@@ -46,18 +48,22 @@ async function main(): Promise<void> {
   });
 
   await registerHealthRoutes(app, { vectorStore, embeddingClient });
+  await registerAuthRoutes(app, { authProvider: services.authProvider });
   await registerBearerAuthIfEnabled(app, config);
-  const routeOpts = apiRouteOpts(config, app);
+  const routeOpts = createProtectedRouteOpts(config, app, services.authProvider);
   await registerDocumentRoutes(app, {
     ingestionService: services.ingestionService,
     registry: services.registry,
     vectorStore: services.vectorStore,
     uploadsDir: services.uploadsDir,
     defaultCollection: services.config.DEFAULT_COLLECTION,
+    systemUserId: services.systemUserId,
     routeOpts,
   });
   await registerSearchRoutes(app, {
     searchService: services.searchService,
+    registry: services.registry,
+    systemUserId: services.systemUserId,
     routeOpts,
   });
   await registerSettingsRoutes(app, {

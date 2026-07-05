@@ -3,6 +3,12 @@ import { join, resolve } from "node:path";
 import type { AppConfig } from "@kb/config";
 import { loadConfig } from "@kb/config";
 import {
+  createAuthProvider,
+  openAuthDatabase,
+  UserStore,
+  type AuthProvider,
+} from "@kb/auth";
+import {
   ChromaVectorStore,
   ContextService,
   EmbeddingClient,
@@ -24,11 +30,38 @@ export interface AppServices {
   searchService: SearchService;
   contextService: ContextService;
   uploadsDir: string;
+  authProvider: AuthProvider | null;
+  systemUserId: string | null;
 }
 
 export async function createAppServices(): Promise<AppServices> {
   const config = loadConfig();
-  const settingsStore = initSettingsStore(config);
+
+  let systemUserId: string | null = null;
+  let authProvider: AuthProvider | null = null;
+
+  if (config.USER_AUTH_ENABLED) {
+    const authDb = openAuthDatabase(config.AUTH_SQLITE_PATH);
+    try {
+      systemUserId = new UserStore(authDb).ensureSystemUser().id;
+    } finally {
+      authDb.close();
+    }
+
+    authProvider = createAuthProvider({
+      dbPath: config.AUTH_SQLITE_PATH,
+      jwtSecret: config.JWT_SECRET!,
+      jwtExpiresInSeconds: config.JWT_EXPIRES_IN,
+      authProvider: config.AUTH_PROVIDER,
+      casMock: config.CAS_MOCK,
+      casServerUrl: config.CAS_SERVER_URL,
+    });
+  }
+
+  const settingsStore = initSettingsStore(
+    config,
+    systemUserId ? { systemUserId } : undefined,
+  );
   const registry = getDocumentRegistry(settingsStore.db);
   const vectorStore = new ChromaVectorStore(config);
   const embeddingClient = new EmbeddingClient(config);
@@ -64,5 +97,7 @@ export async function createAppServices(): Promise<AppServices> {
     searchService,
     contextService,
     uploadsDir,
+    authProvider,
+    systemUserId,
   };
 }

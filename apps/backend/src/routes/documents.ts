@@ -33,6 +33,7 @@ export interface DocumentsDeps {
   vectorStore: ChromaVectorStore;
   uploadsDir: string;
   defaultCollection: string;
+  systemUserId: string | null;
   routeOpts?: ApiRouteOpts;
 }
 
@@ -46,11 +47,34 @@ function isAllowedUpload(filename: string, mimetype: string): boolean {
   return ALLOWED_MIME.has(mimetype) && ALLOWED_EXTENSIONS.has(ext);
 }
 
+function canReadDocument(
+  doc: DocumentRecord,
+  userId: string,
+  systemUserId: string,
+): boolean {
+  return doc.userId === userId || doc.userId === systemUserId;
+}
+
+function resolveIngestUserId(
+  request: { authMode?: "user" | "service"; authUser?: { id: string } },
+  systemUserId: string | null,
+): string {
+  if (request.authMode === "user" && request.authUser) {
+    return request.authUser.id;
+  }
+  if (request.authMode === "service" && systemUserId) {
+    // CLI bulk ingest via global API_KEY assigns legacy system ownership.
+    return systemUserId;
+  }
+  throw new Error("Authenticated user required for ingestion");
+}
+
 export async function registerDocumentRoutes(
   app: FastifyInstance,
   deps: DocumentsDeps,
 ): Promise<void> {
   const opts = deps.routeOpts ?? {};
+  const systemUserId = deps.systemUserId;
 
   app.post("/api/v1/documents", opts, async (request, reply) => {
     let collection: string | undefined;
@@ -85,10 +109,23 @@ export async function registerDocumentRoutes(
       });
     }
 
+    let userId = "";
+    if (systemUserId) {
+      try {
+        userId = resolveIngestUserId(request, systemUserId);
+      } catch {
+        return reply.code(401).send({
+          error: "unauthorized",
+          message: "Authenticated user required",
+        });
+      }
+    }
+
     try {
       const result = await deps.ingestionService.ingest(tempPath, {
         collection: collection ?? deps.defaultCollection,
         filename: originalFilename,
+        userId,
       });
       await unlink(tempPath).catch(() => {});
       return reply.code(201).send({
@@ -103,7 +140,13 @@ export async function registerDocumentRoutes(
     }
   });
 
-  app.get("/api/v1/documents", opts, async () => {
+  app.get("/api/v1/documents", opts, async (request) => {
+    if (request.authMode === "user" && request.authUser && systemUserId) {
+      return deps.registry
+        .listDocumentsForUser(request.authUser.id, systemUserId)
+        .map(toPublicDocument);
+    }
+
     return deps.registry.listDocuments().map(toPublicDocument);
   });
 
@@ -112,6 +155,16 @@ export async function registerDocumentRoutes(
     const doc = deps.registry.getDocument(documentId);
 
     if (!doc) {
+      const mapped = notFound(documentId);
+      return reply.code(mapped.statusCode).send(mapped.body);
+    }
+
+    if (
+      request.authMode === "user" &&
+      request.authUser &&
+      systemUserId &&
+      !canReadDocument(doc, request.authUser.id, systemUserId)
+    ) {
       const mapped = notFound(documentId);
       return reply.code(mapped.statusCode).send(mapped.body);
     }
@@ -126,6 +179,13 @@ export async function registerDocumentRoutes(
     if (!doc) {
       const mapped = notFound(documentId);
       return reply.code(mapped.statusCode).send(mapped.body);
+    }
+
+    if (request.authMode === "user" && request.authUser) {
+      if (doc.userId !== request.authUser.id) {
+        const mapped = notFound(documentId);
+        return reply.code(mapped.statusCode).send(mapped.body);
+      }
     }
 
     await deps.vectorStore.deleteByDocumentId(documentId, doc.collection);

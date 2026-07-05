@@ -23,9 +23,15 @@ body {
   height: 48px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 16px;
   background: #ffffff;
   border-bottom: 1px solid #e4e4e7;
+}
+
+.logout-button {
+  margin-left: auto;
+  color: #52525b;
 }
 
 .app-title {
@@ -400,4 +406,42 @@ body {
 .mono {
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 12px;
+}
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: #f4f4f5;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+}
+
+.login-card h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+}
+
+.login-hint {
+  margin: 0 0 20px;
+  color: #71717a;
+  font-size: 13px;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+
+.primary-button {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
 }

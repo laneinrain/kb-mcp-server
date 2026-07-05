@@ -59,7 +59,7 @@ export function createDefaultIngestDeps(config?: AppConfig): IngestDeps {
         embeddingClient,
         settingsStore,
       });
-      return ingestionService.ingest(filePath, { collection });
+      return ingestionService.ingest(filePath, { collection, userId: "" });
     },
   };
 }
@@ -113,6 +113,13 @@ export async function runIngest(
   collection: string | undefined,
   deps: IngestDeps = createDefaultIngestDeps(),
 ): Promise<number> {
+  if (deps.config.USER_AUTH_ENABLED && !deps.config.AUTH_ENABLED) {
+    process.stderr.write(
+      "USER_AUTH_ENABLED requires AUTH_ENABLED=true and API_KEY for CLI REST ingest.\n",
+    );
+    return 2;
+  }
+
   let stats;
   try {
     stats = await stat(targetPath);

@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod/v4";
-import type { SearchService } from "@kb/core";
+import type { DocumentRegistry, SearchService } from "@kb/core";
 import { mapSearchError } from "../lib/errors.js";
 import type { ApiRouteOpts } from "../auth.js";
 
@@ -25,6 +25,8 @@ const SearchResponseSchema = z.object({
 
 export interface SearchDeps {
   searchService: SearchService;
+  registry: DocumentRegistry;
+  systemUserId: string | null;
   routeOpts?: ApiRouteOpts;
 }
 
@@ -45,9 +47,23 @@ export async function registerSearchRoutes(
     },
     async (request, reply) => {
       try {
+        let allowedDocumentIds: ReadonlySet<string> | undefined;
+        if (
+          request.authMode === "user" &&
+          request.authUser &&
+          deps.systemUserId
+        ) {
+          allowedDocumentIds = new Set(
+            deps.registry
+              .listDocumentsForUser(request.authUser.id, deps.systemUserId)
+              .map((doc) => doc.id),
+          );
+        }
+
         const results = await deps.searchService.search(request.body.query, {
           topK: request.body.topK,
           collection: request.body.collection,
+          allowedDocumentIds,
         });
         return { results };
       } catch (error) {

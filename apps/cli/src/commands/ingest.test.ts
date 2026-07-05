@@ -3,6 +3,7 @@ import type { AppConfig } from "@kb/config";
 import {
   ALLOWED_EXTENSIONS,
   ingestSingleFile,
+  runIngest,
   type IngestDeps,
 } from "./ingest.js";
 import type { ApiClient } from "../api-client.js";
@@ -110,5 +111,21 @@ describe("ingestSingleFile path selection", () => {
     expect(result).toEqual({ ok: true });
     expect(ingestDirect).toHaveBeenCalledWith("sample.txt", undefined);
     expect(uploadDocument).not.toHaveBeenCalled();
+  });
+});
+
+describe("runIngest USER_AUTH guard", () => {
+  it("exits with code 2 when USER_AUTH_ENABLED without AUTH_ENABLED", async () => {
+    const deps = makeDeps({
+      config: {
+        ...baseConfig,
+        USER_AUTH_ENABLED: true,
+        AUTH_ENABLED: false,
+      },
+    });
+
+    const exitCode = await runIngest("sample.txt", undefined, deps);
+
+    expect(exitCode).toBe(2);
   });
 });

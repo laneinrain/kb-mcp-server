@@ -20,11 +20,18 @@ async function buildApp() {
     ]),
   };
 
+  const registry = {
+    listDocuments: vi.fn().mockReturnValue([]),
+    listDocumentsForUser: vi.fn().mockReturnValue([]),
+  };
+
   const app = Fastify().withTypeProvider<ZodTypeProvider>();
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
   await registerSearchRoutes(app, {
     searchService: searchService as never,
+    registry: registry as never,
+    systemUserId: null,
   });
 
   return { app, searchService };

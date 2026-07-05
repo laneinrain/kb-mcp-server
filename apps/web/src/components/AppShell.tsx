@@ -1,3 +1,5 @@
+import { clearAccessToken } from "../lib/auth-token.js";
+
 export type AppTab = "documents" | "search" | "settings" | "help";
 
 interface AppShellProps {
@@ -14,10 +16,22 @@ const TABS: { id: AppTab; label: string }[] = [
 ];
 
 export function AppShell({ activeTab, onTabChange, children }: AppShellProps) {
+  function handleLogout() {
+    clearAccessToken();
+    window.location.href = "/login";
+  }
+
   return (
     <div className="app-shell">
       <header className="app-header">
         <h1 className="app-title">知识库管理</h1>
+        <button
+          type="button"
+          className="btn btn-text logout-button"
+          onClick={handleLogout}
+        >
+          退出登录
+        </button>
       </header>
       <div className="tab-bar" role="tablist" aria-label="主导航">
         {TABS.map((tab) => (

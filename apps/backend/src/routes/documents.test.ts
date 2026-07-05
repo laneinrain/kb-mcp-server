@@ -13,6 +13,7 @@ function createSampleDoc(id = "doc-1"): DocumentRecord {
     status: "indexed",
     chunkCount: 2,
     collection: "default",
+    userId: "user-1",
     createdAt: "2026-06-29T00:00:00.000Z",
     updatedAt: "2026-06-29T00:00:00.000Z",
   };
@@ -39,6 +40,7 @@ async function buildApp(deps?: Partial<Parameters<typeof registerDocumentRoutes>
     vectorStore: vectorStore as never,
     uploadsDir: "./data/uploads",
     defaultCollection: "default",
+    systemUserId: null,
     ...deps,
   });
 

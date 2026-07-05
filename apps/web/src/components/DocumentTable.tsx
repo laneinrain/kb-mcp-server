@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, type DocumentRecord } from "../types.js";
 import { deleteDocument, listDocuments } from "../api/documents.js";
 import { displayFilename } from "../lib/filename.js";
+import { getCurrentUserId } from "../lib/auth-token.js";
 import { CopyIdButton } from "./CopyIdButton.js";
 
 function formatDate(iso: string): string {
@@ -64,6 +65,8 @@ export function DocumentTable() {
     },
   });
 
+  const currentUserId = getCurrentUserId();
+
   if (isLoading) {
     return <p className="muted">加载中…</p>;
   }
@@ -109,6 +112,10 @@ export function DocumentTable() {
           <tbody>
             {data.map((doc) => {
               const filename = displayFilename(doc.filename);
+              const canDelete =
+                !doc.userId ||
+                !currentUserId ||
+                doc.userId === currentUserId;
               return (
                 <tr key={doc.id}>
                   <td className="filename-cell" title={filename}>
@@ -126,17 +133,23 @@ export function DocumentTable() {
                   <td className="muted">{doc.collection}</td>
                   <td className="muted">{formatDate(doc.updatedAt)}</td>
                   <td>
-                    <button
-                      type="button"
-                      className="btn btn-text-destructive"
-                      aria-label={`Delete ${filename}`}
-                      onClick={() => {
-                        setModalError(null);
-                        setPendingDelete(doc);
-                      }}
-                    >
-                      删除
-                    </button>
+                    {canDelete ? (
+                      <button
+                        type="button"
+                        className="btn btn-text-destructive"
+                        aria-label={`Delete ${filename}`}
+                        onClick={() => {
+                          setModalError(null);
+                          setPendingDelete(doc);
+                        }}
+                      >
+                        删除
+                      </button>
+                    ) : (
+                      <span className="muted" title="共享历史文档不可删除">
+                        —
+                      </span>
+                    )}
                   </td>
                 </tr>
               );

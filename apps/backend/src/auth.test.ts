@@ -17,6 +17,7 @@ const authDisabledConfig = {
 function createMockRegistry() {
   return {
     listDocuments: vi.fn().mockReturnValue([]),
+    listDocumentsForUser: vi.fn().mockReturnValue([]),
     getDocument: vi.fn(),
     deleteDocument: vi.fn(),
   };
@@ -36,6 +37,7 @@ async function buildProtectedApp(config: AppConfig) {
     vectorStore: { deleteByDocumentId: vi.fn() } as never,
     uploadsDir: "./data/uploads",
     defaultCollection: "default",
+    systemUserId: null,
     routeOpts,
   });
   return app;

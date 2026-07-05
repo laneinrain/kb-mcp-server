@@ -1,6 +1,8 @@
 import bearerAuth from "@fastify/bearer-auth";
-import type { FastifyInstance, preHandlerHookHandler } from "fastify";
+import type { AuthProvider } from "@kb/auth";
 import type { AppConfig } from "@kb/config";
+import type { FastifyInstance, preHandlerHookHandler } from "fastify";
+import "./types.js";
 
 export type ApiRouteOpts = {
   preHandler?: preHandlerHookHandler | preHandlerHookHandler[];
@@ -32,4 +34,50 @@ export function apiRouteOpts(
   }
 
   return { preHandler: [verify] };
+}
+
+export function createProtectedRouteOpts(
+  config: AppConfig,
+  app: FastifyInstance,
+  authProvider: AuthProvider | null,
+): ApiRouteOpts {
+  if (!config.USER_AUTH_ENABLED) {
+    return apiRouteOpts(config, app);
+  }
+
+  if (!authProvider) {
+    throw new Error("authProvider required when USER_AUTH_ENABLED");
+  }
+
+  return {
+    preHandler: async (request, reply) => {
+      const header = request.headers.authorization;
+      if (!header?.startsWith("Bearer ")) {
+        return reply.code(401).send({
+          error: "unauthorized",
+          message: "Missing Bearer token",
+        });
+      }
+
+      const token = header.slice(7);
+
+      try {
+        request.authUser = await authProvider.validateAccessToken(token);
+        request.authMode = "user";
+        return;
+      } catch {
+        // Fall through to service API key when enabled.
+      }
+
+      if (config.AUTH_ENABLED && config.API_KEY && token === config.API_KEY) {
+        request.authMode = "service";
+        return;
+      }
+
+      return reply.code(401).send({
+        error: "unauthorized",
+        message: "Invalid or expired token",
+      });
+    },
+  };
 }
