@@ -1,12 +1,12 @@
 ---
 gsd_state_version: 1.0
-milestone: none
-milestone_name: none
-status: Awaiting next milestone
-last_updated: "2026-07-05T07:50:00.000Z"
-last_activity: 2026-07-05 — Milestone v1.1 shipped and tagged
+milestone: v1.2
+milestone_name: Multi-User Auth & Hash Upload
+status: planning
+last_updated: "2026-07-05T12:30:00.000Z"
+last_activity: 2026-07-05
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,15 +21,14 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 **Core value:** An MCP client can reliably semantic-search ingested documents through a stable tool interface.
 
-**Current focus:** Planning next milestone
+**Current focus:** v1.2 planning complete — ready for Phase 7 execution
 
 ## Current Position
 
-| Field | Value |
-|-------|-------|
-| **Last shipped** | v1.1 MCP Context Tools (2026-07-05) |
-| **Status** | Awaiting next milestone |
-| **Tag** | v1.1 |
+Phase: 7 (not started)
+Plan: —
+Status: Roadmap approved; awaiting `/gsd-plan-phase 7`
+Last activity: 2026-07-05 — v1.2 requirements and roadmap created
 
 ## Performance Metrics
 
@@ -37,22 +36,25 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 |--------|-------|
 | v1.0 | Shipped 2026-07-05 (30/30 reqs) |
 | v1.1 | Shipped 2026-07-05 (7/7 reqs) |
+| v1.2 | Planning — 18 requirements, 3 phases |
 | Total phases shipped | 6 (18 plans) |
 
 ## Accumulated Context
 
-### Decisions (recent)
+### Decisions (v1.2)
 
-| Decision | Source | Status |
-|----------|--------|--------|
-| v1.1 scope = context tools only | new-milestone | Shipped |
-| MCP read tools on shared ContextService | 06-01 | Shipped |
-| read_around inline search-hit example | 06-discuss | Shipped |
+| Decision | Rationale |
+|----------|-----------|
+| `@kb/auth` independent package | User requirement: swap auth center in production |
+| JWT for user sessions | Standard Fastify middleware; web stores token |
+| Hash on parsed text, key `(user_id, filename)` | Same filename dedup within user scope |
+| MCP unchanged (global corpus) | Per-user MCP auth deferred to PLAT-04 |
+| Legacy docs → default system user | Clean migration without data loss |
 
 ### Todos
 
 - [ ] Push local commits and tag `v1.1` to origin
-- [ ] `/gsd-new-milestone` for v1.2+
+- [ ] `/gsd-plan-phase 7` — Auth Center Module
 
 ### Blockers
 
@@ -60,8 +62,8 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 ## Session Continuity
 
-**Last action:** `/gsd-complete-milestone` — v1.1 archived  
-**Next step:** `/gsd-new-milestone`
+**Last action:** `/gsd-new-milestone` — v1.2 scoped  
+**Next step:** `/gsd-plan-phase 7`
 
 ---
-*State updated: 2026-07-05 — v1.1 milestone complete*
+*State updated: 2026-07-05 — v1.2 milestone planning complete*

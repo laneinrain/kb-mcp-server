@@ -27,30 +27,37 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 
 ### Active
 
-(None — define next milestone via `/gsd-new-milestone`.)
+**Milestone v1.2 — Multi-User Auth & Hash Upload**
 
-## Current State (v1.1 shipped)
+- [ ] Independent auth center module with swappable `AuthProvider` for production IdP replacement — Phase 7
+- [ ] User registration and login (API + 简体中文 Web UI) — Phases 7–8
+- [ ] User-scoped document ownership; list/upload/delete/search isolated per user — Phase 8
+- [ ] Same-filename upload with content-hash check: identical hash → return existing; different hash → replace vectors — Phase 9
 
-**Shipped:** v1.0 (2026-07-05) + v1.1 (2026-07-05) — 6 phases, 18 plans, 37/37 requirements across both milestones.
+## Current Milestone: v1.2 Multi-User Auth & Hash Upload
 
-**MCP tools:** `search_knowledge`, `read_around`, `read_file` (retrieval-only, shared factory on stdio + HTTP).
+**Goal:** Replace single shared API key with real multi-user accounts and make uploads idempotent per filename via content hashing.
 
-**Next milestone candidates:** hybrid BM25/rerank (RETR-01/02), multi-collection (PLAT-01), REST read parity (API-06).
+**Shipped baseline:** v1.0 (Phases 1–4) + v1.1 (Phases 5–6) — 6 phases, 18 plans, 37/37 requirements.
 
-### Out of Scope
+**MCP tools (unchanged in v1.2 scope):** `search_knowledge`, `read_around`, `read_file` — global corpus; per-user MCP auth deferred.
+
+### Out of Scope (v1.2)
 
 - OCR / scanned PDF support — text-layer PDF only
-- Multi-tenant or production-grade auth — single API key only
-- Upload/CRUD via MCP tools — ingestion is backend/CLI/Web only
-- Hosted/managed vector DB — local Chroma for scaffold simplicity
-- Hybrid BM25 / rerank — deferred beyond v1.1 (see RETR-01/02 in archived requirements)
+- Full OAuth/OIDC/LDAP implementation — v1.2 ships local auth + `AuthProvider` interface only
+- Email verification, password reset, admin user-management UI
+- Per-user MCP tool auth or user-scoped MCP search
+- Upload/CRUD via MCP tools — ingestion remains backend/CLI/Web
+- Hosted/managed vector DB — local Chroma
+- Hybrid BM25 / rerank — deferred (RETR-01/02)
 
 ## Context
 
-- **Stack:** pnpm + Turborepo monorepo; packages `@kb/config`, `@kb/core`; apps `@kb/backend`, `@kb/mcp-server`, `@kb/web`, `@kb/cli`
+- **Stack:** pnpm + Turborepo monorepo; packages `@kb/config`, `@kb/core`; apps `@kb/backend`, `@kb/mcp-server`, `@kb/web`, `@kb/cli`; **new:** `@kb/auth` auth center module (v1.2)
 - **Ports:** Chroma 8000, Backend 3000 (+ SPA when `SERVE_WEB=true`), Web dev 5173, MCP HTTP 3100
 - **Dev:** `pnpm dev` starts full stack; `pnpm uat:read-around` validates search → expand workflow
-- **UAT note:** Bearer auth (CONF-03) implemented but not manually UAT-tested
+- **Auth today:** optional single `API_KEY` bearer — v1.2 adds JWT user sessions alongside migration path
 
 ## Constraints
 
@@ -58,8 +65,8 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - **Transport**: MCP stdio and Streamable HTTP entrypoints
 - **Embedding model**: `qwen/qwen3-embedding-8b` via CherryIn API — not swappable without explicit config change in v1
 - **Document formats**: txt, markdown, text-layer PDF only in v1
-- **Security**: API keys in `.env` only; optional backend API key gate via env flag
-- **Deployment**: Local-first scaffold; no cloud infra assumptions
+- **Security**: API keys in `.env` only; v1.2 adds password hashing and JWT for user sessions
+- **Deployment**: Local-first scaffold; auth module designed for swap to external IdP in production
 
 ## Key Decisions
 
@@ -76,6 +83,8 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 | Backend: REST + Web admin + CLI | User wants all three admin surfaces | ✓ Good |
 | Streamable HTTP over legacy SSE | MCP SDK 1.29 standard transport | ✓ Good |
 | DATA_DIR/SQLITE_PATH resolve to monorepo root | Prevents CLI/Web corpus split when cwd differs | ✓ Good |
+| **v1.2:** `@kb/auth` as independent module | User requirement: swap auth center in production without rewriting backend | Pending |
+| **v1.2:** Hash on parsed text, keyed by `(user_id, filename)` | Same filename re-upload: skip if unchanged, replace if content differs | Pending |
 
 ## Evolution
 
@@ -88,4 +97,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-05 after v1.1 milestone shipped*
+*Last updated: 2026-07-05 — v1.2 milestone started*
