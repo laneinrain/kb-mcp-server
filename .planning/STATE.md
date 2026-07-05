@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: MCP Context Tools
-status: milestone_complete
-last_updated: "2026-07-05T07:35:00.000Z"
-stopped_at: Phase 6 complete — v1.1 milestone ready for closeout
+milestone: none
+milestone_name: none
+status: Awaiting next milestone
+last_updated: "2026-07-05T07:50:00.000Z"
+last_activity: 2026-07-05 — Milestone v1.1 shipped and tagged
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State: kb-mcp-server
@@ -21,42 +21,38 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 **Core value:** An MCP client can reliably semantic-search ingested documents through a stable tool interface.
 
-**Current focus:** v1.1 complete — consider `/gsd-complete-milestone`
+**Current focus:** Planning next milestone
 
 ## Current Position
 
 | Field | Value |
 |-------|-------|
-| **Milestone** | v1.1 MCP Context Tools |
-| **Phase** | 6 — MCP Read Tools ✓ |
-| **Plan** | 06-01, 06-02 (2/2 complete) |
-| **Status** | Phase 6 complete ✓ — VERIFICATION passed |
-| **Progress** | v1.1: █████ 2/2 phases · Phase 6: 2/2 plans |
+| **Last shipped** | v1.1 MCP Context Tools (2026-07-05) |
+| **Status** | Awaiting next milestone |
+| **Tag** | v1.1 |
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
 | v1.0 | Shipped 2026-07-05 (30/30 reqs) |
-| v1.1 requirements | 7/7 complete |
-| Phase 6 | 2 plans, UAT PASS 2026-07-05 |
-| Pending PR | — |
+| v1.1 | Shipped 2026-07-05 (7/7 reqs) |
+| Total phases shipped | 6 (18 plans) |
 
 ## Accumulated Context
 
-### Decisions
+### Decisions (recent)
 
 | Decision | Source | Status |
 |----------|--------|--------|
-| v1.1 scope = Option B (context tools only) | new-milestone | Locked |
-| MCP read tools on shared ContextService + SQLite settings | 06-01 | Shipped |
-| read_around inline search-hit example in tool desc | 06-discuss | Shipped |
+| v1.1 scope = context tools only | new-milestone | Shipped |
+| MCP read tools on shared ContextService | 06-01 | Shipped |
+| read_around inline search-hit example | 06-discuss | Shipped |
 
 ### Todos
 
-- [x] Execute Phase 6 (06-01, 06-02 + UAT)
-- [ ] Push local commits to origin/master
-- [ ] `/gsd-complete-milestone` for v1.1
+- [ ] Push local commits and tag `v1.1` to origin
+- [ ] `/gsd-new-milestone` for v1.2+
 
 ### Blockers
 
@@ -64,9 +60,8 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 ## Session Continuity
 
-**Last action:** Phase 6 executed — VERIFICATION passed  
-**Next step:** `/gsd-complete-milestone` or push commits  
-**Resume file:** `.planning/phases/06-mcp-read-tools/06-VERIFICATION.md`
+**Last action:** `/gsd-complete-milestone` — v1.1 archived  
+**Next step:** `/gsd-new-milestone`
 
 ---
-*State updated: 2026-07-05 — Phase 6 complete, v1.1 milestone done*
+*State updated: 2026-07-05 — v1.1 milestone complete*

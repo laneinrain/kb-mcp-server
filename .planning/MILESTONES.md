@@ -1,5 +1,45 @@
 # Milestones: kb-mcp-server
 
+## v1.1 MCP Context Tools
+
+**Shipped:** 2026-07-05  
+**Timeline:** 2026-07-05 (same day)  
+**Phases:** 5–6 | **Plans:** 5
+
+### Delivered
+
+MCP clients can expand `search_knowledge` hits via `read_around` and `read_file` on stdio and Streamable HTTP, backed by a shared `ContextService` with admin-configurable bounds (Web 设置 tab).
+
+### Key Accomplishments
+
+1. **Context retrieval core** — `ChromaVectorStore.getByIds`, `ContextService.readAround`/`readFile`, symmetric ±N windows, truncation metadata, structured `ContextError`
+2. **Admin configurability** — GET/PATCH settings API and Web **上下文检索** panel (window/char limits live in SQLite)
+3. **MCP read tools** — `read_around` + `read_file` on shared `buildMcpServer()` factory; snake_case MCP inputs; search-hit example in tool description
+4. **Transport parity** — stdio + HTTP expose identical three-tool retrieval surface (`search_knowledge`, `read_around`, `read_file`)
+5. **UAT** — `pnpm uat:read-around` passes search → read_around on live stack
+
+### Stats
+
+| Metric | Value |
+|--------|-------|
+| v1.1 requirements | 7/7 |
+| Phase 5 UAT | Approved 2026-07-05 |
+| Phase 6 UAT | PASS 2026-07-05 |
+| Git range | feat(05-01) → feat(06-02) |
+
+### Archives
+
+- [v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md)
+- [v1.1-REQUIREMENTS.md](milestones/v1.1-REQUIREMENTS.md)
+
+### Known Gaps
+
+- REST read endpoints (API-06) deferred to future milestone
+- CONF-03 bearer auth still not manually UAT-tested (carried from v1.0)
+
+---
+*Milestone completed via `/gsd-complete-milestone`*
+
 ## v1.0 Initial Release
 
 **Shipped:** 2026-07-05  
@@ -38,14 +78,3 @@ A self-hosted knowledge-base scaffold: ingest txt/markdown/text-layer PDF into l
 
 ---
 *Milestone completed via `/gsd-complete-milestone`*
-
-## v1.1 MCP Context Tools
-
-**Started:** 2026-07-05  
-**Status:** Planning complete — Phases 5–6  
-**Goal:** `read_around` + `read_file` MCP tools for context expansion after `search_knowledge`
-
-**Scope (Option B):** Context tools only — no hybrid search or rerank in this milestone.
-
----
-*Milestone started via `/gsd-new-milestone`*
