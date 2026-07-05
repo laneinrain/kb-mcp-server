@@ -12,7 +12,8 @@
     "dev:web": "pnpm --filter @kb/web dev",
     "ingest": "pnpm --filter @kb/cli cli -- ingest",
     "setup:chroma": "python -m pip install \"chromadb>=1.5.9\"",
-    "wait:chroma": "tsx scripts/wait-for-chroma.ts"
+    "wait:chroma": "tsx scripts/wait-for-chroma.ts",
+    "uat:read-around": "tsx scripts/uat-read-around.ts"
   },
   "devDependencies": {
     "@kb/config": "workspace:*",

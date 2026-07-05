@@ -1,5 +1,5 @@
 import type { AppConfig } from "@kb/config";
-import type { SearchService } from "@kb/core";
+import type { ContextService, SearchService } from "@kb/core";
 import request from "supertest";
 import { describe, expect, it, vi } from "vitest";
 import { createMcpHttpApp } from "./http.js";
@@ -14,9 +14,38 @@ function mockServices(search?: SearchService["search"]) {
     search: vi.fn(search ?? (async () => [])),
   } as unknown as SearchService;
 
+  const contextService = {
+    readAround: vi.fn(async () => ({
+      documentId: "d1",
+      filename: "a.txt",
+      collection: "default",
+      chunkRange: { start: 0, end: 0 },
+      windowRequested: 1,
+      windowApplied: 1,
+      chunks: [
+        {
+          documentId: "d1",
+          filename: "a.txt",
+          chunkIndex: 0,
+          text: "full chunk text",
+          isCenter: true,
+        },
+      ],
+    })),
+    readFile: vi.fn(async () => ({
+      documentId: "d1",
+      filename: "a.txt",
+      collection: "default",
+      chunkCount: 1,
+      returnedChunks: 1,
+      chunks: [],
+    })),
+  } as unknown as ContextService;
+
   return {
     config: mockConfig,
     searchService,
+    contextService,
   };
 }
 
@@ -31,8 +60,27 @@ const initializeBody = {
   },
 };
 
-const MCP_ACCEPT =
-  "application/json, text/event-stream";
+const MCP_ACCEPT = "application/json, text/event-stream";
+
+async function initSession(app: Awaited<ReturnType<typeof createMcpHttpApp>>) {
+  const init = await request(app)
+    .post("/mcp")
+    .set("Accept", MCP_ACCEPT)
+    .send(initializeBody);
+  const sessionId = init.headers["mcp-session-id"] as string;
+  expect(sessionId).toBeDefined();
+
+  await request(app)
+    .post("/mcp")
+    .set("Accept", MCP_ACCEPT)
+    .set("mcp-session-id", sessionId)
+    .send({
+      jsonrpc: "2.0",
+      method: "notifications/initialized",
+    });
+
+  return sessionId;
+}
 
 describe("MCP HTTP /mcp", () => {
   it("POST /mcp without session returns 400 for non-initialize body", async () => {
@@ -86,7 +134,7 @@ describe("MCP HTTP /mcp", () => {
         .parse((res, callback) => {
           expect(res.statusCode).toBe(200);
           expect(res.headers["content-type"]).toMatch(/text\/event-stream/);
-          res.destroy();
+          (res as unknown as import("node:http").IncomingMessage).destroy();
           callback(null, null);
         });
 
@@ -100,25 +148,9 @@ describe("MCP HTTP /mcp", () => {
     });
   });
 
-  it("uses buildMcpServer via initialize flow (tools/list after init)", async () => {
-    const services = mockServices();
-    const app = await createMcpHttpApp(services);
-
-    const init = await request(app)
-      .post("/mcp")
-      .set("Accept", MCP_ACCEPT)
-      .send(initializeBody);
-    const sessionId = init.headers["mcp-session-id"] as string;
-    expect(sessionId).toBeDefined();
-
-    await request(app)
-      .post("/mcp")
-      .set("Accept", MCP_ACCEPT)
-      .set("mcp-session-id", sessionId)
-      .send({
-        jsonrpc: "2.0",
-        method: "notifications/initialized",
-      });
+  it("tools/list includes search_knowledge, read_around, and read_file", async () => {
+    const app = await createMcpHttpApp(mockServices());
+    const sessionId = await initSession(app);
 
     const list = await request(app)
       .post("/mcp")
@@ -130,6 +162,37 @@ describe("MCP HTTP /mcp", () => {
     const responseText =
       typeof list.text === "string" ? list.text : JSON.stringify(list.body);
     expect(responseText).toContain("search_knowledge");
+    expect(responseText).toContain("read_around");
+    expect(responseText).toContain("read_file");
+  });
+
+  it("tools/call read_around succeeds over HTTP session", async () => {
+    const services = mockServices();
+    const app = await createMcpHttpApp(services);
+    const sessionId = await initSession(app);
+
+    const call = await request(app)
+      .post("/mcp")
+      .set("Accept", MCP_ACCEPT)
+      .set("mcp-session-id", sessionId)
+      .send({
+        jsonrpc: "2.0",
+        method: "tools/call",
+        id: 3,
+        params: {
+          name: "read_around",
+          arguments: { document_id: "d1", chunk_index: 0 },
+        },
+      });
+
+    expect(call.status).toBe(200);
+    const responseText =
+      typeof call.text === "string" ? call.text : JSON.stringify(call.body);
+    expect(responseText).toContain("full chunk text");
+    expect(services.contextService.readAround).toHaveBeenCalledWith("d1", 0, {
+      window: undefined,
+      collection: undefined,
+    });
   });
 
   it("does not use legacy SSE-only transport as sole handler", async () => {
