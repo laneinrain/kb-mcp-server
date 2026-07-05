@@ -67,7 +67,21 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 3. Logout clears token; unauthenticated redirect (complete WEB-03); optional register page (WEB-02)
 4. Integration tests: user A cannot read/delete user B documents
 
-**Plans:** TBD via `/gsd-plan-phase 8`
+**Plans:** 3 plans in 3 waves
+
+**Wave 1** *(foundation)*
+- [ ] 08-01: Registry user_id + system user migration + Chroma metadata (USER-01, USER-03)
+
+**Wave 2** *(blocked on Wave 1)*
+- [ ] 08-02: Composite JWT/API_KEY auth + scoped document/search routes (AUTH-04, AUTH-05, USER-02, USER-04)
+
+**Wave 3** *(blocked on Wave 2)*
+- [ ] 08-03: Web JWT-only + logout + CLI guard (WEB-03, WEB-04; WEB-02 deferred)
+
+**Cross-cutting constraints:**
+- JWT user sees own docs + system legacy shared docs (D-15, D-18)
+- API_KEY service path retains global access (D-11)
+- WEB-02 deferred — JIT login only (D-05)
 
 ---
 
@@ -95,7 +109,7 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 | 5. Context Retrieval Core | v1.1 | 3/3 | Complete | 2026-07-05 |
 | 6. MCP Read Tools | v1.1 | 2/2 | Complete | 2026-07-05 |
 | 7. Auth Center Module | v1.2 | 3/3 | Complete | 2026-07-05 |
-| 8. Multi-User Backend & Web Auth | v1.2 | 0/? | Not started | — |
+| 8. Multi-User Backend & Web Auth | v1.2 | 0/3 | Planned | — |
 | 9. Filename Content-Hash Dedup | v1.2 | 0/? | Not started | — |
 
 ---
