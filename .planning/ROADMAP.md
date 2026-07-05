@@ -6,9 +6,9 @@
 
 - ✅ **v1.0 Initial Release** — Phases 1–4 (shipped 2026-07-05)
 - ✅ **v1.1 MCP Context Tools** — Phases 5–6 (shipped 2026-07-05)
-- 🚧 **v1.2 Multi-User Auth & Hash Upload** — Phases 7–9 (planning)
+- ✅ **v1.2 Multi-User Auth & Hash Upload** — Phases 7–9 (shipped 2026-07-05)
 
-See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md), and [milestones/v1.1-ROADMAP.md](milestones/v1.1-ROADMAP.md).
+See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived milestone details.
 
 ## Phases
 
@@ -30,90 +30,14 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 
 </details>
 
-### Phase 7: Auth Center Module
+<details>
+<summary>✅ v1.2 Multi-User Auth & Hash Upload (Phases 7–9) — SHIPPED 2026-07-05</summary>
 
-**Goal:** Independent `@kb/auth` with **MockCasAuthProvider**, 工号 login API, and 简体中文 login page; production swaps to company CAS without Web changes.
+- [x] Phase 7: Auth Center Module (3/3 plans)
+- [x] Phase 8: Multi-User Backend & Web Auth (3/3 plans)
+- [x] Phase 9: Filename Content-Hash Dedup (3/3 plans)
 
-**Requirements:** AUTH-01, AUTH-02, AUTH-03, AUTH-06, **WEB-01** (login page only)
-
-**Success criteria:**
-1. `@kb/auth` exports `AuthProvider`, `MockCasAuthProvider`, JWT helpers, `createJwtPreHandler`
-2. `POST /api/v1/auth/login` with `employeeId` + password → mock CAS success → JWT + JIT user
-3. Web login page (工号 + 密码) stores `kb_access_token` and enters admin
-4. README documents Mock → real **统一 CAS** swap (`CAS_MOCK`, `CAS_SERVER_URL`)
-
-**Plans:** 3 plans in 3 waves
-
-**Wave 1** *(foundation)*
-- [x] 07-01: `@kb/auth` + MockCasAuthProvider + employeeId store + config (AUTH-01, AUTH-02)
-
-**Wave 2** *(blocked on Wave 1)*
-- [x] 07-02: Login API + README (AUTH-03, AUTH-06)
-
-**Wave 3** *(blocked on Wave 2)*
-- [x] 07-03: Web LoginPage + JWT client (WEB-01)
-
----
-
-### Phase 8: Multi-User Backend & Web Auth
-
-**Goal:** JWT-protected API, per-user document isolation, logout, optional register.
-
-**Requirements:** AUTH-04, AUTH-05, USER-01, USER-02, USER-03, USER-04, WEB-02, WEB-03 (full), WEB-04
-
-**Success criteria:**
-1. `/api/v1` document and search routes require valid user JWT when user auth enabled
-2. Documents and Chroma metadata scoped by `user_id`; migration assigns legacy docs to default user
-3. Logout clears token; unauthenticated redirect (complete WEB-03); optional register page (WEB-02)
-4. Integration tests: user A cannot read/delete user B documents
-
-**Plans:** 3 plans in 3 waves
-
-**Wave 1** *(foundation)*
-- [x] 08-01: Registry user_id + system user migration + Chroma metadata (USER-01, USER-03)
-
-**Wave 2** *(blocked on Wave 1)*
-- [x] 08-02: Composite JWT/API_KEY auth + scoped document/search routes (AUTH-04, AUTH-05, USER-02, USER-04)
-
-**Wave 3** *(blocked on Wave 2)*
-- [x] 08-03: Web JWT-only + logout + CLI guard (WEB-03, WEB-04; WEB-02 deferred)
-
-**Cross-cutting constraints:**
-- JWT user sees own docs + system legacy shared docs (D-15, D-18)
-- API_KEY service path retains global access (D-11)
-- WEB-02 deferred — JIT login only (D-05)
-
----
-
-### Phase 9: Filename Content-Hash Dedup
-
-**Goal:** Same-filename uploads skip re-embedding when content unchanged; replace when content differs.
-
-**Requirements:** INGE-10, INGE-11, INGE-12, INGE-13
-
-**Success criteria:**
-1. `content_hash` stored; unique lookup on `(user_id, filename)`
-2. Re-upload identical content returns `unchanged` with existing `document_id` (no Chroma upsert)
-3. Re-upload changed content returns `replaced`; old vectors removed
-4. Tests cover created / unchanged / replaced paths
-
-**Plans:** 3 plans in 3 waves
-
-**Wave 1** *(foundation)*
-- [ ] 09-01: Registry content_hash + findByUserAndFilename + hash helpers (INGE-10)
-
-**Wave 2** *(blocked on Wave 1)*
-- [ ] 09-02: IngestionService created/unchanged/replaced outcomes (INGE-11, INGE-12, INGE-13)
-
-**Wave 3** *(blocked on Wave 2)*
-- [ ] 09-03: REST/Web/CLI outcome surfacing (INGE-13)
-
-**Cross-cutting constraints:**
-- Dedup key `(user_id, filename)`; hash on normalized parsed text (D-01–D-04)
-- Legacy documents keep existing ids until re-upload (D-12)
-- MCP unchanged (D-15)
-
----
+</details>
 
 ## Progress
 
@@ -123,8 +47,8 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 | 5. Context Retrieval Core | v1.1 | 3/3 | Complete | 2026-07-05 |
 | 6. MCP Read Tools | v1.1 | 2/2 | Complete | 2026-07-05 |
 | 7. Auth Center Module | v1.2 | 3/3 | Complete | 2026-07-05 |
-| 8. Multi-User Backend & Web Auth | v1.2 | 3/3 | Verified | 2026-07-05 |
-| 9. Filename Content-Hash Dedup | v1.2 | 0/3 | Planned | — |
+| 8. Multi-User Backend & Web Auth | v1.2 | 3/3 | Complete | 2026-07-05 |
+| 9. Filename Content-Hash Dedup | v1.2 | 3/3 | Complete | 2026-07-05 |
 
 ---
-*Last updated: 2026-07-05 — Phase 9 planned (3 plans)*
+*Last updated: 2026-07-05 — v1.2 milestone shipped*

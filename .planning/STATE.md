@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Multi-User Auth & Hash Upload
-status: planned
-last_updated: "2026-07-05T22:52:00.000Z"
-last_activity: 2026-07-05 -- Phase 9 planning complete (3 plans)
+status: shipped
+last_updated: "2026-07-05T15:20:00.000Z"
+last_activity: 2026-07-05 -- v1.2 milestone archived and tagged
 progress:
   total_phases: 3
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 9
-  completed_plans: 6
-  percent: 67
+  completed_plans: 9
+  percent: 100
 ---
 
 # Project State: kb-mcp-server
@@ -21,39 +21,34 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 **Core value:** An MCP client can reliably semantic-search ingested documents through a stable tool interface.
 
-**Current focus:** Phase 9 planned — ready to execute
+**Current focus:** Planning next milestone (`/gsd-new-milestone`)
 
 ## Current Position
 
-Phase: 9 — Filename Content-Hash Dedup (planned)
-Plan: 09-01 next
-Status: Ready to execute
-Last activity: 2026-07-05 — Phase 9 planning complete (3 plans)
+Milestone: v1.2 — **SHIPPED** 2026-07-05  
+Tag: `v1.2`  
+Last activity: 2026-07-05 — milestone archived
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| v1.0 | Shipped 2026-07-05 (30/30 reqs) |
-| v1.1 | Shipped 2026-07-05 (7/7 reqs) |
-| v1.2 | Phases 7–8 verified; Phase 9 planned 0/3 |
-| Total plans executed | 24 (+ 3 planned for Phase 9) |
+| v1.0 | Shipped 2026-07-05 |
+| v1.1 | Shipped 2026-07-05 |
+| v1.2 | Shipped 2026-07-05 (17/18 reqs; WEB-02 deferred) |
+| Total plans executed | 27 |
 
-## Accumulated Context
+## Deferred Items
 
-### Decisions (Phase 9 preview)
+| Item | Source | Notes |
+|------|--------|-------|
+| WEB-02 Register page | Phase 8 | JIT login only; backlog candidate |
+| Per-user MCP auth | REQUIREMENTS PLAT-04 | Out of scope v1.2 |
 
-| Decision | Source | Status |
-|----------|--------|--------|
-| Hash normalized parsed text | Phase 9 D-01 | Locked in CONTEXT |
-| Dedup key (user_id, filename) | Phase 9 D-03 | Locked in CONTEXT |
-| outcome: created/unchanged/replaced | Phase 9 D-05 | Locked in CONTEXT |
+## Todos
 
-### Todos
+- [ ] `/gsd-new-milestone` — define v1.3 scope
 
-- [ ] `/gsd-execute-phase 9`
-- [ ] `/gsd-complete-milestone` after Phase 9 verified
-
-### Blockers
+## Blockers
 
 None

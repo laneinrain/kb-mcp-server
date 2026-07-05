@@ -1,5 +1,45 @@
 # Milestones: kb-mcp-server
 
+## v1.2 Multi-User Auth & Hash Upload
+
+**Shipped:** 2026-07-05  
+**Timeline:** 2026-07-05  
+**Phases:** 7–9 | **Plans:** 9
+
+### Delivered
+
+JWT multi-user auth with swappable `@kb/auth` (Mock CAS → production CAS), per-user document isolation on REST/Web, and content-hash dedup on filename re-uploads with `created` / `unchanged` / `replaced` outcomes.
+
+### Key Accomplishments
+
+1. **Auth center** — `@kb/auth` with MockCasAuthProvider, employeeId JIT users, JWT login API, 简体中文 LoginPage
+2. **Multi-user backend** — registry `user_id`, system legacy migration, composite JWT/API_KEY auth, scoped list/search/delete
+3. **Web auth UX** — JWT-only client, logout, 401 → login redirect; legacy docs shared read-only
+4. **Hash dedup** — `content_hash` column, `(user_id, filename)` lookup, skip embed on unchanged content
+5. **Operator clarity** — REST 201/200 + Web 简体中文 messages + CLI outcome JSON
+
+### Stats
+
+| Metric | Value |
+|--------|-------|
+| v1.2 requirements | 17/18 shipped (WEB-02 deferred) |
+| Phase 9 UAT | 8/8 pass, 1 skipped (live dedup needs USER_AUTH) |
+| Git range | 109d46b → feat(phase 9) |
+
+### Archives
+
+- [v1.2-ROADMAP.md](milestones/v1.2-ROADMAP.md)
+- [v1.2-REQUIREMENTS.md](milestones/v1.2-REQUIREMENTS.md)
+
+### Known Gaps
+
+- WEB-02 register page deferred (JIT login)
+- Per-user MCP auth deferred (PLAT-04)
+- CONF-03 bearer auth manual UAT still not run (carried from v1.0)
+
+---
+*Milestone completed via `/gsd-complete-milestone`*
+
 ## v1.1 MCP Context Tools
 
 **Shipped:** 2026-07-05  
