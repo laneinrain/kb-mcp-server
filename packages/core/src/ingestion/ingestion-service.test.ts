@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
+import { join, resolve } from "node:path";
 import type { DocumentRegistry } from "../registry/document-registry.js";
 import type { SettingsStore } from "../registry/settings-store.js";
 import { IngestionService } from "./ingestion-service.js";
@@ -67,7 +68,9 @@ describe("IngestionService", () => {
       "default",
     );
 
-    const result = await service.ingest("scripts/fixtures/sample.txt");
+    const result = await service.ingest("scripts/fixtures/sample.txt", {
+      userId: "test-user-id",
+    });
 
     expect(parseDocumentMock).toHaveBeenCalled();
     expect(chunkTextMock).toHaveBeenCalledWith(
@@ -107,7 +110,7 @@ describe("IngestionService", () => {
       { embedDocuments } as never,
     );
 
-    await service.ingest("scripts/fixtures/sample.txt");
+    await service.ingest("scripts/fixtures/sample.txt", { userId: "test-user-id" });
 
     expect(deleteByDocumentId).toHaveBeenCalled();
     expect(callOrder).toEqual(["delete", "upsert"]);
@@ -125,8 +128,12 @@ describe("IngestionService", () => {
       { embedDocuments: vi.fn().mockResolvedValue([[0.1]]) } as never,
     );
 
-    const first = await service.ingest("scripts/fixtures/sample.txt");
-    const second = await service.ingest("scripts/fixtures/sample.txt");
+    const first = await service.ingest("scripts/fixtures/sample.txt", {
+      userId: "test-user-id",
+    });
+    const second = await service.ingest("scripts/fixtures/sample.txt", {
+      userId: "test-user-id",
+    });
 
     expect(first.documentId).toBe(second.documentId);
     expect(first.documentId).toMatch(/^[a-f0-9]{64}$/);
@@ -149,7 +156,7 @@ describe("IngestionService", () => {
       } as never,
     );
 
-    await service.ingest("scripts/fixtures/sample.txt");
+    await service.ingest("scripts/fixtures/sample.txt", { userId: "test-user-id" });
 
     expect(registry.registerDocument).toHaveBeenCalledWith(
       expect.objectContaining({ status: "pending" }),
@@ -179,6 +186,7 @@ describe("IngestionService", () => {
 
     await service.ingest("scripts/fixtures/sample.txt", {
       collection: "research",
+      userId: "test-user-id",
     });
 
     expect(deleteByDocumentId).toHaveBeenCalledWith(
@@ -208,10 +216,34 @@ describe("IngestionService", () => {
 
     await service.ingest("data/uploads/uuid-sample.txt", {
       filename: "sample.txt",
+      userId: "test-user-id",
     });
 
     expect(registry.registerDocument).toHaveBeenCalledWith(
       expect.objectContaining({ filename: "sample.txt" }),
+    );
+  });
+
+  it("allows paths under DATA_DIR when cwd is a package subdirectory", async () => {
+    const registry = createRegistryMock();
+    const dataDir = resolve("data");
+    const uploadPath = join(dataDir, "uploads", "uuid-sample.txt");
+    const service = new IngestionService(
+      registry,
+      {
+        deleteByDocumentId: vi.fn(),
+        upsertChunks: vi.fn().mockResolvedValue(["id:0"]),
+      } as never,
+      { embedDocuments: vi.fn().mockResolvedValue([[0.1]]) } as never,
+      undefined,
+      "default",
+      [dataDir, resolve("apps/backend")],
+    );
+
+    await expect(
+      service.ingest(uploadPath, { userId: "test-user-id" }),
+    ).resolves.toEqual(
+      expect.objectContaining({ collection: "default" }),
     );
   });
 });

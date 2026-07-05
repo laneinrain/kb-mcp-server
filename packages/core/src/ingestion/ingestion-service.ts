@@ -12,6 +12,7 @@ export interface IngestOptions {
   collection?: string;
   /** Original upload filename when temp path includes a storage prefix */
   filename?: string;
+  userId?: string;
 }
 
 export interface IngestResult {
@@ -25,15 +26,18 @@ function deriveDocumentId(absolutePath: string): string {
   return createHash("sha256").update(normalized).digest("hex");
 }
 
-function resolveIngestPath(filePath: string): string {
-  const absolutePath = resolve(filePath);
-  const cwd = resolve(process.cwd());
+function isUnderRoot(absolutePath: string, root: string): boolean {
+  const resolvedRoot = resolve(root);
+  return (
+    absolutePath === resolvedRoot ||
+    absolutePath.startsWith(`${resolvedRoot}\\`) ||
+    absolutePath.startsWith(`${resolvedRoot}/`)
+  );
+}
 
-  if (
-    absolutePath !== cwd &&
-    !absolutePath.startsWith(`${cwd}\\`) &&
-    !absolutePath.startsWith(`${cwd}/`)
-  ) {
+function resolveIngestPath(filePath: string, allowedRoots: string[]): string {
+  const absolutePath = resolve(filePath);
+  if (!allowedRoots.some((root) => isUnderRoot(absolutePath, root))) {
     throw new Error(
       `Path must be under current working directory: ${filePath}`,
     );
@@ -49,6 +53,7 @@ export class IngestionService {
     private readonly embeddingClient: EmbeddingClient,
     private readonly settingsStore?: SettingsStore,
     private readonly defaultCollection: string = DEFAULT_COLLECTION,
+    private readonly allowedPathRoots: string[] = [process.cwd()],
   ) {}
 
   static create(config: AppConfig, deps: {
@@ -63,6 +68,7 @@ export class IngestionService {
       deps.embeddingClient,
       deps.settingsStore,
       config.DEFAULT_COLLECTION,
+      [config.DATA_DIR, process.cwd()],
     );
   }
 
@@ -70,9 +76,13 @@ export class IngestionService {
     filePath: string,
     options?: IngestOptions,
   ): Promise<IngestResult> {
-    const absolutePath = resolveIngestPath(filePath);
+    const absolutePath = resolveIngestPath(filePath, this.allowedPathRoots);
     const documentId = deriveDocumentId(absolutePath);
     const collection = options?.collection ?? this.defaultCollection;
+    const userId = options?.userId;
+    if (!userId) {
+      throw new Error("userId is required for ingestion");
+    }
 
     const { text, mimeType, filename: parsedFilename } =
       await parseDocument(absolutePath);
@@ -92,6 +102,7 @@ export class IngestionService {
       mimeType,
       collection,
       status: "pending",
+      userId,
     });
     this.registry.updateStatus(documentId, "processing");
 
@@ -99,6 +110,7 @@ export class IngestionService {
     const chromaIds = await this.vectorStore.upsertChunks({
       documentId,
       filename,
+      userId,
       chunks,
       embeddings,
       collection,

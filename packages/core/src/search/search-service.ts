@@ -54,7 +54,12 @@ export class SearchService {
       collection,
     });
 
-    return hits.map((hit) => ({
+    const allowed = options?.allowedDocumentIds;
+    const filtered = allowed
+      ? hits.filter((hit) => allowed.has(hit.documentId))
+      : hits;
+
+    return filtered.map((hit) => ({
       documentId: hit.documentId,
       filename: hit.filename,
       chunkIndex: hit.chunkIndex,

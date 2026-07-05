@@ -26,6 +26,11 @@ function makeTestConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
     EMBEDDING_DIMENSIONS: 1024,
     AUTH_ENABLED: false,
+    USER_AUTH_ENABLED: false,
+    JWT_EXPIRES_IN: 604800,
+    AUTH_SQLITE_PATH: "./data/sqlite/auth.db",
+    AUTH_PROVIDER: "cas",
+    CAS_MOCK: true,
     ...overrides,
   };
 }

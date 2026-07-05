@@ -5,6 +5,7 @@ import type Database from "better-sqlite3";
 import BetterSqlite3 from "better-sqlite3";
 import type { AppConfig } from "@kb/config";
 import type { ChunkConfig, ContextConfig } from "./types.js";
+import { runRegistryMigrations } from "./migrations.js";
 
 function loadSchemaSql(): string {
   const dir = dirname(fileURLToPath(import.meta.url));
@@ -73,10 +74,12 @@ export interface SettingsStore {
 export function getSettingsStore(
   dbPath: string,
   config: AppConfig,
+  options?: { systemUserId?: string },
 ): SettingsStore {
   mkdirSync(dirname(dbPath), { recursive: true });
   const db = new BetterSqlite3(dbPath);
   ensureSchema(db);
+  runRegistryMigrations(db, options?.systemUserId ?? "");
   seedSettingsIfMissing(db, config);
 
   return {
@@ -134,8 +137,11 @@ export function getSettingsStore(
 
 let activeStore: SettingsStore | null = null;
 
-export function initSettingsStore(config: AppConfig): SettingsStore {
-  activeStore = getSettingsStore(config.SQLITE_PATH, config);
+export function initSettingsStore(
+  config: AppConfig,
+  options?: { systemUserId?: string },
+): SettingsStore {
+  activeStore = getSettingsStore(config.SQLITE_PATH, config, options);
   return activeStore;
 }
 

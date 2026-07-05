@@ -13,6 +13,7 @@ export function buildChunkId(documentId: string, chunkIndex: number): string {
 export interface UpsertChunksParams {
   documentId: string;
   filename: string;
+  userId: string;
   chunks: string[];
   embeddings: number[][];
   collection?: string;
@@ -96,7 +97,7 @@ export class ChromaVectorStore {
   }
 
   async upsertChunks(params: UpsertChunksParams): Promise<string[]> {
-    const { documentId, filename, chunks, embeddings, collection } = params;
+    const { documentId, filename, userId, chunks, embeddings, collection } = params;
 
     if (embeddings.length !== chunks.length) {
       throw new Error("embeddings length must match chunks length");
@@ -108,6 +109,7 @@ export class ChromaVectorStore {
       document_id: documentId,
       filename,
       chunk_index: index,
+      user_id: userId,
     }));
 
     await col.upsert({

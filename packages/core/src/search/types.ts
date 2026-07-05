@@ -1,6 +1,7 @@
 export interface SearchOptions {
   collection?: string;
   topK?: number;
+  allowedDocumentIds?: ReadonlySet<string>;
 }
 
 export interface SearchResult {

@@ -30,6 +30,11 @@ function makeConfig(dbPath: string, overrides: Partial<AppConfig> = {}): AppConf
     EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
     EMBEDDING_DIMENSIONS: 1024,
     AUTH_ENABLED: false,
+    USER_AUTH_ENABLED: false,
+    JWT_EXPIRES_IN: 604800,
+    AUTH_SQLITE_PATH: "./data/sqlite/auth.db",
+    AUTH_PROVIDER: "cas",
+    CAS_MOCK: true,
     ...overrides,
   };
 }
@@ -184,6 +189,7 @@ describe("DocumentRegistry", () => {
       sourcePath: "/data/notes.txt",
       mimeType: "text/plain",
       collection: "default",
+      userId: "test-user",
     });
 
     expect(doc.id).toBe("doc-1");
@@ -206,6 +212,7 @@ describe("DocumentRegistry", () => {
       sourcePath: "/data/readme.md",
       mimeType: "text/markdown",
       collection: "default",
+      userId: "test-user",
     });
 
     registry.deleteDocument("doc-2");

@@ -21,6 +21,7 @@ export interface DocumentRecord {
   status: DocumentStatus;
   chunkCount: number;
   collection: string;
+  userId: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -32,4 +33,5 @@ export interface RegisterDocumentInput {
   mimeType: string;
   collection: string;
   status?: DocumentStatus;
+  userId: string;
 }

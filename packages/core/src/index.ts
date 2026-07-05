@@ -5,6 +5,7 @@ export {
   initSettingsStore,
   type SettingsStore,
 } from "./registry/settings-store.js";
+export { runRegistryMigrations } from "./registry/migrations.js";
 export {
   getDocumentRegistry,
   type DocumentRegistry,

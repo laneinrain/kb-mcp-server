@@ -13,6 +13,7 @@ interface DocumentRow {
   status: DocumentStatus;
   chunk_count: number;
   collection: string;
+  user_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -26,6 +27,7 @@ function mapRow(row: DocumentRow): DocumentRecord {
     status: row.status,
     chunkCount: row.chunk_count,
     collection: row.collection,
+    userId: row.user_id ?? "",
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -40,6 +42,7 @@ export interface DocumentRegistry {
   ): void;
   getDocument(id: string): DocumentRecord | undefined;
   listDocuments(): DocumentRecord[];
+  listDocumentsForUser(userId: string, systemUserId: string): DocumentRecord[];
   deleteDocument(id: string): void;
   trackChunkIds(documentId: string, chromaIds: string[]): void;
   getChunkIds(documentId: string): string[];
@@ -48,28 +51,37 @@ export interface DocumentRegistry {
 export function getDocumentRegistry(db: Database.Database): DocumentRegistry {
   const upsertStmt = db.prepare(`
     INSERT INTO documents (
-      id, filename, source_path, mime_type, status, chunk_count, collection
+      id, filename, source_path, mime_type, status, chunk_count, collection, user_id
     ) VALUES (
-      @id, @filename, @sourcePath, @mimeType, @status, 0, @collection
+      @id, @filename, @sourcePath, @mimeType, @status, 0, @collection, @userId
     )
     ON CONFLICT(id) DO UPDATE SET
       filename = excluded.filename,
       source_path = excluded.source_path,
       mime_type = excluded.mime_type,
       collection = excluded.collection,
+      user_id = excluded.user_id,
       updated_at = datetime('now')
   `);
 
   const selectStmt = db.prepare(`
     SELECT id, filename, source_path, mime_type, status, chunk_count,
-           collection, created_at, updated_at
+           collection, user_id, created_at, updated_at
     FROM documents WHERE id = ?
   `);
 
   const listStmt = db.prepare(`
     SELECT id, filename, source_path, mime_type, status, chunk_count,
-           collection, created_at, updated_at
+           collection, user_id, created_at, updated_at
     FROM documents ORDER BY created_at DESC
+  `);
+
+  const listForUserStmt = db.prepare(`
+    SELECT id, filename, source_path, mime_type, status, chunk_count,
+           collection, user_id, created_at, updated_at
+    FROM documents
+    WHERE user_id = @userId OR user_id = @systemUserId
+    ORDER BY created_at DESC
   `);
 
   const deleteStmt = db.prepare("DELETE FROM documents WHERE id = ?");
@@ -103,6 +115,7 @@ export function getDocumentRegistry(db: Database.Database): DocumentRegistry {
         mimeType: meta.mimeType,
         status: meta.status ?? "pending",
         collection: meta.collection,
+        userId: meta.userId,
       });
 
       const row = selectStmt.get(meta.id) as DocumentRow | undefined;
@@ -123,6 +136,11 @@ export function getDocumentRegistry(db: Database.Database): DocumentRegistry {
 
     listDocuments() {
       const rows = listStmt.all() as DocumentRow[];
+      return rows.map(mapRow);
+    },
+
+    listDocumentsForUser(userId, systemUserId) {
+      const rows = listForUserStmt.all({ userId, systemUserId }) as DocumentRow[];
       return rows.map(mapRow);
     },
 
