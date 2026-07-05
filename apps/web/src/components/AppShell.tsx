@@ -1,4 +1,4 @@
-export type AppTab = "documents" | "search" | "help";
+export type AppTab = "documents" | "search" | "settings" | "help";
 
 interface AppShellProps {
   activeTab: AppTab;
@@ -9,6 +9,7 @@ interface AppShellProps {
 const TABS: { id: AppTab; label: string }[] = [
   { id: "documents", label: "文档" },
   { id: "search", label: "搜索" },
+  { id: "settings", label: "设置" },
   { id: "help", label: "使用说明" },
 ];
 

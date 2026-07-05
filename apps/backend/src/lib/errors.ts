@@ -1,4 +1,4 @@
-import { INSUFFICIENT_TEXT_ERROR } from "@kb/core";
+import { ContextError, INSUFFICIENT_TEXT_ERROR } from "@kb/core";
 
 export interface ErrorBody {
   error: string;
@@ -71,6 +71,51 @@ export function mapSearchError(error: unknown): {
     return {
       statusCode: 503,
       body: { error: "service_unavailable", message },
+    };
+  }
+
+  return {
+    statusCode: 500,
+    body: { error: "internal_error", message },
+  };
+}
+
+export function mapContextError(error: unknown): {
+  statusCode: number;
+  body: ErrorBody;
+} {
+  if (error instanceof ContextError) {
+    if (error.code === "document_not_found") {
+      return {
+        statusCode: 404,
+        body: { error: "not_found", message: error.message },
+      };
+    }
+    if (error.code === "chunk_index_out_of_range") {
+      return {
+        statusCode: 400,
+        body: { error: "bad_request", message: error.message },
+      };
+    }
+  }
+
+  const message = error instanceof Error ? error.message : String(error);
+  return {
+    statusCode: 500,
+    body: { error: "internal_error", message },
+  };
+}
+
+export function mapContextSettingsError(error: unknown): {
+  statusCode: number;
+  body: ErrorBody;
+} {
+  const message = error instanceof Error ? error.message : String(error);
+
+  if (message.includes("must be >=")) {
+    return {
+      statusCode: 400,
+      body: { error: "validation_error", message },
     };
   }
 

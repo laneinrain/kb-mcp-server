@@ -11,6 +11,7 @@ import {
 import { registerDocumentRoutes } from "./routes/documents.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerSearchRoutes } from "./routes/search.js";
+import { registerSettingsRoutes } from "./routes/settings.js";
 import { createAppServices } from "./services.js";
 import { apiRouteOpts, registerBearerAuthIfEnabled } from "./auth.js";
 import { registerWebStatic } from "./static.js";
@@ -57,6 +58,10 @@ async function main(): Promise<void> {
   });
   await registerSearchRoutes(app, {
     searchService: services.searchService,
+    routeOpts,
+  });
+  await registerSettingsRoutes(app, {
+    settingsStore: services.settingsStore,
     routeOpts,
   });
 

@@ -6,6 +6,7 @@ import { ApiKeyModal } from "./components/ApiKeyModal.js";
 import { DocumentTable } from "./components/DocumentTable.js";
 import { HelpPanel } from "./components/HelpPanel.js";
 import { SearchPanel } from "./components/SearchPanel.js";
+import { SettingsPanel } from "./components/SettingsPanel.js";
 import { UploadPanel } from "./components/UploadPanel.js";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ export function App() {
           </div>
         ) : null}
         {activeTab === "search" ? <SearchPanel /> : null}
+        {activeTab === "settings" ? <SettingsPanel /> : null}
         {activeTab === "help" ? <HelpPanel /> : null}
       </AppShell>
       <ApiKeyModal
