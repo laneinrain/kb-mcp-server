@@ -27,9 +27,9 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 | Field | Value |
 |-------|-------|
 | **Milestone** | v1.1 MCP Context Tools |
-| **Phase** | Not started (requirements + roadmap defined) |
+| **Phase** | 5 — Context Retrieval Core (context gathered) |
 | **Plan** | — |
-| **Status** | Planning complete — ready for Phase 5 |
+| **Status** | Phase 5 context ready — plan next |
 | **Progress** | ░░░░░░░░░░ 0/2 phases (v1.1) |
 
 ## Performance Metrics
@@ -54,7 +54,8 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 - [x] Merge PR #1 `fix/mcp-http-streamable` (MCP HTTP fix on master)
 - [ ] Push v1.1 planning commit to origin/master
-- [ ] `/gsd-discuss-phase 5` or `/gsd-plan-phase 5`
+- [x] `/gsd-discuss-phase 5`
+- [ ] `/gsd-plan-phase 5`
 
 ### Blockers
 
@@ -63,8 +64,9 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 ## Session Continuity
 
 **Last updated:** 2026-07-05  
-**Last action:** `/gsd-new-milestone` — v1.1 Option B scoped  
-**Next step:** `/gsd-discuss-phase 5` or `/gsd-plan-phase 5`
+**Last action:** `/gsd-discuss-phase 5` — window semantics + admin settings captured  
+**Next step:** `/gsd-plan-phase 5`  
+**Resume file:** `.planning/phases/05-context-retrieval-core/05-CONTEXT.md`
 
 ---
 *State updated: 2026-07-05 — milestone v1.1 started*
