@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A TypeScript/Node scaffold for a knowledge-base MCP server. AI clients connect via **stdio** or **SSE** to search a vectorized document store; ingestion and administration happen through a separate backend (REST API, lightweight web UI, and CLI). Documents in txt, markdown, and text-layer PDF are chunked, embedded, and stored locally for semantic retrieval.
+A TypeScript/Node knowledge-base MCP server scaffold. AI clients connect via **stdio** or **Streamable HTTP** to search a vectorized document store; ingestion and administration happen through a Fastify REST API, Vite/React web admin (简体中文), and Commander CLI. Documents in txt, markdown, and text-layer PDF are chunked, embedded via CherryIn, and stored in local Chroma for semantic retrieval.
 
 Built for developers who want a self-hosted knowledge base that Cursor and other MCP clients can query without handling upload pipelines in the MCP layer itself.
 
@@ -14,36 +14,37 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ MCP server exposes `search_knowledge` over stdio and Streamable HTTP — v1.0 Phase 3
+- ✓ Backend ingests txt, markdown, and text-layer PDF into a vector knowledge base — v1.0 Phase 1
+- ✓ Embeddings via `qwen/qwen3-embedding-8b` through CherryIn OpenAI-compatible API — v1.0 Phase 1
+- ✓ Local vector storage (Chroma) with single default collection; APIs designed for future multi-collection support — v1.0 Phase 1
+- ✓ Backend provides REST API, web admin (upload, list docs, test search), and CLI for ingestion — v1.0 Phases 2 & 4
+- ✓ Optional API key auth for backend when enabled via environment variable; default localhost dev mode without auth — v1.0 Phase 4
+- ✓ Secrets (API keys) loaded from environment / `.env`, never committed to git — v1.0 Phase 1
 
 ### Active
 
-- [ ] MCP server exposes search-focused tools (e.g. `search_knowledge`) over stdio and SSE transports
-- [ ] Backend ingests txt, markdown, and text-layer PDF into a vector knowledge base
-- [ ] Embeddings via `qwen/qwen3-embedding-8b` through CherryIn OpenAI-compatible API (`https://open.cherryin.cc`)
-- [ ] Local vector storage (Chroma) with single default collection; APIs designed for future multi-collection support
-- [ ] Backend provides REST API, simple web admin (upload, list docs, test search), and CLI for ingestion
-- [ ] Optional API key auth for backend when enabled via environment variable; default localhost dev mode without auth
-- [ ] Secrets (API keys) loaded from environment / `.env`, never committed to git
+(None — run `/gsd-new-milestone` to define v1.1+ scope. See archived v2 candidates in `milestones/v1.0-REQUIREMENTS.md`.)
 
 ### Out of Scope
 
 - OCR / scanned PDF support — text-layer PDF only; keeps v1 parsing simple and predictable
-- Multi-tenant or production-grade auth — v1 is a personal/dev scaffold
+- Multi-tenant or production-grade auth — v1 is a personal/dev scaffold; single API key only
 - Upload/CRUD via MCP tools — ingestion is backend/CLI/Web only; MCP is retrieval-focused
 - Hosted/managed vector DB (Milvus, Qdrant cloud, pgvector) — local Chroma for scaffold simplicity
 
 ## Context
 
-- Greenfield project in an empty repository (`kb-mcp-server`)
-- User operates in a Cursor/MCP-centric workflow and wants both transport modes for flexibility (local stdio vs remote SSE)
-- Embedding provider is CherryIn with Qwen3 embedding model; configuration is externalized
-- Prior decision: start with one vector collection but shape interfaces so multiple collections can be added without breaking changes
+- **Shipped v1.0** (2026-07-05): 4 phases, 13 plans, 30/30 requirements
+- **Stack:** pnpm + Turborepo monorepo; packages `@kb/config`, `@kb/core`; apps `@kb/backend`, `@kb/mcp-server`, `@kb/web`, `@kb/cli`
+- **Ports:** Chroma 8000, Backend 3000 (+ SPA when `SERVE_WEB=true`), Web dev 5173, MCP HTTP 3100
+- **Dev:** `pnpm dev` starts full stack; daily web UI at http://127.0.0.1:5173
+- **UAT note:** Bearer auth (CONF-03) implemented but not manually UAT-tested
 
 ## Constraints
 
-- **Tech stack**: TypeScript/Node — aligns with MCP SDK ecosystem and user's explicit choice over Python
-- **Transport**: Must support both MCP stdio and SSE entrypoints
+- **Tech stack**: TypeScript/Node — aligns with MCP SDK ecosystem
+- **Transport**: MCP stdio and Streamable HTTP entrypoints
 - **Embedding model**: `qwen/qwen3-embedding-8b` via CherryIn API — not swappable without explicit config change in v1
 - **Document formats**: txt, markdown, text-layer PDF only in v1
 - **Security**: API keys in `.env` only; optional backend API key gate via env flag
@@ -53,13 +54,15 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| MCP retrieval-only; ingestion via backend | Keeps MCP tools simple and fast; upload is admin workflow | — Pending |
-| Chroma local vector store | Lightweight, persistent, good fit for single-machine scaffold | — Pending |
-| Single collection v1, multi-collection-ready APIs | Ship fast without painting into a corner | — Pending |
-| TypeScript/Node over Python | User preference (8-TS); MCP SDK parity | — Pending |
-| Text-layer PDF only (no OCR) | Reduces v1 complexity and dependency surface | — Pending |
-| Optional API key auth via env | Safe local dev default; easy hardening when needed | — Pending |
-| Backend: REST + Web admin + CLI | User wants all three admin surfaces | — Pending |
+| MCP retrieval-only; ingestion via backend | Keeps MCP tools simple and fast; upload is admin workflow | ✓ Good |
+| Chroma local vector store | Lightweight, persistent, good fit for single-machine scaffold | ✓ Good |
+| Single collection v1, multi-collection-ready APIs | Ship fast without painting into a corner | ✓ Good |
+| TypeScript/Node over Python | User preference; MCP SDK parity | ✓ Good |
+| Text-layer PDF only (no OCR) | Reduces v1 complexity and dependency surface | ✓ Good |
+| Optional API key auth via env | Safe local dev default; easy hardening when needed | ✓ Good (UAT skipped) |
+| Backend: REST + Web admin + CLI | User wants all three admin surfaces | ✓ Good |
+| Streamable HTTP over legacy SSE | MCP SDK 1.29 standard transport | ✓ Good |
+| DATA_DIR/SQLITE_PATH resolve to monorepo root | Prevents CLI/Web corpus split when cwd differs | ✓ Good |
 
 ## Evolution
 
@@ -79,4 +82,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-29 after initialization*
+*Last updated: 2026-07-05 after v1.0 milestone*

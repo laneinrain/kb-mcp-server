@@ -2,13 +2,8 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, type DocumentRecord } from "../types.js";
 import { deleteDocument, listDocuments } from "../api/documents.js";
-
-function truncate(value: string, max: number): string {
-  if (value.length <= max) {
-    return value;
-  }
-  return `${value.slice(0, max - 1)}…`;
-}
+import { displayFilename } from "../lib/filename.js";
+import { CopyIdButton } from "./CopyIdButton.js";
 
 function formatDate(iso: string): string {
   return iso.slice(0, 16).replace("T", " ");
@@ -103,6 +98,7 @@ export function DocumentTable() {
           <thead>
             <tr>
               <th>文件名</th>
+              <th>ID</th>
               <th>状态</th>
               <th>分块数</th>
               <th>集合</th>
@@ -111,32 +107,40 @@ export function DocumentTable() {
             </tr>
           </thead>
           <tbody>
-            {data.map((doc) => (
-              <tr key={doc.id}>
-                <td title={doc.filename}>{truncate(doc.filename, 40)}</td>
-                <td>
-                  <span className={statusClass(doc.status)}>
-                    {statusLabel(doc.status)}
-                  </span>
-                </td>
-                <td>{doc.chunkCount}</td>
-                <td className="muted">{doc.collection}</td>
-                <td className="muted">{formatDate(doc.updatedAt)}</td>
-                <td>
-                  <button
-                    type="button"
-                    className="btn btn-text-destructive"
-                    aria-label={`Delete ${doc.filename}`}
-                    onClick={() => {
-                      setModalError(null);
-                      setPendingDelete(doc);
-                    }}
-                  >
-                    删除
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {data.map((doc) => {
+              const filename = displayFilename(doc.filename);
+              return (
+                <tr key={doc.id}>
+                  <td className="filename-cell" title={filename}>
+                    {filename}
+                  </td>
+                  <td>
+                    <CopyIdButton id={doc.id} />
+                  </td>
+                  <td>
+                    <span className={statusClass(doc.status)}>
+                      {statusLabel(doc.status)}
+                    </span>
+                  </td>
+                  <td>{doc.chunkCount}</td>
+                  <td className="muted">{doc.collection}</td>
+                  <td className="muted">{formatDate(doc.updatedAt)}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-text-destructive"
+                      aria-label={`Delete ${filename}`}
+                      onClick={() => {
+                        setModalError(null);
+                        setPendingDelete(doc);
+                      }}
+                    >
+                      删除
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -146,7 +150,7 @@ export function DocumentTable() {
           <div className="modal" role="dialog" aria-modal="true">
             <h2>删除文档</h2>
             <p>
-              确定删除「{pendingDelete.filename}」及其全部向量吗？此操作不可撤销。
+              确定删除「{displayFilename(pendingDelete.filename)}」及其全部向量吗？此操作不可撤销。
             </p>
             {modalError ? (
               <p className="inline-error">请求失败：{modalError}</p>

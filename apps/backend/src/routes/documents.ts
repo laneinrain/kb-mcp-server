@@ -55,12 +55,14 @@ export async function registerDocumentRoutes(
   app.post("/api/v1/documents", opts, async (request, reply) => {
     let collection: string | undefined;
     let tempPath: string | undefined;
+    let originalFilename: string | undefined;
 
     const parts = request.parts();
     for await (const part of parts) {
       if (part.type === "field" && part.fieldname === "collection") {
         collection = String(part.value);
       } else if (part.type === "file") {
+        originalFilename = basename(part.filename);
         if (!isAllowedUpload(part.filename, part.mimetype)) {
           return reply.code(415).send({
             error: "unsupported_media_type",
@@ -86,6 +88,7 @@ export async function registerDocumentRoutes(
     try {
       const result = await deps.ingestionService.ingest(tempPath, {
         collection: collection ?? deps.defaultCollection,
+        filename: originalFilename,
       });
       await unlink(tempPath).catch(() => {});
       return reply.code(201).send({

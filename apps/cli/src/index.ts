@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { restoreInvokerCwd } from "./cwd.js";
 import { runDelete } from "./commands/delete.js";
 import { runIngest } from "./commands/ingest.js";
 import { runList } from "./commands/list.js";
@@ -46,6 +47,7 @@ export function buildProgram(): Command {
 }
 
 async function main(): Promise<void> {
+  restoreInvokerCwd();
   const program = buildProgram();
   try {
     await program.parseAsync(process.argv);

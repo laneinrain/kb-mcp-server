@@ -27,7 +27,24 @@ export function UploadPanel() {
           );
           return;
         }
-        setError(`请求失败：${err.message}。请确认后端已启动并重试。`);
+        if (
+          err.body.error === "unprocessable_entity" ||
+          err.message.includes("No sufficient text layer")
+        ) {
+          setError(
+            "无法索引该 PDF：未检测到足够文字层。扫描版 PDF（纯图片）暂不支持，请使用可选中文字的电子版，或先用 OCR 转换后再上传。",
+          );
+          return;
+        }
+        if (err.body.error === "payload_too_large") {
+          setError("文件过大（上限 50MB），请压缩或拆分后重试。");
+          return;
+        }
+        if (err.status === 0) {
+          setError(err.message);
+          return;
+        }
+        setError(`请求失败：${err.message}`);
         return;
       }
       setError(err instanceof Error ? err.message : "上传失败");

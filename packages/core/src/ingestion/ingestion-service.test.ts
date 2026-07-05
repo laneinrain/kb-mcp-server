@@ -189,4 +189,29 @@ describe("IngestionService", () => {
       expect.objectContaining({ collection: "research" }),
     );
   });
+
+  it("uses options.filename over parsed basename for uploads", async () => {
+    parseDocumentMock.mockResolvedValue({
+      text: "body",
+      mimeType: "text/plain",
+      filename: "uuid-prefix-sample.txt",
+    });
+    const registry = createRegistryMock();
+    const service = new IngestionService(
+      registry,
+      {
+        deleteByDocumentId: vi.fn(),
+        upsertChunks: vi.fn().mockResolvedValue(["id:0"]),
+      } as never,
+      { embedDocuments: vi.fn().mockResolvedValue([[0.1]]) } as never,
+    );
+
+    await service.ingest("data/uploads/uuid-sample.txt", {
+      filename: "sample.txt",
+    });
+
+    expect(registry.registerDocument).toHaveBeenCalledWith(
+      expect.objectContaining({ filename: "sample.txt" }),
+    );
+  });
 });

@@ -10,6 +10,8 @@ import { parseDocument } from "./parsers/index.js";
 
 export interface IngestOptions {
   collection?: string;
+  /** Original upload filename when temp path includes a storage prefix */
+  filename?: string;
 }
 
 export interface IngestResult {
@@ -72,7 +74,9 @@ export class IngestionService {
     const documentId = deriveDocumentId(absolutePath);
     const collection = options?.collection ?? this.defaultCollection;
 
-    const { text, mimeType, filename } = await parseDocument(absolutePath);
+    const { text, mimeType, filename: parsedFilename } =
+      await parseDocument(absolutePath);
+    const filename = options?.filename ?? parsedFilename;
     const chunkConfig = this.settingsStore?.getChunkConfig();
     const chunks = await chunkText(text, chunkConfig);
 

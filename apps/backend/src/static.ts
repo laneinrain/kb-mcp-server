@@ -18,6 +18,7 @@ export async function registerWebStatic(app: FastifyInstance): Promise<void> {
   await app.register(fastifyStatic, {
     root: distRoot,
     wildcard: false,
+    index: ["index.html"],
   });
 
   app.setNotFoundHandler((request, reply) => {

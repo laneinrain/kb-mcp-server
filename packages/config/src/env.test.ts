@@ -1,5 +1,16 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
-import { loadConfig } from "./env.js";
+import { findMonorepoRoot, loadConfig } from "./env.js";
+describe("findMonorepoRoot", () => {
+  it("finds repo root from packages/config", () => {
+    const configDir = path.dirname(fileURLToPath(import.meta.url));
+    const root = findMonorepoRoot(configDir);
+    expect(existsSync(path.join(root, "pnpm-workspace.yaml"))).toBe(true);
+    expect(existsSync(path.join(root, "apps", "cli"))).toBe(true);
+  });
+});
 
 describe("loadConfig", () => {
   it("returns typed config when required vars are set", () => {
@@ -12,6 +23,8 @@ describe("loadConfig", () => {
     expect(config.CHERRYIN_BASE_URL).toBe("https://open.cherryin.cc/v1");
     expect(config.AUTH_ENABLED).toBe(false);
     expect(config.API_KEY).toBeUndefined();
+    expect(path.isAbsolute(config.SQLITE_PATH)).toBe(true);
+    expect(path.isAbsolute(config.DATA_DIR)).toBe(true);
   });
 
   it("succeeds without API_KEY when AUTH_ENABLED is false or omitted", () => {

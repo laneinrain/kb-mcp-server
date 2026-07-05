@@ -36,6 +36,44 @@ function findEnvFile(): string | undefined {
   return undefined;
 }
 
+/** Walk upward for pnpm-workspace.yaml so data paths are stable across package cwds. */
+export function findMonorepoRoot(...startDirs: string[]): string {
+  const seen = new Set<string>();
+  for (const start of startDirs) {
+    if (!start) {
+      continue;
+    }
+    let dir = path.resolve(start);
+    for (let depth = 0; depth < 12; depth++) {
+      if (seen.has(dir)) {
+        break;
+      }
+      seen.add(dir);
+      if (existsSync(path.join(dir, "pnpm-workspace.yaml"))) {
+        return dir;
+      }
+      const parent = path.dirname(dir);
+      if (parent === dir) {
+        break;
+      }
+      dir = parent;
+    }
+  }
+  return path.resolve(process.cwd());
+}
+
+function resolveRepoRelativePath(relativePath: string): string {
+  if (path.isAbsolute(relativePath)) {
+    return relativePath;
+  }
+  const roots = [
+    process.env.INIT_CWD,
+    process.cwd(),
+    path.dirname(fileURLToPath(import.meta.url)),
+  ].filter((value): value is string => Boolean(value));
+  return path.resolve(findMonorepoRoot(...roots), relativePath);
+}
+
 if (process.env.NODE_ENV !== "production") {
   const envPath = findEnvFile();
   loadDotenv(envPath ? { path: envPath, quiet: true } : { quiet: true });
@@ -82,7 +120,11 @@ const envSchema = z.object({
       message: "API_KEY is required when AUTH_ENABLED is true",
     });
   }
-});
+}).transform((data) => ({
+  ...data,
+  DATA_DIR: resolveRepoRelativePath(data.DATA_DIR),
+  SQLITE_PATH: resolveRepoRelativePath(data.SQLITE_PATH),
+}));
 
 export type AppConfig = z.infer<typeof envSchema>;
 
