@@ -1,0 +1,29 @@
+{
+  "name": "@kb/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node --input-type=module -e \"import { copyFileSync, mkdirSync } from 'node:fs'; mkdirSync('dist', { recursive: true }); copyFileSync('src/schema.sql', 'dist/schema.sql');\"",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@kb/config": "workspace:*",
+    "better-sqlite3": "^12.11.1",
+    "jose": "^6.0.11"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}
