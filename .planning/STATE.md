@@ -28,9 +28,9 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 |-------|-------|
 | **Milestone** | v1.1 MCP Context Tools |
 | **Phase** | 6 — MCP Read Tools (next) |
-| **Plan** | — |
-| **Status** | Phase 6 context gathered ✓ |
-| **Progress** | v1.1: █░░░░ 1/2 phases · Phase 5: 3/3 plans |
+| **Plan** | 06-01, 06-02 (0/2 complete) |
+| **Status** | Phase 6 planned ✓ — ready to execute |
+| **Progress** | v1.1: █░░░░ 1/2 phases · Phase 6: 0/2 plans |
 
 ## Performance Metrics
 
