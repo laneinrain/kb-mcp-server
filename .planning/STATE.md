@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: MCP Context Tools
-status: ready_to_plan
-last_updated: "2026-07-05T07:28:36.213Z"
+status: ready_to_execute
+last_updated: "2026-07-05T07:30:00.000Z"
 progress:
   total_phases: 2
   completed_phases: 1
@@ -60,7 +60,8 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 - [x] Execute Phase 5 (05-01, 05-02, 05-03 + UAT)
 - [ ] Push local commits to origin/master
 - [x] `/gsd-discuss-phase 6`
-- [ ] `/gsd-plan-phase 6`
+- [x] `/gsd-plan-phase 6`
+- [ ] `/gsd-execute-phase 6`
 
 ### Blockers
 
@@ -68,9 +69,9 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 ## Session Continuity
 
-**Last action:** Phase 6 discuss — 06-CONTEXT.md captured  
-**Next step:** `/gsd-plan-phase 6`  
-**Resume file:** `.planning/phases/06-mcp-read-tools/06-CONTEXT.md`
+**Last action:** Phase 6 planned — 06-01 + 06-02  
+**Next step:** `/gsd-execute-phase 6`  
+**Resume file:** `.planning/phases/06-mcp-read-tools/06-01-PLAN.md`
 
 ---
-*State updated: 2026-07-05 — Phase 6 context gathered*
+*State updated: 2026-07-05 — Phase 6 planned*
