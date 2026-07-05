@@ -1,6 +1,6 @@
 # kb-mcp-server
 
-自托管知识库的 TypeScript/Node monorepo。文档经分块与向量化后存入本地 Chroma；AI 客户端通过 **MCP**（stdio 或 Streamable HTTP）进行语义检索，文档的上传与管理走 **REST API / CLI**（Web 管理界面在 Phase 4 规划中）。
+自托管知识库的 TypeScript/Node monorepo。文档经分块与向量化后存入本地 Chroma；AI 客户端通过 **MCP**（stdio 或 Streamable HTTP）进行语义检索，文档的上传与管理走 **REST API / CLI / Web 管理界面**。
 
 ## 功能概览
 
@@ -11,7 +11,7 @@
 | 本地 Chroma 向量存储 | ✅ |
 | REST API（上传、列表、搜索、健康检查） | ✅ |
 | MCP 工具 `search_knowledge`（stdio + HTTP） | ✅ |
-| Web 管理界面、可选 API Key 鉴权 | 🔜 Phase 4 |
+| Web 管理界面、JWT 登录、可选 API Key（CLI/服务） | ✅ Phase 4–8 |
 
 ## 架构
 
@@ -30,7 +30,8 @@
 | 端口 | 服务 | 说明 |
 |------|------|------|
 | 8000 | Chroma | 向量数据库（HTTP sidecar） |
-| 3000 | Backend | Fastify REST API + Swagger UI |
+| 3000 | Backend | Fastify REST API + Swagger UI；生产/静态模式下同时托管 Web SPA |
+| 5173 | Web（开发） | Vite 开发服务器（HMR）；`/api` 代理到 `:3000` |
 | 3100 | MCP HTTP | Streamable HTTP，`POST /mcp` |
 | — | MCP stdio | Cursor 等本地客户端，无端口 |
 
@@ -73,7 +74,7 @@ pnpm build
 pnpm dev
 ```
 
-`pnpm dev` 会依次启动 Chroma、Backend（`:3000`）和 MCP HTTP（`:3100`）。
+`pnpm dev` 会依次启动 Chroma、Backend（`:3000`）、MCP HTTP（`:3100`）和 **Web 动态前端**（Vite `:5173`）。日常开发在浏览器打开 **http://localhost:5173**。
 
 ### 5. 入库文档
 
@@ -107,6 +108,84 @@ curl http://127.0.0.1:3000/health/embeddings
 ```
 
 API 文档：http://127.0.0.1:3000/docs
+
+## Web 管理界面：动态前端 vs 静态前端
+
+Web 应用（`@kb/web`）有两种运行方式：
+
+| | **动态前端（开发）** | **静态前端（生产 / 一体化）** |
+|---|---|---|
+| **是什么** | Vite 开发服务器，支持热更新（HMR） | 先 `vite build` 生成静态文件，由 **Backend 托管** |
+| **访问地址** | http://localhost:5173 | http://127.0.0.1:3000 |
+| **API** | Vite 将 `/api` **代理**到 Backend `:3000` | 与 REST API **同端口**（Backend 同时提供 API + SPA） |
+| **何时启用** | 默认 `pnpm dev` | `NODE_ENV=production` 或 `SERVE_WEB=true` |
+
+```
+开发（动态）:
+  浏览器 → :5173 (Vite) ──proxy /api──→ :3000 (Backend)
+
+生产/静态:
+  浏览器 → :3000 (Backend)
+              ├── /api/v1/*     REST
+              └── /*            apps/web/dist 静态 SPA
+```
+
+### 动态前端（开发，日常推荐）
+
+```bash
+# 全栈：Chroma + Backend + MCP + Web（Vite :5173）
+pnpm dev
+
+# 仅 Web 动态前端（需 Backend 已在 :3000 运行）
+pnpm dev:web
+# 等价于：
+pnpm --filter @kb/web dev
+```
+
+浏览器打开 **http://localhost:5173** 登录并使用管理界面。
+
+### 静态前端（构建后由 Backend 托管）
+
+```bash
+# 构建 Web 静态资源 → apps/web/dist/
+pnpm --filter @kb/web build
+
+# 全量构建（turbo 会先 build @kb/web 再 build @kb/backend）
+pnpm build
+```
+
+**在 Backend 上同时提供 API + 静态页面：**
+
+```bash
+# 方式 A：开发环境验证「单端口部署」（PowerShell）
+pnpm --filter @kb/web build
+$env:SERVE_WEB="true"; pnpm --filter @kb/backend dev
+
+# 方式 B：生产模式（NODE_ENV=production 也会自动托管静态页）
+pnpm build
+$env:NODE_ENV="production"; pnpm --filter @kb/backend dev
+```
+
+Linux / macOS 将 `$env:SERVE_WEB="true"` 换成 `SERVE_WEB=true` 前缀即可。
+
+访问 **http://127.0.0.1:3000**（页面与 API 均在 3000）。
+
+> 默认只运行 `pnpm --filter @kb/backend dev` 且未设置 `SERVE_WEB` 时，`:3000` **仅提供 REST API**，不提供 Web 界面。
+
+### 辅助命令（可选）
+
+```bash
+# 预览已 build 的 dist（Vite 自带，默认 :5173，通常不含 /api 代理）
+pnpm --filter @kb/web preview
+```
+
+### 场景速查
+
+| 场景 | 命令 | 浏览器打开 |
+|------|------|------------|
+| 改 Web UI、本地上传/搜索测试 | `pnpm dev` | http://localhost:5173 |
+| 验证单端口部署形态 | `pnpm --filter @kb/web build` + `SERVE_WEB=true` 启动 backend | http://127.0.0.1:3000 |
+| 正式构建产物 | `pnpm build` | 生产环境 Backend 监听 3000 |
 
 ## MCP 配置
 
@@ -192,6 +271,18 @@ Cursor MCP 配置示例：
 | `EMBEDDING_MODEL` | `qwen/qwen3-embedding-8b` | 嵌入模型 |
 | `CHUNK_SIZE` / `CHUNK_OVERLAP` | `1024` / `154` | 分块参数 |
 | `DATA_DIR` | `./data` | 本地数据目录（SQLite、上传缓存） |
+| `AUTH_ENABLED` | `false` | 全局 API Key（CLI/服务访问） |
+| `USER_AUTH_ENABLED` | `false` | Web 工号登录 + JWT；与 `AUTH_ENABLED` 独立 |
+
+### 鉴权矩阵（Phase 8）
+
+| 客户端 | 凭据 | 文档范围 |
+|--------|------|----------|
+| **Web 管理界面** | JWT（`POST /api/v1/auth/login`） | 自己的文档 + 系统共享历史文档 |
+| **CLI / 自动化** | `AUTH_ENABLED` + `API_KEY`（Bearer） | 全局（服务账号） |
+| **MCP** | 无（本阶段未变） | 检索不受用户隔离限制 |
+
+当 `USER_AUTH_ENABLED=true` 时，Web 必须使用 JWT 登录；CLI 需同时设置 `AUTH_ENABLED=true` 与 `API_KEY` 才能通过 REST 入库。用户注册页（WEB-02）暂未实现，首次登录即 JIT 建号。
 
 **切勿将 `.env` 提交到 Git。**
 
@@ -213,9 +304,12 @@ Cursor MCP 配置示例：
 ```
 kb-mcp-server/
 ├── apps/
-│   ├── backend/          # Fastify REST API
+│   ├── backend/          # Fastify REST API（可选托管 Web 静态资源）
+│   ├── web/              # React 管理界面（Vite）
+│   ├── cli/              # 命令行入库
 │   └── mcp-server/       # MCP stdio + Streamable HTTP
 ├── packages/
+│   ├── auth/             # 用户认证（JWT / Mock CAS）
 │   ├── config/           # 环境变量与常量
 │   └── core/             # 入库、检索、Chroma、嵌入客户端
 ├── scripts/
@@ -237,6 +331,7 @@ pnpm test
 
 # 单独启动各服务
 pnpm --filter @kb/backend dev
+pnpm dev:web                              # Web 动态前端 :5173
 pnpm --filter @kb/mcp-server dev          # HTTP :3100
 pnpm --filter @kb/mcp-server dev:stdio    # stdio
 
@@ -246,8 +341,8 @@ pnpm wait:chroma
 
 ## 路线图
 
-- **Phase 1–3**（已完成）：平台基础、REST 检索、MCP 检索服务
-- **Phase 4**（规划中）：Web 管理界面、可选 API Key 鉴权、CLI 增强
+- **Phase 1–8**（已完成）：平台基础、REST 检索、MCP、Web 管理、用户 JWT 多租户
+- **Phase 9+**（规划中）：文件名内容哈希去重等
 
 ## 许可证
 

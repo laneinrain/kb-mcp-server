@@ -70,13 +70,13 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 **Plans:** 3 plans in 3 waves
 
 **Wave 1** *(foundation)*
-- [ ] 08-01: Registry user_id + system user migration + Chroma metadata (USER-01, USER-03)
+- [x] 08-01: Registry user_id + system user migration + Chroma metadata (USER-01, USER-03)
 
 **Wave 2** *(blocked on Wave 1)*
-- [ ] 08-02: Composite JWT/API_KEY auth + scoped document/search routes (AUTH-04, AUTH-05, USER-02, USER-04)
+- [x] 08-02: Composite JWT/API_KEY auth + scoped document/search routes (AUTH-04, AUTH-05, USER-02, USER-04)
 
 **Wave 3** *(blocked on Wave 2)*
-- [ ] 08-03: Web JWT-only + logout + CLI guard (WEB-03, WEB-04; WEB-02 deferred)
+- [x] 08-03: Web JWT-only + logout + CLI guard (WEB-03, WEB-04; WEB-02 deferred)
 
 **Cross-cutting constraints:**
 - JWT user sees own docs + system legacy shared docs (D-15, D-18)
