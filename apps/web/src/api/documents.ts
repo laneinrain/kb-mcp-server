@@ -6,6 +6,7 @@ export interface UploadResult {
   chunkCount: number;
   collection: string;
   status: string;
+  outcome: "created" | "unchanged" | "replaced";
 }
 
 export async function listDocuments(): Promise<DocumentRecord[]> {

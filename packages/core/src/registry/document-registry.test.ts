@@ -107,4 +107,36 @@ describe("runRegistryMigrations", () => {
 
     store.db.close();
   });
+
+  it("findByUserAndFilename returns latest row for user and filename", () => {
+    tempDir = mkdtempSync(join(tmpdir(), "kb-registry-find-"));
+    const dbPath = join(tempDir, "registry.db");
+    const store = getSettingsStore(dbPath, makeConfig(dbPath));
+    const registry = getDocumentRegistry(store.db);
+
+    registry.registerDocument({
+      id: "doc-a",
+      filename: "report.pdf",
+      sourcePath: "/data/report.pdf",
+      mimeType: "application/pdf",
+      collection: "default",
+      userId: "user-a",
+      contentHash: "hash-v1",
+    });
+    registry.registerDocument({
+      id: "doc-b",
+      filename: "other.txt",
+      sourcePath: "/data/other.txt",
+      mimeType: "text/plain",
+      collection: "default",
+      userId: "user-a",
+    });
+
+    const found = registry.findByUserAndFilename("user-a", "report.pdf");
+    expect(found?.id).toBe("doc-a");
+    expect(found?.contentHash).toBe("hash-v1");
+    expect(registry.findByUserAndFilename("user-a", "missing.txt")).toBeUndefined();
+
+    store.db.close();
+  });
 });

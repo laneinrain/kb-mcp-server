@@ -38,8 +38,14 @@ export {
   type ParsedDocument,
 } from "./ingestion/parsers/index.js";
 export {
+  computeContentHash,
+  deriveDocumentIdForUserFile,
+  normalizeParsedText,
+} from "./ingestion/content-hash.js";
+export {
   IngestionService,
   type IngestOptions,
+  type IngestOutcome,
   type IngestResult,
 } from "./ingestion/ingestion-service.js";
 export { SearchService } from "./search/search-service.js";

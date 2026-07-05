@@ -22,6 +22,7 @@ export interface DocumentRecord {
   chunkCount: number;
   collection: string;
   userId: string;
+  contentHash: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -34,4 +35,5 @@ export interface RegisterDocumentInput {
   collection: string;
   status?: DocumentStatus;
   userId: string;
+  contentHash?: string | null;
 }

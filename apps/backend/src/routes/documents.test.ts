@@ -14,6 +14,7 @@ function createSampleDoc(id = "doc-1"): DocumentRecord {
     chunkCount: 2,
     collection: "default",
     userId: "user-1",
+    contentHash: null,
     createdAt: "2026-06-29T00:00:00.000Z",
     updatedAt: "2026-06-29T00:00:00.000Z",
   };

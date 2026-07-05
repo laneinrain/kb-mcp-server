@@ -128,11 +128,13 @@ export async function registerDocumentRoutes(
         userId,
       });
       await unlink(tempPath).catch(() => {});
-      return reply.code(201).send({
+      const statusCode = result.outcome === "created" ? 201 : 200;
+      return reply.code(statusCode).send({
         documentId: result.documentId,
         chunkCount: result.chunkCount,
         collection: result.collection,
         status: "indexed",
+        outcome: result.outcome,
       });
     } catch (error) {
       const mapped = mapIngestError(error);

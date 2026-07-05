@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { normalize, resolve } from "node:path";
 import { DEFAULT_COLLECTION, type AppConfig } from "@kb/config";
 import { EmbeddingClient } from "../embeddings/embedding-client.js";
@@ -6,6 +5,10 @@ import type { DocumentRegistry } from "../registry/document-registry.js";
 import type { SettingsStore } from "../registry/settings-store.js";
 import { ChromaVectorStore } from "../vector-store/chroma-store.js";
 import { chunkText } from "./chunker.js";
+import {
+  computeContentHash,
+  deriveDocumentIdForUserFile,
+} from "./content-hash.js";
 import { parseDocument } from "./parsers/index.js";
 
 export interface IngestOptions {
@@ -15,15 +18,13 @@ export interface IngestOptions {
   userId?: string;
 }
 
+export type IngestOutcome = "created" | "unchanged" | "replaced";
+
 export interface IngestResult {
   documentId: string;
   chunkCount: number;
   collection: string;
-}
-
-function deriveDocumentId(absolutePath: string): string {
-  const normalized = normalize(resolve(absolutePath));
-  return createHash("sha256").update(normalized).digest("hex");
+  outcome: IngestOutcome;
 }
 
 function isUnderRoot(absolutePath: string, root: string): boolean {
@@ -77,7 +78,6 @@ export class IngestionService {
     options?: IngestOptions,
   ): Promise<IngestResult> {
     const absolutePath = resolveIngestPath(filePath, this.allowedPathRoots);
-    const documentId = deriveDocumentId(absolutePath);
     const collection = options?.collection ?? this.defaultCollection;
     const userId = options?.userId;
     if (!userId) {
@@ -87,13 +87,31 @@ export class IngestionService {
     const { text, mimeType, filename: parsedFilename } =
       await parseDocument(absolutePath);
     const filename = options?.filename ?? parsedFilename;
+    const contentHash = computeContentHash(text);
+
+    const existing = this.registry.findByUserAndFilename(userId, filename);
+    if (existing?.contentHash === contentHash) {
+      return {
+        documentId: existing.id,
+        chunkCount: existing.chunkCount,
+        collection: existing.collection,
+        outcome: "unchanged",
+      };
+    }
+
+    const documentId =
+      existing?.id ?? deriveDocumentIdForUserFile(userId, filename);
+    const outcome = existing ? "replaced" : "created";
+
+    if (existing) {
+      await this.vectorStore.deleteByDocumentId(
+        documentId,
+        existing.collection,
+      );
+    }
+
     const chunkConfig = this.settingsStore?.getChunkConfig();
     const chunks = await chunkText(text, chunkConfig);
-
-    const existing = this.registry.getDocument(documentId);
-    if (existing) {
-      await this.vectorStore.deleteByDocumentId(documentId, collection);
-    }
 
     this.registry.registerDocument({
       id: documentId,
@@ -103,6 +121,7 @@ export class IngestionService {
       collection,
       status: "pending",
       userId,
+      contentHash,
     });
     this.registry.updateStatus(documentId, "processing");
 
@@ -123,6 +142,7 @@ export class IngestionService {
       documentId,
       chunkCount: chunks.length,
       collection,
+      outcome,
     };
   }
 }

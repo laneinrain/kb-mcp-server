@@ -1,7 +1,12 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { join, resolve } from "node:path";
+import type { DocumentRecord } from "../registry/types.js";
 import type { DocumentRegistry } from "../registry/document-registry.js";
 import type { SettingsStore } from "../registry/settings-store.js";
+import {
+  computeContentHash,
+  deriveDocumentIdForUserFile,
+} from "./content-hash.js";
 import { IngestionService } from "./ingestion-service.js";
 
 vi.mock("./parsers/index.js", () => ({
@@ -18,12 +23,36 @@ import { chunkText } from "./chunker.js";
 const parseDocumentMock = vi.mocked(parseDocument);
 const chunkTextMock = vi.mocked(chunkText);
 
-function createRegistryMock(existing?: { id: string }) {
+const PARSED_TEXT = "parsed document body";
+const CONTENT_HASH = computeContentHash(PARSED_TEXT);
+
+function createRegistryMock(options?: {
+  existing?: Partial<DocumentRecord> & { id: string };
+}) {
+  const existing = options?.existing;
   return {
     registerDocument: vi.fn(),
     updateStatus: vi.fn(),
-    getDocument: vi.fn().mockReturnValue(existing),
+    getDocument: vi.fn(),
+    findByUserAndFilename: vi.fn().mockReturnValue(
+      existing
+        ? {
+            id: existing.id,
+            filename: existing.filename ?? "sample.txt",
+            sourcePath: existing.sourcePath ?? "/data/sample.txt",
+            mimeType: existing.mimeType ?? "text/plain",
+            status: existing.status ?? "indexed",
+            chunkCount: existing.chunkCount ?? 2,
+            collection: existing.collection ?? "default",
+            userId: existing.userId ?? "test-user-id",
+            contentHash: existing.contentHash ?? null,
+            createdAt: existing.createdAt ?? "2026-06-29T00:00:00.000Z",
+            updatedAt: existing.updatedAt ?? "2026-06-29T00:00:00.000Z",
+          }
+        : undefined,
+    ),
     listDocuments: vi.fn(),
+    listDocumentsForUser: vi.fn(),
     deleteDocument: vi.fn(),
     trackChunkIds: vi.fn(),
     getChunkIds: vi.fn(),
@@ -34,7 +63,7 @@ describe("IngestionService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     parseDocumentMock.mockResolvedValue({
-      text: "parsed document body",
+      text: PARSED_TEXT,
       mimeType: "text/plain",
       filename: "sample.txt",
     });
@@ -73,10 +102,10 @@ describe("IngestionService", () => {
     });
 
     expect(parseDocumentMock).toHaveBeenCalled();
-    expect(chunkTextMock).toHaveBeenCalledWith(
-      "parsed document body",
-      { chunkSize: 512, chunkOverlap: 64 },
-    );
+    expect(chunkTextMock).toHaveBeenCalledWith(PARSED_TEXT, {
+      chunkSize: 512,
+      chunkOverlap: 64,
+    });
     expect(embedDocuments).toHaveBeenCalledWith(["chunk-a", "chunk-b"]);
     expect(upsertChunks).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -89,10 +118,52 @@ describe("IngestionService", () => {
       }),
     );
     expect(result.chunkCount).toBe(2);
+    expect(result.outcome).toBe("created");
   });
 
-  it("re-ingest same path calls deleteByDocumentId before upsert", async () => {
-    const registry = createRegistryMock({ id: "existing-doc" });
+  it("returns unchanged without embed when content hash matches", async () => {
+    const registry = createRegistryMock({
+      existing: {
+        id: "existing-doc",
+        contentHash: CONTENT_HASH,
+        chunkCount: 5,
+        collection: "default",
+      },
+    });
+    const embedDocuments = vi.fn();
+    const upsertChunks = vi.fn();
+    const service = new IngestionService(
+      registry,
+      {
+        deleteByDocumentId: vi.fn(),
+        upsertChunks,
+      } as never,
+      { embedDocuments } as never,
+    );
+
+    const result = await service.ingest("scripts/fixtures/sample.txt", {
+      userId: "test-user-id",
+    });
+
+    expect(result).toEqual({
+      documentId: "existing-doc",
+      chunkCount: 5,
+      collection: "default",
+      outcome: "unchanged",
+    });
+    expect(embedDocuments).not.toHaveBeenCalled();
+    expect(upsertChunks).not.toHaveBeenCalled();
+    expect(registry.registerDocument).not.toHaveBeenCalled();
+  });
+
+  it("replaces existing document when content hash differs", async () => {
+    const registry = createRegistryMock({
+      existing: {
+        id: "existing-doc",
+        contentHash: "old-hash",
+        collection: "default",
+      },
+    });
     const callOrder: string[] = [];
     const deleteByDocumentId = vi.fn(async () => {
       callOrder.push("delete");
@@ -110,13 +181,17 @@ describe("IngestionService", () => {
       { embedDocuments } as never,
     );
 
-    await service.ingest("scripts/fixtures/sample.txt", { userId: "test-user-id" });
+    const result = await service.ingest("scripts/fixtures/sample.txt", {
+      userId: "test-user-id",
+    });
 
-    expect(deleteByDocumentId).toHaveBeenCalled();
+    expect(deleteByDocumentId).toHaveBeenCalledWith("existing-doc", "default");
     expect(callOrder).toEqual(["delete", "upsert"]);
+    expect(result.outcome).toBe("replaced");
+    expect(result.documentId).toBe("existing-doc");
   });
 
-  it("uses stable document_id derived from normalized absolute path", async () => {
+  it("uses stable document_id derived from user and filename", async () => {
     const registry = createRegistryMock();
     const upsertChunks = vi.fn().mockResolvedValue(["id:0"]);
     const service = new IngestionService(
@@ -128,15 +203,13 @@ describe("IngestionService", () => {
       { embedDocuments: vi.fn().mockResolvedValue([[0.1]]) } as never,
     );
 
-    const first = await service.ingest("scripts/fixtures/sample.txt", {
-      userId: "test-user-id",
-    });
-    const second = await service.ingest("scripts/fixtures/sample.txt", {
+    const expectedId = deriveDocumentIdForUserFile("test-user-id", "sample.txt");
+    const result = await service.ingest("scripts/fixtures/sample.txt", {
       userId: "test-user-id",
     });
 
-    expect(first.documentId).toBe(second.documentId);
-    expect(first.documentId).toMatch(/^[a-f0-9]{64}$/);
+    expect(result.documentId).toBe(expectedId);
+    expect(result.documentId).toMatch(/^[a-f0-9]{64}$/);
   });
 
   it("transitions registry status pending → processing → indexed after embed succeeds", async () => {
@@ -156,10 +229,15 @@ describe("IngestionService", () => {
       } as never,
     );
 
-    await service.ingest("scripts/fixtures/sample.txt", { userId: "test-user-id" });
+    await service.ingest("scripts/fixtures/sample.txt", {
+      userId: "test-user-id",
+    });
 
     expect(registry.registerDocument).toHaveBeenCalledWith(
-      expect.objectContaining({ status: "pending" }),
+      expect.objectContaining({
+        status: "pending",
+        contentHash: CONTENT_HASH,
+      }),
     );
     expect(registry.updateStatus).toHaveBeenNthCalledWith(
       1,
@@ -174,8 +252,14 @@ describe("IngestionService", () => {
     );
   });
 
-  it("passes collection option to ChromaVectorStore", async () => {
-    const registry = createRegistryMock({ id: "existing-doc" });
+  it("passes collection option to ChromaVectorStore on replace", async () => {
+    const registry = createRegistryMock({
+      existing: {
+        id: "existing-doc",
+        contentHash: "old-hash",
+        collection: "legacy",
+      },
+    });
     const deleteByDocumentId = vi.fn();
     const upsertChunks = vi.fn().mockResolvedValue(["id:0"]);
     const service = new IngestionService(
@@ -190,8 +274,8 @@ describe("IngestionService", () => {
     });
 
     expect(deleteByDocumentId).toHaveBeenCalledWith(
-      expect.any(String),
-      "research",
+      "existing-doc",
+      "legacy",
     );
     expect(upsertChunks).toHaveBeenCalledWith(
       expect.objectContaining({ collection: "research" }),
@@ -219,6 +303,10 @@ describe("IngestionService", () => {
       userId: "test-user-id",
     });
 
+    expect(registry.findByUserAndFilename).toHaveBeenCalledWith(
+      "test-user-id",
+      "sample.txt",
+    );
     expect(registry.registerDocument).toHaveBeenCalledWith(
       expect.objectContaining({ filename: "sample.txt" }),
     );
@@ -243,7 +331,7 @@ describe("IngestionService", () => {
     await expect(
       service.ingest(uploadPath, { userId: "test-user-id" }),
     ).resolves.toEqual(
-      expect.objectContaining({ collection: "default" }),
+      expect.objectContaining({ collection: "default", outcome: "created" }),
     );
   });
 });

@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS documents (
   chunk_count INTEGER NOT NULL DEFAULT 0,
   collection TEXT NOT NULL,
   user_id TEXT,
+  content_hash TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

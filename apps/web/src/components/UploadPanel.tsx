@@ -12,9 +12,15 @@ export function UploadPanel() {
 
   const mutation = useMutation({
     mutationFn: (file: File) => uploadFile(file),
-    onSuccess: (_data, file) => {
+    onSuccess: (data, file) => {
       setError(null);
-      setSuccess(`已上传 ${file.name}`);
+      if (data.outcome === "unchanged") {
+        setSuccess(`内容未变，跳过索引（${file.name}）`);
+      } else if (data.outcome === "replaced") {
+        setSuccess(`内容已更新并重新索引（${file.name}）`);
+      } else {
+        setSuccess(`已上传 ${file.name}`);
+      }
       void queryClient.invalidateQueries({ queryKey: ["documents"] });
       setTimeout(() => setSuccess(null), 3000);
     },

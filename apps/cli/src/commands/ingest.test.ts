@@ -63,6 +63,7 @@ describe("ingestSingleFile path selection", () => {
       chunkCount: 3,
       collection: "default",
       status: "indexed",
+      outcome: "created",
     });
     const ingestDirect = vi.fn();
     const logs: string[] = [];
@@ -88,6 +89,36 @@ describe("ingestSingleFile path selection", () => {
     expect(logs.some((line) => line.includes("ingesting sample.txt"))).toBe(
       true,
     );
+    expect(logs.some((line) => line.includes('"outcome":"created"'))).toBe(
+      true,
+    );
+  });
+
+  it("logs outcome from direct ingest", async () => {
+    const uploadDocument = vi.fn();
+    const ingestDirect = vi.fn().mockResolvedValue({
+      documentId: "doc-2",
+      chunkCount: 1,
+      collection: "default",
+      outcome: "unchanged",
+    });
+    const logs: string[] = [];
+
+    const deps = makeDeps({
+      config: { ...baseConfig, AUTH_ENABLED: false },
+      apiClient: {
+        uploadDocument,
+      } as unknown as ApiClient,
+      ingestDirect,
+    });
+
+    await ingestSingleFile("sample.txt", undefined, deps, (line) =>
+      logs.push(line),
+    );
+
+    expect(logs.some((line) => line.includes('"outcome":"unchanged"'))).toBe(
+      true,
+    );
   });
 
   it("uses direct core ingest when AUTH_ENABLED is false", async () => {
@@ -96,6 +127,7 @@ describe("ingestSingleFile path selection", () => {
       documentId: "doc-2",
       chunkCount: 1,
       collection: "default",
+      outcome: "created",
     });
 
     const deps = makeDeps({

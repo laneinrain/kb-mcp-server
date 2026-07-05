@@ -40,6 +40,7 @@ export interface IngestDeps {
     documentId: string;
     chunkCount: number;
     collection: string;
+    outcome: "created" | "unchanged" | "replaced";
   }>;
 }
 
@@ -81,6 +82,7 @@ export async function ingestSingleFile(
           chunkCount: result.chunkCount,
           collection: result.collection,
           status: result.status,
+          outcome: result.outcome,
         })}`,
       );
     } else {
@@ -90,6 +92,7 @@ export async function ingestSingleFile(
           documentId: result.documentId,
           chunkCount: result.chunkCount,
           collection: result.collection,
+          outcome: result.outcome,
         })}`,
       );
     }

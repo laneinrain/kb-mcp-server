@@ -14,6 +14,7 @@ interface DocumentRow {
   chunk_count: number;
   collection: string;
   user_id: string | null;
+  content_hash: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -28,6 +29,7 @@ function mapRow(row: DocumentRow): DocumentRecord {
     chunkCount: row.chunk_count,
     collection: row.collection,
     userId: row.user_id ?? "",
+    contentHash: row.content_hash,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -41,6 +43,10 @@ export interface DocumentRegistry {
     chunkCount?: number,
   ): void;
   getDocument(id: string): DocumentRecord | undefined;
+  findByUserAndFilename(
+    userId: string,
+    filename: string,
+  ): DocumentRecord | undefined;
   listDocuments(): DocumentRecord[];
   listDocumentsForUser(userId: string, systemUserId: string): DocumentRecord[];
   deleteDocument(id: string): void;
@@ -51,9 +57,9 @@ export interface DocumentRegistry {
 export function getDocumentRegistry(db: Database.Database): DocumentRegistry {
   const upsertStmt = db.prepare(`
     INSERT INTO documents (
-      id, filename, source_path, mime_type, status, chunk_count, collection, user_id
+      id, filename, source_path, mime_type, status, chunk_count, collection, user_id, content_hash
     ) VALUES (
-      @id, @filename, @sourcePath, @mimeType, @status, 0, @collection, @userId
+      @id, @filename, @sourcePath, @mimeType, @status, 0, @collection, @userId, @contentHash
     )
     ON CONFLICT(id) DO UPDATE SET
       filename = excluded.filename,
@@ -61,24 +67,34 @@ export function getDocumentRegistry(db: Database.Database): DocumentRegistry {
       mime_type = excluded.mime_type,
       collection = excluded.collection,
       user_id = excluded.user_id,
+      content_hash = excluded.content_hash,
       updated_at = datetime('now')
   `);
 
   const selectStmt = db.prepare(`
     SELECT id, filename, source_path, mime_type, status, chunk_count,
-           collection, user_id, created_at, updated_at
+           collection, user_id, content_hash, created_at, updated_at
     FROM documents WHERE id = ?
+  `);
+
+  const findByUserAndFilenameStmt = db.prepare(`
+    SELECT id, filename, source_path, mime_type, status, chunk_count,
+           collection, user_id, content_hash, created_at, updated_at
+    FROM documents
+    WHERE user_id = @userId AND filename = @filename
+    ORDER BY updated_at DESC
+    LIMIT 1
   `);
 
   const listStmt = db.prepare(`
     SELECT id, filename, source_path, mime_type, status, chunk_count,
-           collection, user_id, created_at, updated_at
+           collection, user_id, content_hash, created_at, updated_at
     FROM documents ORDER BY created_at DESC
   `);
 
   const listForUserStmt = db.prepare(`
     SELECT id, filename, source_path, mime_type, status, chunk_count,
-           collection, user_id, created_at, updated_at
+           collection, user_id, content_hash, created_at, updated_at
     FROM documents
     WHERE user_id = @userId OR user_id = @systemUserId
     ORDER BY created_at DESC
@@ -116,6 +132,7 @@ export function getDocumentRegistry(db: Database.Database): DocumentRegistry {
         status: meta.status ?? "pending",
         collection: meta.collection,
         userId: meta.userId,
+        contentHash: meta.contentHash ?? null,
       });
 
       const row = selectStmt.get(meta.id) as DocumentRow | undefined;
@@ -131,6 +148,14 @@ export function getDocumentRegistry(db: Database.Database): DocumentRegistry {
 
     getDocument(id) {
       const row = selectStmt.get(id) as DocumentRow | undefined;
+      return row ? mapRow(row) : undefined;
+    },
+
+    findByUserAndFilename(userId, filename) {
+      const row = findByUserAndFilenameStmt.get({
+        userId,
+        filename,
+      }) as DocumentRow | undefined;
       return row ? mapRow(row) : undefined;
     },
 

@@ -23,6 +23,7 @@ export interface UploadResult {
   chunkCount: number;
   collection: string;
   status: string;
+  outcome: "created" | "unchanged" | "replaced";
 }
 
 export interface DeleteResult {
