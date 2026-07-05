@@ -1,7 +1,12 @@
 CREATE TABLE IF NOT EXISTS settings (
   id INTEGER PRIMARY KEY CHECK (id = 1),
   chunk_size INTEGER NOT NULL,
-  chunk_overlap INTEGER NOT NULL
+  chunk_overlap INTEGER NOT NULL,
+  read_around_window_default INTEGER NOT NULL DEFAULT 1,
+  read_around_window_max INTEGER NOT NULL DEFAULT 3,
+  read_around_max_chars INTEGER NOT NULL DEFAULT 32000,
+  read_file_max_chunks INTEGER NOT NULL DEFAULT 50,
+  read_file_max_chars INTEGER NOT NULL DEFAULT 64000
 );
 
 CREATE TABLE IF NOT EXISTS documents (

@@ -3,6 +3,14 @@ export interface ChunkConfig {
   chunkOverlap: number;
 }
 
+export interface ContextConfig {
+  readAroundWindowDefault: number;
+  readAroundWindowMax: number;
+  readAroundMaxChars: number;
+  readFileMaxChunks: number;
+  readFileMaxChars: number;
+}
+
 export type DocumentStatus = "pending" | "processing" | "indexed" | "failed";
 
 export interface DocumentRecord {

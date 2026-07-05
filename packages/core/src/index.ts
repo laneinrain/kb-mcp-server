@@ -1,5 +1,6 @@
 export {
   getChunkConfig,
+  getContextConfig,
   getSettingsStore,
   initSettingsStore,
   type SettingsStore,
@@ -10,6 +11,7 @@ export {
 } from "./registry/document-registry.js";
 export type {
   ChunkConfig,
+  ContextConfig,
   DocumentRecord,
   DocumentStatus,
   RegisterDocumentInput,
@@ -21,6 +23,8 @@ export {
   type UpsertChunksParams,
   type QueryParams,
   type QueryHit,
+  type GetByIdsParams,
+  type ChunkHit,
 } from "./vector-store/chroma-store.js";
 export { chunkText } from "./ingestion/chunker.js";
 export type { TextChunk } from "./ingestion/types.js";

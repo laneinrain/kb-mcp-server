@@ -20,6 +20,11 @@ describe("loadConfig", () => {
     const config = loadConfig();
     expect(config.CHUNK_SIZE).toBe(1024);
     expect(config.CHUNK_OVERLAP).toBe(154);
+    expect(config.READ_AROUND_WINDOW_DEFAULT).toBe(1);
+    expect(config.READ_AROUND_WINDOW_MAX).toBe(3);
+    expect(config.READ_AROUND_MAX_CHARS).toBe(32000);
+    expect(config.READ_FILE_MAX_CHUNKS).toBe(50);
+    expect(config.READ_FILE_MAX_CHARS).toBe(64000);
     expect(config.CHERRYIN_BASE_URL).toBe("https://open.cherryin.cc/v1");
     expect(config.AUTH_ENABLED).toBe(false);
     expect(config.API_KEY).toBeUndefined();

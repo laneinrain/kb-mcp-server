@@ -32,6 +32,18 @@ export interface QueryHit {
   distance: number;
 }
 
+export interface GetByIdsParams {
+  ids: string[];
+  collection?: string;
+}
+
+export interface ChunkHit {
+  documentId: string;
+  filename: string;
+  chunkIndex: number;
+  text: string;
+}
+
 interface ChromaClientLike {
   heartbeat(): Promise<number>;
   getOrCreateCollection(args: {
@@ -138,5 +150,46 @@ export class ChromaVectorStore {
       text: documents[index] ?? "",
       distance: distances[index] ?? 0,
     }));
+  }
+
+  async getByIds(params: GetByIdsParams): Promise<ChunkHit[]> {
+    const { ids, collection } = params;
+    if (ids.length === 0) {
+      return [];
+    }
+
+    const col = await this.getOrCreateCollection(collection);
+
+    const result = await col.get({
+      ids,
+      include: ["documents", "metadatas"],
+    });
+
+    const resultIds = result.ids ?? [];
+    const documents = result.documents ?? [];
+    const metadatas = result.metadatas ?? [];
+
+    const hitMap = new Map<string, ChunkHit>();
+    for (let i = 0; i < resultIds.length; i++) {
+      const id = resultIds[i];
+      if (id) {
+        hitMap.set(id, {
+          documentId: String(metadatas[i]?.document_id ?? ""),
+          filename: String(metadatas[i]?.filename ?? ""),
+          chunkIndex: Number(metadatas[i]?.chunk_index ?? 0),
+          text: documents[i] ?? "",
+        });
+      }
+    }
+
+    const hits: ChunkHit[] = [];
+    for (const id of ids) {
+      const hit = hitMap.get(id);
+      if (hit) {
+        hits.push(hit);
+      }
+    }
+    hits.sort((a, b) => a.chunkIndex - b.chunkIndex);
+    return hits;
   }
 }
