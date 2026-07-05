@@ -21,14 +21,14 @@ See: .planning/PROJECT.md (updated 2026-07-05)
 
 **Core value:** An MCP client can reliably semantic-search ingested documents through a stable tool interface.
 
-**Current focus:** Phase 7 verified — plan Phase 8
+**Current focus:** Phase 8 planned — ready to execute
 
 ## Current Position
 
-Phase: 8 — Multi-User Backend & Web Auth (context gathered)
-Plan: —
+Phase: 8 — Multi-User Backend & Web Auth (planned)
+Plan: 08-01 next
 Status: Ready to execute
-Last activity: 2026-07-05 -- Phase 8 planning complete
+Last activity: 2026-07-05 — Phase 8 planning complete (3 plans)
 
 ## Performance Metrics
 
@@ -36,7 +36,7 @@ Last activity: 2026-07-05 -- Phase 8 planning complete
 |--------|-------|
 | v1.0 | Shipped 2026-07-05 (30/30 reqs) |
 | v1.1 | Shipped 2026-07-05 (7/7 reqs) |
-| v1.2 | Phase 7 verified; Phase 8 context ready |
+| v1.2 | Phase 7 verified; Phase 8 planned 0/3 |
 | Total phases shipped | 6 + Phase 7 verified (21 plans) |
 
 ## Accumulated Context
