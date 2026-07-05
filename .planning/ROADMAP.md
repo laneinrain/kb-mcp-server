@@ -32,36 +32,39 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 
 ### Phase 7: Auth Center Module
 
-**Goal:** Standalone auth package with swappable provider and user registration/login API.
+**Goal:** Independent `@kb/auth` with **MockCasAuthProvider**, 工号 login API, and 简体中文 login page; production swaps to company CAS without Web changes.
 
-**Requirements:** AUTH-01, AUTH-02, AUTH-03, AUTH-06
+**Requirements:** AUTH-01, AUTH-02, AUTH-03, AUTH-06, **WEB-01** (login page only)
 
 **Success criteria:**
-1. `@kb/auth` exports `AuthProvider`, `LocalAuthProvider`, JWT helpers, and Fastify auth middleware factory
-2. Users table in SQLite; passwords hashed; register + login REST routes return JWT
-3. Unit tests cover register, login, invalid credentials, token validation
-4. README documents how to replace `LocalAuthProvider` with external IdP
+1. `@kb/auth` exports `AuthProvider`, `MockCasAuthProvider`, JWT helpers, `createJwtPreHandler`
+2. `POST /api/v1/auth/login` with `employeeId` + password → mock CAS success → JWT + JIT user
+3. Web login page (工号 + 密码) stores `kb_access_token` and enters admin
+4. README documents Mock → real **统一 CAS** swap (`CAS_MOCK`, `CAS_SERVER_URL`)
 
-**Plans:** 2 plans in 2 waves
+**Plans:** 3 plans in 3 waves
 
-**Wave 1** *(foundation — no dependencies)*
-- [ ] 07-01: `@kb/auth` package — AuthProvider, LocalAuthProvider, SQLite users, JWT, config env vars (AUTH-01, AUTH-02)
+**Wave 1** *(foundation)*
+- [ ] 07-01: `@kb/auth` + MockCasAuthProvider + employeeId store + config (AUTH-01, AUTH-02)
 
 **Wave 2** *(blocked on Wave 1)*
-- [ ] 07-02: Auth REST routes + backend wiring + README swap docs (AUTH-03, AUTH-06)
+- [ ] 07-02: Login API + README (AUTH-03, AUTH-06)
+
+**Wave 3** *(blocked on Wave 2)*
+- [ ] 07-03: Web LoginPage + JWT client (WEB-01)
 
 ---
 
 ### Phase 8: Multi-User Backend & Web Auth
 
-**Goal:** JWT-protected API, per-user document isolation, and 简体中文 login/register UI.
+**Goal:** JWT-protected API, per-user document isolation, logout, optional register.
 
-**Requirements:** AUTH-04, AUTH-05, USER-01, USER-02, USER-03, USER-04, WEB-01, WEB-02, WEB-03, WEB-04
+**Requirements:** AUTH-04, AUTH-05, USER-01, USER-02, USER-03, USER-04, WEB-02, WEB-03 (full), WEB-04
 
 **Success criteria:**
-1. `/api/v1` document and search routes require valid user JWT when auth enabled
+1. `/api/v1` document and search routes require valid user JWT when user auth enabled
 2. Documents and Chroma metadata scoped by `user_id`; migration assigns legacy docs to default user
-3. Web login/register pages work end-to-end; protected routes redirect when logged out
+3. Logout clears token; unauthenticated redirect (complete WEB-03); optional register page (WEB-02)
 4. Integration tests: user A cannot read/delete user B documents
 
 **Plans:** TBD via `/gsd-plan-phase 8`
@@ -91,7 +94,7 @@ See [MILESTONES.md](MILESTONES.md), [milestones/v1.0-ROADMAP.md](milestones/v1.0
 | 1–4 | v1.0 | 13/13 | Complete | 2026-07-05 |
 | 5. Context Retrieval Core | v1.1 | 3/3 | Complete | 2026-07-05 |
 | 6. MCP Read Tools | v1.1 | 2/2 | Complete | 2026-07-05 |
-| 7. Auth Center Module | v1.2 | 0/2 | Planned | — |
+| 7. Auth Center Module | v1.2 | 0/3 | Planned | — |
 | 8. Multi-User Backend & Web Auth | v1.2 | 0/? | Not started | — |
 | 9. Filename Content-Hash Dedup | v1.2 | 0/? | Not started | — |
 

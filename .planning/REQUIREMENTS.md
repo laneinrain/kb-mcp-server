@@ -85,9 +85,9 @@ Explicitly excluded from v1.2 to prevent scope creep.
 | USER-02 | Phase 8 | Pending |
 | USER-03 | Phase 8 | Pending |
 | USER-04 | Phase 8 | Pending |
-| WEB-01 | Phase 8 | Pending |
+| WEB-01 | Phase 7 | Pending |
 | WEB-02 | Phase 8 | Pending |
-| WEB-03 | Phase 8 | Pending |
+| WEB-03 | Phase 7 (minimal gate) + Phase 8 (full) | Pending |
 | WEB-04 | Phase 8 | Pending |
 | INGE-10 | Phase 9 | Pending |
 | INGE-11 | Phase 9 | Pending |

@@ -77,6 +77,33 @@
 
 ---
 
+## 生产环境 CAS（补充 2026-07-05）
+
+**User's choice:** 生产环境将接入公司内部的 **统一 CAS**。
+
+**Captured as D-16–D-20:**
+- `@kb/auth` 生产替换目标为 **CasAuthProvider**（非泛化 OAuth）
+- v1.2 本地工号+密码仅 dev/scaffold；生产禁用开放注册，Web 跳转 CAS 登录
+- CAS 主体映射到 **工号** (`employeeId`)；验证通过后仍由应用签发 JWT 供 API 使用
+- CAS 协议实现延后；Phase 7 预留 `AuthProvider` 契约与 `AUTH_PROVIDER=local|cas` 文档
+
+---
+
+## 登录页 + CAS Mock（补充 2026-07-05）
+
+**User's choice:**
+- 登录页输入 **工号 + 密码**
+- 后台通过 **CAS 适配层** 鉴权（非本地 bcrypt 验密）
+- **当前阶段：** 必须有登录页；**CAS mock — 鉴权直接成功**（合法工号 + 非空密码即可）
+
+**Captured as D-21–D-26:**
+- `MockCasAuthProvider` 默认开启
+- 登录成功后 JIT 创建用户并签发 JWT
+- WEB-01 登录页纳入当前交付范围
+
+---
+
 ## Deferred Ideas
 
 - Refresh token、管理员创建工号、邮箱登录、register 速率限制 — 后续阶段
+- **CasAuthProvider 完整实现** — 生产 CAS 对接（AUTH-10 CAS 变体）
