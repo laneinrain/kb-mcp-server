@@ -18,7 +18,10 @@ export async function createMcpHttpApp(
   const app = express();
   app.use(express.json());
 
-  app.post("/mcp", async (req, res) => {
+  async function handleMcpPost(
+    req: express.Request,
+    res: express.Response,
+  ): Promise<void> {
     try {
       const sessionId = req.headers["mcp-session-id"] as string | undefined;
       let transport: StreamableHTTPServerTransport | undefined;
@@ -63,7 +66,52 @@ export async function createMcpHttpApp(
         });
       }
     }
-  });
+  }
+
+  async function handleMcpGet(
+    req: express.Request,
+    res: express.Response,
+  ): Promise<void> {
+    try {
+      const sessionId = req.headers["mcp-session-id"] as string | undefined;
+      if (!sessionId || !transports[sessionId]) {
+        // Optional SSE probe before session exists — client treats 405 as "no standalone GET stream"
+        res.status(405).send("Method Not Allowed");
+        return;
+      }
+
+      await transports[sessionId].handleRequest(req, res);
+    } catch (error) {
+      logError(error);
+      if (!res.headersSent) {
+        res.status(500).send("Internal server error");
+      }
+    }
+  }
+
+  async function handleMcpDelete(
+    req: express.Request,
+    res: express.Response,
+  ): Promise<void> {
+    try {
+      const sessionId = req.headers["mcp-session-id"] as string | undefined;
+      if (!sessionId || !transports[sessionId]) {
+        res.status(400).send("Invalid or missing session ID");
+        return;
+      }
+
+      await transports[sessionId].handleRequest(req, res);
+    } catch (error) {
+      logError(error);
+      if (!res.headersSent) {
+        res.status(500).send("Error processing session termination");
+      }
+    }
+  }
+
+  app.post("/mcp", handleMcpPost);
+  app.get("/mcp", handleMcpGet);
+  app.delete("/mcp", handleMcpDelete);
 
   return app;
 }
@@ -84,10 +132,13 @@ async function main(): Promise<void> {
   await startMcpHttpServer();
 }
 
-const isMain =
-  process.argv[1] &&
-  (process.argv[1].endsWith("http.ts") ||
-    process.argv[1].endsWith("http.js"));
+const isMain = process.argv.some(
+  (arg) =>
+    arg.endsWith("http.ts") ||
+    arg.endsWith("http.js") ||
+    arg.replace(/\\/g, "/").endsWith("/http.ts") ||
+    arg.replace(/\\/g, "/").endsWith("/http.js"),
+);
 
 if (isMain) {
   main().catch((err) => {

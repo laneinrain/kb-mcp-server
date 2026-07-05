@@ -118,34 +118,43 @@ MCP 暴露单一工具 **`search_knowledge`**：
 | `top_k` | number | 返回条数，1–10，默认 5 |
 | `collection` | string | 集合名，默认 `default` |
 
-### 方式一：stdio（Cursor 本地）
+### 方式一：stdio（Cursor 本地，推荐）
 
-先构建 MCP 包：
-
-```bash
-pnpm --filter @kb/mcp-server build
-```
-
-在 Cursor 的 MCP 配置（项目 `.cursor/mcp.json` 或全局 `~/.cursor/mcp.json`）中添加：
+**推荐：使用仓库内项目级配置**（已包含在 [`.cursor/mcp.json`](.cursor/mcp.json)，无绝对路径）：
 
 ```json
 {
   "mcpServers": {
     "kb-mcp-server": {
-      "command": "C:/Program Files/nodejs/node.exe",
-      "args": ["D:/project_ai/kb-mcp-server/apps/mcp-server/dist/stdio.js"],
-      "cwd": "D:/project_ai/kb-mcp-server"
+      "command": "pnpm",
+      "args": ["--filter", "@kb/mcp-server", "dev:stdio"],
+      "env": { "DOTENV_CONFIG_QUIET": "true" }
     }
   }
 }
 ```
 
-> **Windows 提示**
+用 Cursor 打开本仓库根目录即可；工作区根目录即 `cwd`，会自动加载根目录 `.env`。
+
+**生产/已构建**（需先 `pnpm --filter @kb/mcp-server build`）：
+
+```json
+{
+  "mcpServers": {
+    "kb-mcp-server": {
+      "command": "node",
+      "args": ["apps/mcp-server/dist/stdio.js"],
+      "env": { "DOTENV_CONFIG_QUIET": "true" }
+    }
+  }
+}
+```
+
+> **说明**
 >
-> - 将路径改为你本机的项目绝对路径。
-> - Cursor GUI 进程可能找不到 `node`，请使用 `node.exe` 的完整路径。
-> - 必须设置 `cwd`，以便正确加载项目根目录的 `.env`。
-> - 也可使用 `pnpm --filter @kb/mcp-server dev:stdio`，但需保证 `cwd` 为 monorepo 根目录。
+> - 配置放在 **项目** `.cursor/mcp.json`，不要写 `D:/...` 或 `node.exe` 绝对路径。
+> - 全局 `~/.cursor/mcp.json` 仅适合与路径无关的 HTTP 方式（见方式二）；stdio 请用项目级配置。
+> - Windows 若 Cursor 找不到 `pnpm`/`node`：将 Node 安装目录加入系统 PATH，或从「以管理员身份运行」的终端启动 Cursor。
 
 ### 方式二：Streamable HTTP（远程 / 多客户端）
 
