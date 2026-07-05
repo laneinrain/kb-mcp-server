@@ -12,7 +12,7 @@ export async function createMcpHttpApp(
   services?: McpServices,
 ): Promise<express.Application> {
   const resolved = services ?? (await createMcpServices());
-  const { searchService } = resolved;
+  const { searchService, contextService } = resolved;
   const transports: Record<string, StreamableHTTPServerTransport> = {};
 
   const app = express();
@@ -41,7 +41,7 @@ export async function createMcpHttpApp(
             delete transports[sid];
           }
         };
-        const server = buildMcpServer(searchService);
+        const server = buildMcpServer(searchService, contextService);
         await server.connect(transport);
       } else {
         res.status(400).json({

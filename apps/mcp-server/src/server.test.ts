@@ -3,9 +3,20 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import type { SearchService } from "@kb/core";
+import {
+  ContextError,
+  type ContextService,
+  type ReadAroundResult,
+  type ReadFileResult,
+  type SearchService,
+} from "@kb/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { buildMcpServer, SEARCH_TOOL_NAME } from "./server.js";
+import {
+  buildMcpServer,
+  READ_AROUND_TOOL_NAME,
+  READ_FILE_TOOL_NAME,
+  SEARCH_TOOL_NAME,
+} from "./server.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const serverSource = readFileSync(join(__dirname, "server.ts"), "utf8");
@@ -27,16 +38,70 @@ function mockSearchService(
   } as unknown as SearchService;
 }
 
-async function connectTestClient(searchService: SearchService) {
+function mockContextService(
+  overrides?: Partial<{
+    readAround: ContextService["readAround"];
+    readFile: ContextService["readFile"];
+  }>,
+): ContextService {
+  return {
+    readAround: vi.fn(
+      overrides?.readAround ??
+        (async () =>
+          ({
+            documentId: "d1",
+            filename: "a.txt",
+            collection: "default",
+            chunkRange: { start: 0, end: 0 },
+            windowRequested: 1,
+            windowApplied: 1,
+            totalChars: 10,
+            chunks: [
+              {
+                documentId: "d1",
+                filename: "a.txt",
+                chunkIndex: 0,
+                text: "full chunk",
+                isCenter: true,
+              },
+            ],
+          }) satisfies ReadAroundResult),
+    ),
+    readFile: vi.fn(
+      overrides?.readFile ??
+        (async () =>
+          ({
+            documentId: "d1",
+            filename: "a.txt",
+            collection: "default",
+            chunkCount: 1,
+            returnedChunks: 1,
+            chunks: [
+              {
+                documentId: "d1",
+                filename: "a.txt",
+                chunkIndex: 0,
+                text: "full chunk",
+              },
+            ],
+          }) satisfies ReadFileResult),
+    ),
+  } as unknown as ContextService;
+}
+
+async function connectTestClient(
+  searchService: SearchService,
+  contextService: ContextService,
+) {
   const [clientTransport, serverTransport] =
     InMemoryTransport.createLinkedPair();
-  const server = buildMcpServer(searchService);
+  const server = buildMcpServer(searchService, contextService);
   await server.connect(serverTransport);
 
   const client = new Client({ name: "test-client", version: "1.0.0" });
   await client.connect(clientTransport);
 
-  return { client, server, searchService };
+  return { client, server, searchService, contextService };
 }
 
 describe("buildMcpServer", () => {
@@ -48,13 +113,23 @@ describe("buildMcpServer", () => {
     vi.restoreAllMocks();
   });
 
-  it("registers only search_knowledge", async () => {
+  it("registers search_knowledge, read_around, and read_file", async () => {
     const searchService = mockSearchService();
-    const { client, server } = await connectTestClient(searchService);
+    const contextService = mockContextService();
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
 
     const { tools } = await client.listTools();
-    expect(tools).toHaveLength(1);
-    expect(tools?.[0]?.name).toBe(SEARCH_TOOL_NAME);
+    expect(tools).toHaveLength(3);
+    expect(tools?.map((t) => t.name)).toEqual(
+      expect.arrayContaining([
+        SEARCH_TOOL_NAME,
+        READ_AROUND_TOOL_NAME,
+        READ_FILE_TOOL_NAME,
+      ]),
+    );
 
     await client.close();
     await server.close();
@@ -71,7 +146,11 @@ describe("buildMcpServer", () => {
       },
     ]);
     const searchService = mockSearchService(search);
-    const { client, server } = await connectTestClient(searchService);
+    const contextService = mockContextService();
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
 
     await client.callTool({
       name: SEARCH_TOOL_NAME,
@@ -96,7 +175,11 @@ describe("buildMcpServer", () => {
       chunkIndex: 0,
     };
     const searchService = mockSearchService(async () => [result]);
-    const { client, server } = await connectTestClient(searchService);
+    const contextService = mockContextService();
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
 
     const response = await client.callTool({
       name: SEARCH_TOOL_NAME,
@@ -114,9 +197,142 @@ describe("buildMcpServer", () => {
     await server.close();
   });
 
+  it("read_around delegates to ContextService.readAround with mapped args", async () => {
+    const readAround = vi.fn().mockResolvedValue({
+      documentId: "d1",
+      filename: "a.txt",
+      collection: "default",
+      chunkRange: { start: 0, end: 2 },
+      windowRequested: 1,
+      windowApplied: 1,
+      chunks: [],
+    });
+    const searchService = mockSearchService();
+    const contextService = mockContextService({ readAround });
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
+
+    await client.callTool({
+      name: READ_AROUND_TOOL_NAME,
+      arguments: {
+        document_id: "d1",
+        chunk_index: 1,
+        window: 2,
+        collection: "default",
+      },
+    });
+
+    expect(readAround).toHaveBeenCalledWith("d1", 1, {
+      window: 2,
+      collection: "default",
+    });
+
+    await client.close();
+    await server.close();
+  });
+
+  it("read_around returns structuredContent with chunks", async () => {
+    const readAroundResult: ReadAroundResult = {
+      documentId: "d1",
+      filename: "a.txt",
+      collection: "default",
+      chunkRange: { start: 0, end: 0 },
+      windowRequested: 1,
+      windowApplied: 1,
+      totalChars: 11,
+      chunks: [
+        {
+          documentId: "d1",
+          filename: "a.txt",
+          chunkIndex: 0,
+          text: "full chunk",
+          isCenter: true,
+        },
+      ],
+    };
+    const searchService = mockSearchService();
+    const contextService = mockContextService({
+      readAround: async () => readAroundResult,
+    });
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
+
+    const response = await client.callTool({
+      name: READ_AROUND_TOOL_NAME,
+      arguments: { document_id: "d1", chunk_index: 0 },
+    });
+
+    expect(response.structuredContent).toEqual(readAroundResult);
+    expect(response.isError).toBeUndefined();
+
+    await client.close();
+    await server.close();
+  });
+
+  it("read_around returns isError on ContextError without partial chunks", async () => {
+    const searchService = mockSearchService();
+    const contextService = mockContextService({
+      readAround: async () => {
+        throw new ContextError("document_not_found", "Document d9 not found");
+      },
+    });
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
+
+    const response = await client.callTool({
+      name: READ_AROUND_TOOL_NAME,
+      arguments: { document_id: "d9", chunk_index: 0 },
+    });
+
+    expect(response.isError).toBe(true);
+    expect(response.structuredContent).toBeUndefined();
+    const content = response.content as { type: string; text: string }[] | undefined;
+    expect(content?.[0]?.text).toContain("not found");
+
+    await client.close();
+    await server.close();
+  });
+
+  it("read_file delegates to ContextService.readFile", async () => {
+    const readFile = vi.fn().mockResolvedValue({
+      documentId: "d1",
+      filename: "a.txt",
+      collection: "default",
+      chunkCount: 1,
+      returnedChunks: 1,
+      chunks: [],
+    });
+    const searchService = mockSearchService();
+    const contextService = mockContextService({ readFile });
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
+
+    await client.callTool({
+      name: READ_FILE_TOOL_NAME,
+      arguments: { document_id: "d1", collection: "default" },
+    });
+
+    expect(readFile).toHaveBeenCalledWith("d1", { collection: "default" });
+
+    await client.close();
+    await server.close();
+  });
+
   it("rejects empty query with tool error", async () => {
     const searchService = mockSearchService();
-    const { client, server } = await connectTestClient(searchService);
+    const contextService = mockContextService();
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
 
     const response = await client.callTool({
       name: SEARCH_TOOL_NAME,
@@ -128,6 +344,12 @@ describe("buildMcpServer", () => {
 
     await client.close();
     await server.close();
+  });
+
+  it("read_around description includes search hit example", () => {
+    expect(serverSource).toMatch(/documentId.*chunkIndex|chunkIndex.*documentId/);
+    expect(serverSource).toMatch(/document_id=/);
+    expect(serverSource).toMatch(/chunk_index=/);
   });
 
   it("does not register ingest or write tools (MCP-05)", () => {

@@ -8,8 +8,8 @@ import { logError, logInfo } from "./logger.js";
 // Or after build: { "command": "node", "args": ["path/to/apps/mcp-server/dist/stdio.js"] }
 
 async function main(): Promise<void> {
-  const { searchService } = await createMcpServices();
-  const server = buildMcpServer(searchService);
+  const { searchService, contextService } = await createMcpServices();
+  const server = buildMcpServer(searchService, contextService);
   const transport = new StdioServerTransport();
   await server.connect(transport);
   logInfo("kb-mcp-server running on stdio");
