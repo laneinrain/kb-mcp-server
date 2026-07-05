@@ -58,6 +58,48 @@ describe("MCP HTTP /mcp", () => {
     expect(response.headers["mcp-session-id"]).toBeDefined();
   });
 
+  it("GET /mcp without session returns 405", async () => {
+    const app = await createMcpHttpApp(mockServices());
+
+    const response = await request(app)
+      .get("/mcp")
+      .set("Accept", MCP_ACCEPT);
+
+    expect(response.status).toBe(405);
+  });
+
+  it("GET /mcp with valid session opens SSE stream", async () => {
+    const app = await createMcpHttpApp(mockServices());
+
+    const init = await request(app)
+      .post("/mcp")
+      .set("Accept", MCP_ACCEPT)
+      .send(initializeBody);
+    const sessionId = init.headers["mcp-session-id"] as string;
+
+    await new Promise<void>((resolve, reject) => {
+      const req = request(app)
+        .get("/mcp")
+        .set("Accept", MCP_ACCEPT)
+        .set("mcp-session-id", sessionId)
+        .buffer(false)
+        .parse((res, callback) => {
+          expect(res.statusCode).toBe(200);
+          expect(res.headers["content-type"]).toMatch(/text\/event-stream/);
+          res.destroy();
+          callback(null, null);
+        });
+
+      req.end((err) => {
+        if (err && (err as NodeJS.ErrnoException).code !== "ECONNRESET") {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
+    });
+  });
+
   it("uses buildMcpServer via initialize flow (tools/list after init)", async () => {
     const services = mockServices();
     const app = await createMcpHttpApp(services);
