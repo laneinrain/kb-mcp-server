@@ -23,22 +23,33 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - ✓ Per-user document isolation (JWT + composite API_KEY service path) — v1.2 Phase 8
 - ✓ Content-hash dedup: created / unchanged / replaced outcomes — v1.2 Phase 9
 
-### Active
+### Active (v1.3 — Mock CAS Admin Console)
 
-_No active milestone — run `/gsd-new-milestone` to define v1.3+ scope._
+- [ ] **ADMIN-01**: Bootstrap `admin` / `admin123` when `CAS_MOCK=true`
+- [ ] **AUTH-07**: Register API with bcrypt for local users (mock mode only)
+- [ ] **AUTH-09**: JWT `role` claim (`admin` | `user`)
+- [ ] **USER-05–09**: Admin REST — list all users, manage any user's documents
+- [ ] **WEB-02**: Register page (简体中文)
+- [ ] **WEB-05–08**: Admin 用户管理 tab — user list + per-user document management
+
+### Active Milestone Scope
+
+When `CAS_MOCK=true`: complete user admin backend — registration, hardcoded admin account, all-accounts query, cross-user document management. Disabled when `CAS_MOCK=false`.
 
 ### Out of Scope (carried forward)
 
 - OCR / scanned PDF — text-layer PDF only
 - Full OAuth/OIDC/LDAP implementation — interface + mock CAS shipped; production swap documented
-- WEB-02 user registration page — JIT login only (deferred from v1.2)
+- WEB-02 user registration page — **in scope v1.3** (mock mode only)
 - Per-user MCP tool auth — MCP stays global corpus
 - Hybrid BM25 / rerank — deferred (RETR-01/02)
 - Upload/CRUD via MCP tools — ingestion remains backend/CLI/Web
 
-## Current State (v1.2 shipped 2026-07-05)
+## Current State (v1.3 planned 2026-07-07)
 
 **Shipped milestones:** v1.0 (Phases 1–4) + v1.1 (Phases 5–6) + v1.2 (Phases 7–9) — 9 phases, 27 plans.
+
+**Active milestone:** v1.3 Mock CAS Admin Console (Phases 10–12) — register, admin account, user directory, cross-user doc management (mock mode only).
 
 **MCP tools:** `search_knowledge`, `read_around`, `read_file` — global corpus.
 
@@ -84,4 +95,4 @@ _No active milestone — run `/gsd-new-milestone` to define v1.3+ scope._
 </details>
 
 ---
-*Last updated: 2026-07-05 after v1.2 milestone*
+*Last updated: 2026-07-07 — v1.3 milestone planned*
