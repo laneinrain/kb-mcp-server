@@ -28,7 +28,7 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - [ ] **ADMIN-01**: Bootstrap 工号 `00000` / `admin123` when `CAS_MOCK=true`
 - [ ] **AUTH-07**: Register API with bcrypt for local users (mock mode only)
 - [ ] **AUTH-09**: JWT `role` claim (`admin` | `user`)
-- [ ] **USER-05–09**: Admin REST — list all users, manage any user's documents
+- [x] **USER-05–09**: Admin REST — list all users, manage any user's documents
 - [ ] **WEB-02**: Register page (简体中文)
 - [ ] **WEB-05–08**: Admin 用户管理 tab — user list + per-user document management
 

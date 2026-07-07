@@ -21,11 +21,11 @@ When `CAS_MOCK=true` and `USER_AUTH_ENABLED=true`, provide a **complete user adm
 
 ### Admin REST API
 
-- [ ] **USER-05**: `GET /api/v1/admin/users` — admin-only; returns all accounts (id, employeeId, authSource, role, createdAt, documentCount)
-- [ ] **USER-06**: Admin JWT can list/get/delete **any** user's documents (not limited to own + system)
-- [ ] **USER-07**: Admin JWT can upload documents assigned to a target `userId` via `POST /api/v1/admin/users/:userId/documents`
-- [ ] **USER-08**: Non-admin JWT receives 403 on `/api/v1/admin/*` routes
-- [ ] **USER-09**: Regular user document routes unchanged (own + system legacy only)
+- [x] **USER-05**: `GET /api/v1/admin/users` — admin-only; returns all accounts (id, employeeId, authSource, role, createdAt, documentCount)
+- [x] **USER-06**: Admin JWT can list/get/delete **any** user's documents (not limited to own + system)
+- [x] **USER-07**: Admin JWT can upload documents assigned to a target `userId` via `POST /api/v1/admin/users/:userId/documents`
+- [x] **USER-08**: Non-admin JWT receives 403 on `/api/v1/admin/*` routes
+- [x] **USER-09**: Regular user document routes unchanged (own + system legacy only)
 
 ### Web Admin Console (简体中文)
 
@@ -45,18 +45,18 @@ When `CAS_MOCK=true` and `USER_AUTH_ENABLED=true`, provide a **complete user adm
 | AUTH-08 | 10 | Complete |
 | AUTH-09 | 10 | Complete |
 | AUTH-10 | 10 | Complete |
-| USER-05 | 11 | Pending |
-| USER-06 | 11 | Pending |
-| USER-07 | 11 | Pending |
-| USER-08 | 11 | Pending |
-| USER-09 | 11 | Pending |
+| USER-05 | 11 | Complete |
+| USER-06 | 11 | Complete |
+| USER-07 | 11 | Complete |
+| USER-08 | 11 | Complete |
+| USER-09 | 11 | Complete |
 | WEB-02 | 12 | Pending |
 | WEB-05 | 12 | Pending |
 | WEB-06 | 12 | Pending |
 | WEB-07 | 12 | Pending |
 | WEB-08 | 12 | Pending |
 
-**Coverage:** 6/16
+**Coverage:** 11/16
 
 ## Out of Scope (v1.3)
 

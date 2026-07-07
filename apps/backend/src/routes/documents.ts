@@ -1,9 +1,8 @@
 import { createWriteStream } from "node:fs";
 import { unlink } from "node:fs/promises";
-import { basename, extname } from "node:path";
+import { basename, join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { pipeline } from "node:stream/promises";
-import { join } from "node:path";
 import type { FastifyInstance } from "fastify";
 import type {
   ChromaVectorStore,
@@ -11,21 +10,13 @@ import type {
   DocumentRegistry,
   IngestionService,
 } from "@kb/core";
-import { mapIngestError, notFound } from "../lib/errors.js";
+import { notFound } from "../lib/errors.js";
 import type { ApiRouteOpts } from "../auth.js";
-
-const ALLOWED_MIME = new Set([
-  "text/plain",
-  "text/markdown",
-  "application/pdf",
-]);
-
-const ALLOWED_EXTENSIONS = new Set([
-  ".txt",
-  ".md",
-  ".markdown",
-  ".pdf",
-]);
+import {
+  ingestMultipartUpload,
+  isAllowedUpload,
+  toPublicDocument,
+} from "./document-upload.js";
 
 export interface DocumentsDeps {
   ingestionService: IngestionService;
@@ -35,16 +26,6 @@ export interface DocumentsDeps {
   defaultCollection: string;
   systemUserId: string | null;
   routeOpts?: ApiRouteOpts;
-}
-
-function toPublicDocument(doc: DocumentRecord) {
-  const { sourcePath: _sourcePath, ...rest } = doc;
-  return rest;
-}
-
-function isAllowedUpload(filename: string, mimetype: string): boolean {
-  const ext = extname(filename).toLowerCase();
-  return ALLOWED_MIME.has(mimetype) && ALLOWED_EXTENSIONS.has(ext);
 }
 
 function canReadDocument(
@@ -77,38 +58,6 @@ export async function registerDocumentRoutes(
   const systemUserId = deps.systemUserId;
 
   app.post("/api/v1/documents", opts, async (request, reply) => {
-    let collection: string | undefined;
-    let tempPath: string | undefined;
-    let originalFilename: string | undefined;
-
-    const parts = request.parts();
-    for await (const part of parts) {
-      if (part.type === "field" && part.fieldname === "collection") {
-        collection = String(part.value);
-      } else if (part.type === "file") {
-        originalFilename = basename(part.filename);
-        if (!isAllowedUpload(part.filename, part.mimetype)) {
-          return reply.code(415).send({
-            error: "unsupported_media_type",
-            message: `Unsupported: ${part.mimetype}`,
-          });
-        }
-
-        tempPath = join(
-          deps.uploadsDir,
-          `${randomUUID()}-${basename(part.filename)}`,
-        );
-        await pipeline(part.file, createWriteStream(tempPath));
-      }
-    }
-
-    if (!tempPath) {
-      return reply.code(400).send({
-        error: "bad_request",
-        message: "Missing file field",
-      });
-    }
-
     let userId = "";
     if (systemUserId) {
       try {
@@ -121,25 +70,12 @@ export async function registerDocumentRoutes(
       }
     }
 
-    try {
-      const result = await deps.ingestionService.ingest(tempPath, {
-        collection: collection ?? deps.defaultCollection,
-        filename: originalFilename,
-        userId,
-      });
-      await unlink(tempPath).catch(() => {});
-      const statusCode = result.outcome === "created" ? 201 : 200;
-      return reply.code(statusCode).send({
-        documentId: result.documentId,
-        chunkCount: result.chunkCount,
-        collection: result.collection,
-        status: "indexed",
-        outcome: result.outcome,
-      });
-    } catch (error) {
-      const mapped = mapIngestError(error);
-      return reply.code(mapped.statusCode).send(mapped.body);
-    }
+    return ingestMultipartUpload(request, reply, {
+      ingestionService: deps.ingestionService,
+      uploadsDir: deps.uploadsDir,
+      defaultCollection: deps.defaultCollection,
+      userId,
+    });
   });
 
   app.get("/api/v1/documents", opts, async (request) => {
@@ -199,3 +135,6 @@ export async function registerDocumentRoutes(
     };
   });
 }
+
+// Re-export for tests that reference upload helpers
+export { isAllowedUpload, toPublicDocument };

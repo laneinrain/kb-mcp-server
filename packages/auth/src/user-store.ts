@@ -68,6 +68,7 @@ export class UserStore {
   private readonly insertCasUserStmt;
   private readonly insertSystemUserStmt;
   private readonly insertLocalUserStmt;
+  private readonly listAllUsersStmt;
 
   constructor(private readonly db: Database.Database) {
     this.findByEmployeeIdStmt = db.prepare(`${USER_SELECT} WHERE employee_id = ?`);
@@ -84,6 +85,10 @@ export class UserStore {
       INSERT INTO users (id, employee_id, email, password_hash, auth_source, role)
       VALUES (@id, @employeeId, NULL, @passwordHash, 'local', @role)
     `);
+    this.listAllUsersStmt = db.prepare(`
+      ${USER_SELECT}
+      ORDER BY created_at ASC
+    `);
   }
 
   findByEmployeeId(employeeId: string): AuthUser | undefined {
@@ -98,6 +103,11 @@ export class UserStore {
 
   findRowByEmployeeId(employeeId: string): UserRow | undefined {
     return this.findByEmployeeIdStmt.get(employeeId) as UserRow | undefined;
+  }
+
+  listAllUsers(): AuthUser[] {
+    const rows = this.listAllUsersStmt.all() as UserRow[];
+    return rows.map(mapRow);
   }
 
   upsertCasUser(employeeId: string): AuthUser {
