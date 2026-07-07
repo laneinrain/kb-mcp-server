@@ -1,3 +1,6 @@
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import Fastify from "fastify";
 import fastifyMultipart from "@fastify/multipart";
 import { describe, expect, it, vi } from "vitest";
@@ -19,6 +22,7 @@ async function buildApp(
 
   const app = Fastify();
   await app.register(fastifyMultipart);
+  const uploadsDir = mkdtempSync(join(tmpdir(), "kb-dedup-upload-"));
   await registerDocumentRoutes(app, {
     ingestionService: ingestionService as never,
     registry: {
@@ -29,7 +33,7 @@ async function buildApp(
     vectorStore: {
       deleteByDocumentId: vi.fn(),
     } as never,
-    uploadsDir: "./data/uploads",
+    uploadsDir,
     defaultCollection: "default",
     systemUserId: null,
   });

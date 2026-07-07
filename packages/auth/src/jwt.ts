@@ -1,19 +1,23 @@
 import { SignJWT, jwtVerify } from "jose";
+import type { UserRole } from "./types.js";
 
 export interface AccessTokenPayload {
   sub: string;
   employeeId: string;
+  role: UserRole;
 }
 
 export async function signAccessToken(params: {
   userId: string;
   employeeId: string;
+  role: UserRole;
   secret: string;
   expiresInSeconds: number;
 }): Promise<string> {
   const secret = new TextEncoder().encode(params.secret);
   return new SignJWT({
     employeeId: params.employeeId,
+    role: params.role,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(params.userId)
@@ -37,5 +41,10 @@ export async function verifyAccessToken(
   if (typeof employeeId !== "string") {
     throw new Error("Invalid token");
   }
-  return { sub: payload.sub, employeeId };
+  const role = payload.role;
+  return {
+    sub: payload.sub,
+    employeeId,
+    role: role === "admin" ? "admin" : "user",
+  };
 }

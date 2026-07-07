@@ -282,7 +282,19 @@ Cursor MCP 配置示例：
 | **CLI / 自动化** | `AUTH_ENABLED` + `API_KEY`（Bearer） | 全局（服务账号） |
 | **MCP** | 无（本阶段未变） | 检索不受用户隔离限制 |
 
-当 `USER_AUTH_ENABLED=true` 时，Web 必须使用 JWT 登录；CLI 需同时设置 `AUTH_ENABLED=true` 与 `API_KEY` 才能通过 REST 入库。用户注册页（WEB-02）暂未实现，首次登录即 JIT 建号。
+当 `USER_AUTH_ENABLED=true` 时，Web 必须使用 JWT 登录；CLI 需同时设置 `AUTH_ENABLED=true` 与 `API_KEY` 才能通过 REST 入库。
+
+**Mock 模式（`CAS_MOCK=true`）额外能力（v1.3）：**
+
+- 管理员：工号 `00000` / 密码 `admin123`（启动时自动创建，仅脚手架）
+- 注册：`POST /api/v1/auth/register`（本地用户，bcrypt，密码至少 8 位）
+- JWT 含 `role: admin | user`；JIT CAS 用户仍任意非空密码首次登录
+- 管理 API（需 `role=admin` JWT 或 `API_KEY`）：
+  - `GET /api/v1/admin/users` — 用户列表 + 文档数
+  - `GET /api/v1/admin/users/:userId/documents` — 指定用户文档
+  - `GET /api/v1/admin/documents/:documentId` — 任意文档详情
+  - `DELETE /api/v1/admin/documents/:documentId` — 删除任意文档
+  - `POST /api/v1/admin/users/:userId/documents` — 代用户上传
 
 **切勿将 `.env` 提交到 Git。**
 

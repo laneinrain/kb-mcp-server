@@ -81,3 +81,34 @@ export function createProtectedRouteOpts(
     },
   };
 }
+
+export function createAdminRouteOpts(
+  config: AppConfig,
+  app: FastifyInstance,
+  authProvider: AuthProvider | null,
+): ApiRouteOpts {
+  const base = createProtectedRouteOpts(config, app, authProvider);
+  const baseHandlers = Array.isArray(base.preHandler)
+    ? base.preHandler
+    : base.preHandler
+      ? [base.preHandler]
+      : [];
+
+  return {
+    preHandler: [
+      ...baseHandlers,
+      async (request, reply) => {
+        if (request.authMode === "service") {
+          return;
+        }
+        if (request.authUser?.role === "admin") {
+          return;
+        }
+        return reply.code(403).send({
+          error: "forbidden",
+          message: "Admin access required",
+        });
+      },
+    ],
+  };
+}

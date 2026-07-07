@@ -82,6 +82,8 @@ describe("documents multi-user isolation", () => {
           (doc) => doc.userId === userId || doc.userId === systemId,
         ),
       ),
+      listDocumentsByUserId: vi.fn(),
+      countDocumentsByUserId: vi.fn(),
       getDocument: vi.fn((id: string) => docs.find((doc) => doc.id === id)),
       deleteDocument: vi.fn(),
     };

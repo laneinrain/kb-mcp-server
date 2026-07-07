@@ -9,12 +9,13 @@ import {
   type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 import { registerAuthRoutes } from "./routes/auth.js";
+import { registerAdminRoutes } from "./routes/admin.js";
 import { registerDocumentRoutes } from "./routes/documents.js";
 import { registerHealthRoutes } from "./routes/health.js";
 import { registerSearchRoutes } from "./routes/search.js";
 import { registerSettingsRoutes } from "./routes/settings.js";
 import { createAppServices } from "./services.js";
-import { createProtectedRouteOpts, registerBearerAuthIfEnabled } from "./auth.js";
+import { createProtectedRouteOpts, createAdminRouteOpts, registerBearerAuthIfEnabled } from "./auth.js";
 import { registerWebStatic } from "./static.js";
 import "./types.js";
 
@@ -48,9 +49,29 @@ async function main(): Promise<void> {
   });
 
   await registerHealthRoutes(app, { vectorStore, embeddingClient });
-  await registerAuthRoutes(app, { authProvider: services.authProvider });
+  await registerAuthRoutes(app, {
+    authProvider: services.authProvider,
+    casMock: config.CAS_MOCK,
+  });
   await registerBearerAuthIfEnabled(app, config);
   const routeOpts = createProtectedRouteOpts(config, app, services.authProvider);
+  if (config.USER_AUTH_ENABLED) {
+    const adminRouteOpts = createAdminRouteOpts(
+      config,
+      app,
+      services.authProvider,
+    );
+    await registerAdminRoutes(app, {
+      authProvider: services.authProvider,
+      authSqlitePath: config.AUTH_SQLITE_PATH,
+      registry: services.registry,
+      ingestionService: services.ingestionService,
+      vectorStore: services.vectorStore,
+      uploadsDir: services.uploadsDir,
+      defaultCollection: services.config.DEFAULT_COLLECTION,
+      routeOpts: adminRouteOpts,
+    });
+  }
   await registerDocumentRoutes(app, {
     ingestionService: services.ingestionService,
     registry: services.registry,

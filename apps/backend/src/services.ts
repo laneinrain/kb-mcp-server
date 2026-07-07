@@ -6,6 +6,8 @@ import {
   createAuthProvider,
   openAuthDatabase,
   UserStore,
+  hashPassword,
+  ADMIN_DEFAULT_PASSWORD,
   type AuthProvider,
 } from "@kb/auth";
 import {
@@ -43,7 +45,12 @@ export async function createAppServices(): Promise<AppServices> {
   if (config.USER_AUTH_ENABLED) {
     const authDb = openAuthDatabase(config.AUTH_SQLITE_PATH);
     try {
-      systemUserId = new UserStore(authDb).ensureSystemUser().id;
+      const userStore = new UserStore(authDb);
+      systemUserId = userStore.ensureSystemUser().id;
+      if (config.CAS_MOCK) {
+        const adminHash = await hashPassword(ADMIN_DEFAULT_PASSWORD);
+        userStore.ensureAdminUser(adminHash);
+      }
     } finally {
       authDb.close();
     }

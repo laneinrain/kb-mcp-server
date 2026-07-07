@@ -1,13 +1,23 @@
-import { useState } from "react";
-import { login } from "../api/auth.js";
+import { useEffect, useState } from "react";
+import { isRegisterAvailable, login } from "../api/auth.js";
 import { ApiError } from "../types.js";
-import { setAccessToken, setCurrentUserId } from "../lib/auth-token.js";
+import {
+  setAccessToken,
+  setCurrentEmployeeId,
+  setCurrentUserId,
+  setCurrentUserRole,
+} from "../lib/auth-token.js";
 
 export function LoginPage() {
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [registerEnabled, setRegisterEnabled] = useState(false);
+
+  useEffect(() => {
+    void isRegisterAvailable().then(setRegisterEnabled);
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -27,6 +37,8 @@ export function LoginPage() {
       const result = await login(employeeId.trim(), password);
       setAccessToken(result.accessToken);
       setCurrentUserId(result.user.id);
+      setCurrentUserRole(result.user.role ?? "user");
+      setCurrentEmployeeId(result.user.employeeId);
       window.location.href = "/";
     } catch (err) {
       if (err instanceof ApiError) {
@@ -44,7 +56,9 @@ export function LoginPage() {
       <form className="login-card panel" onSubmit={handleSubmit}>
         <h1>登录</h1>
         <p className="login-hint">
-          开发环境 CAS 模拟：合法工号（4–10 位数字）+ 任意非空密码即可登录。
+          {registerEnabled
+            ? "Mock 模式：JIT CAS 用户任意非空密码；本地注册用户需使用注册密码。管理员工号 00000。"
+            : "开发环境 CAS 模拟：合法工号（4–10 位数字）+ 任意非空密码即可登录。"}
         </p>
         <div className="field">
           <label htmlFor="employee-id">工号</label>
@@ -74,6 +88,11 @@ export function LoginPage() {
         <button type="submit" className="primary-button" disabled={loading}>
           {loading ? "登录中…" : "登录"}
         </button>
+        {registerEnabled ? (
+          <p className="login-footer-link">
+            没有账号？<a href="/register">注册</a>
+          </p>
+        ) : null}
       </form>
     </div>
   );

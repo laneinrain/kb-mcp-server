@@ -35,7 +35,23 @@ function statusClass(status: DocumentRecord["status"]): string {
   return "badge badge-pending";
 }
 
-export function DocumentTable() {
+export interface DocumentTableProps {
+  listFn?: () => Promise<DocumentRecord[]>;
+  deleteFn?: (id: string) => Promise<{ status: string; documentId: string }>;
+  queryKey?: string[];
+  canDeleteDoc?: (doc: DocumentRecord) => boolean;
+  emptyTitle?: string;
+  emptyDescription?: string;
+}
+
+export function DocumentTable({
+  listFn = listDocuments,
+  deleteFn = deleteDocument,
+  queryKey = ["documents"],
+  canDeleteDoc,
+  emptyTitle = "暂无文档",
+  emptyDescription = "上传 .txt、.md 或含可提取文本的 PDF，即可建立知识库索引。",
+}: DocumentTableProps) {
   const queryClient = useQueryClient();
   const [pendingDelete, setPendingDelete] = useState<DocumentRecord | null>(
     null,
@@ -43,16 +59,16 @@ export function DocumentTable() {
   const [modalError, setModalError] = useState<string | null>(null);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["documents"],
-    queryFn: listDocuments,
+    queryKey,
+    queryFn: listFn,
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteDocument(id),
+    mutationFn: (id: string) => deleteFn(id),
     onSuccess: () => {
       setPendingDelete(null);
       setModalError(null);
-      void queryClient.invalidateQueries({ queryKey: ["documents"] });
+      void queryClient.invalidateQueries({ queryKey });
     },
     onError: (err) => {
       setModalError(
@@ -66,6 +82,13 @@ export function DocumentTable() {
   });
 
   const currentUserId = getCurrentUserId();
+
+  function resolveCanDelete(doc: DocumentRecord): boolean {
+    if (canDeleteDoc) {
+      return canDeleteDoc(doc);
+    }
+    return !doc.userId || !currentUserId || doc.userId === currentUserId;
+  }
 
   if (isLoading) {
     return <p className="muted">加载中…</p>;
@@ -88,8 +111,8 @@ export function DocumentTable() {
   if (!data?.length) {
     return (
       <div className="empty-state">
-        <h3>暂无文档</h3>
-        <p>上传 .txt、.md 或含可提取文本的 PDF，即可建立知识库索引。</p>
+        <h3>{emptyTitle}</h3>
+        <p>{emptyDescription}</p>
       </div>
     );
   }
@@ -112,10 +135,7 @@ export function DocumentTable() {
           <tbody>
             {data.map((doc) => {
               const filename = displayFilename(doc.filename);
-              const canDelete =
-                !doc.userId ||
-                !currentUserId ||
-                doc.userId === currentUserId;
+              const canDelete = resolveCanDelete(doc);
               return (
                 <tr key={doc.id}>
                   <td className="filename-cell" title={filename}>

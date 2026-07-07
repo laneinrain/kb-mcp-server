@@ -49,6 +49,8 @@ export interface DocumentRegistry {
   ): DocumentRecord | undefined;
   listDocuments(): DocumentRecord[];
   listDocumentsForUser(userId: string, systemUserId: string): DocumentRecord[];
+  listDocumentsByUserId(userId: string): DocumentRecord[];
+  countDocumentsByUserId(userId: string): number;
   deleteDocument(id: string): void;
   trackChunkIds(documentId: string, chromaIds: string[]): void;
   getChunkIds(documentId: string): string[];
@@ -98,6 +100,18 @@ export function getDocumentRegistry(db: Database.Database): DocumentRegistry {
     FROM documents
     WHERE user_id = @userId OR user_id = @systemUserId
     ORDER BY created_at DESC
+  `);
+
+  const listByUserIdStmt = db.prepare(`
+    SELECT id, filename, source_path, mime_type, status, chunk_count,
+           collection, user_id, content_hash, created_at, updated_at
+    FROM documents
+    WHERE user_id = @userId
+    ORDER BY created_at DESC
+  `);
+
+  const countByUserIdStmt = db.prepare(`
+    SELECT COUNT(*) AS count FROM documents WHERE user_id = @userId
   `);
 
   const deleteStmt = db.prepare("DELETE FROM documents WHERE id = ?");
@@ -167,6 +181,16 @@ export function getDocumentRegistry(db: Database.Database): DocumentRegistry {
     listDocumentsForUser(userId, systemUserId) {
       const rows = listForUserStmt.all({ userId, systemUserId }) as DocumentRow[];
       return rows.map(mapRow);
+    },
+
+    listDocumentsByUserId(userId) {
+      const rows = listByUserIdStmt.all({ userId }) as DocumentRow[];
+      return rows.map(mapRow);
+    },
+
+    countDocumentsByUserId(userId) {
+      const row = countByUserIdStmt.get({ userId }) as { count: number };
+      return row.count;
     },
 
     deleteDocument(id) {

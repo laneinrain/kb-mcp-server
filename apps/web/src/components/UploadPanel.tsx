@@ -1,9 +1,41 @@
 import { useRef, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../types.js";
-import { uploadFile } from "../api/documents.js";
+import { uploadFile, type UploadResult } from "../api/documents.js";
 
-export function UploadPanel() {
+export interface UploadPanelProps {
+  uploadFn?: (file: File) => Promise<UploadResult>;
+  queryKey?: string[];
+  hint?: string;
+}
+
+function uploadErrorMessage(err: unknown): string {
+  if (err instanceof ApiError) {
+    if (err.body.error === "unsupported_media_type") {
+      return "不支持的文件类型。请使用 .txt、.md、.markdown 或含可提取文本的 .pdf。";
+    }
+    if (
+      err.body.error === "unprocessable_entity" ||
+      err.message.includes("No sufficient text layer")
+    ) {
+      return "无法索引该 PDF：未检测到足够文字层。扫描版 PDF（纯图片）暂不支持，请使用可选中文字的电子版，或先用 OCR 转换后再上传。";
+    }
+    if (err.body.error === "payload_too_large") {
+      return "文件过大（上限 50MB），请压缩或拆分后重试。";
+    }
+    if (err.status === 0) {
+      return err.message;
+    }
+    return `请求失败：${err.message}`;
+  }
+  return err instanceof Error ? err.message : "上传失败";
+}
+
+export function UploadPanel({
+  uploadFn = uploadFile,
+  queryKey = ["documents"],
+  hint,
+}: UploadPanelProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const [dragOver, setDragOver] = useState(false);
@@ -11,7 +43,7 @@ export function UploadPanel() {
   const [success, setSuccess] = useState<string | null>(null);
 
   const mutation = useMutation({
-    mutationFn: (file: File) => uploadFile(file),
+    mutationFn: (file: File) => uploadFn(file),
     onSuccess: (data, file) => {
       setError(null);
       if (data.outcome === "unchanged") {
@@ -21,39 +53,12 @@ export function UploadPanel() {
       } else {
         setSuccess(`已上传 ${file.name}`);
       }
-      void queryClient.invalidateQueries({ queryKey: ["documents"] });
+      void queryClient.invalidateQueries({ queryKey });
       setTimeout(() => setSuccess(null), 3000);
     },
     onError: (err) => {
       setSuccess(null);
-      if (err instanceof ApiError) {
-        if (err.body.error === "unsupported_media_type") {
-          setError(
-            "不支持的文件类型。请使用 .txt、.md、.markdown 或含可提取文本的 .pdf。",
-          );
-          return;
-        }
-        if (
-          err.body.error === "unprocessable_entity" ||
-          err.message.includes("No sufficient text layer")
-        ) {
-          setError(
-            "无法索引该 PDF：未检测到足够文字层。扫描版 PDF（纯图片）暂不支持，请使用可选中文字的电子版，或先用 OCR 转换后再上传。",
-          );
-          return;
-        }
-        if (err.body.error === "payload_too_large") {
-          setError("文件过大（上限 50MB），请压缩或拆分后重试。");
-          return;
-        }
-        if (err.status === 0) {
-          setError(err.message);
-          return;
-        }
-        setError(`请求失败：${err.message}`);
-        return;
-      }
-      setError(err instanceof Error ? err.message : "上传失败");
+      setError(uploadErrorMessage(err));
     },
   });
 
@@ -78,6 +83,7 @@ export function UploadPanel() {
 
   return (
     <section>
+      {hint ? <p className="muted admin-upload-hint">{hint}</p> : null}
       <input
         ref={inputRef}
         type="file"

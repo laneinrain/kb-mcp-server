@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
   email TEXT UNIQUE,
   password_hash TEXT,
   auth_source TEXT NOT NULL DEFAULT 'cas',
+  role TEXT NOT NULL DEFAULT 'user',
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
