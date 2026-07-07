@@ -1,5 +1,47 @@
 # Milestones: kb-mcp-server
 
+## v1.3 Mock CAS Admin Console
+
+**Shipped:** 2026-07-07  
+**Timeline:** 2026-07-07  
+**Phases:** 10–12 | **Plans:** 9
+
+### Delivered
+
+When `CAS_MOCK=true`, a complete mock-mode user administration backend: self-service registration with bcrypt, built-in admin account (工号 `00000` / `admin123`), admin REST APIs for account directory and cross-user document management, and a 简体中文 Web admin console. Production CAS path (`CAS_MOCK=false`) unchanged — admin features disabled.
+
+### Key Accomplishments
+
+1. **Mock local auth** — `local` users with bcrypt, `role` column, JWT `role` claim, admin bootstrap on startup
+2. **Register API** — `POST /api/v1/auth/register` gated to mock mode; duplicate employeeId rejected
+3. **Admin REST** — `/api/v1/admin/*` for user directory and cross-user document list/upload/delete
+4. **Web console** — Register page (WEB-02), admin **用户管理** tab with per-user document panel
+5. **RBAC** — Non-admin JWT gets 403 on admin routes; regular user document routes unchanged
+
+### Stats
+
+| Metric | Value |
+|--------|-------|
+| v1.3 requirements | 16/16 shipped |
+| Resolves v1.2 deferral | WEB-02 register page |
+| Git range | v1.2 → feat(phase-12) |
+
+### Archives
+
+- [v1.3-ROADMAP.md](milestones/v1.3-ROADMAP.md)
+- [v1.3-REQUIREMENTS.md](milestones/v1.3-REQUIREMENTS.md)
+
+### Known Gaps
+
+- Per-user MCP auth deferred (PLAT-04)
+- Production `CasAuthProvider` not implemented
+- Admin disabled when `CAS_MOCK=false`
+- User account delete/disable not implemented
+- CONF-03 bearer auth manual UAT still not run (carried from v1.0)
+
+---
+*Milestone completed via `/gsd-complete-milestone`*
+
 ## v1.2 Multi-User Auth & Hash Upload
 
 **Shipped:** 2026-07-05  

@@ -7,7 +7,7 @@
 - ✅ **v1.0 Initial Release** — Phases 1–4 (shipped 2026-07-05)
 - ✅ **v1.1 MCP Context Tools** — Phases 5–6 (shipped 2026-07-05)
 - ✅ **v1.2 Multi-User Auth & Hash Upload** — Phases 7–9 (shipped 2026-07-05)
-- 🚧 **v1.3 Mock CAS Admin Console** — Phases 10–12 (complete 2026-07-07)
+- ✅ **v1.3 Mock CAS Admin Console** — Phases 10–12 (shipped 2026-07-07)
 
 See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived milestone details.
 
@@ -41,7 +41,7 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 </details>
 
 <details>
-<summary>✅ v1.3 Mock CAS Admin Console (Phases 10–12) — COMPLETE 2026-07-07</summary>
+<summary>✅ v1.3 Mock CAS Admin Console (Phases 10–12) — SHIPPED 2026-07-07</summary>
 
 - [x] Phase 10: Mock Local Auth & Admin Bootstrap (3/3 plans)
 - [x] Phase 11: Admin REST API (3/3 plans)
@@ -64,4 +64,4 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 | 12. Web Admin Console | v1.3 | 3/3 | Complete | 2026-07-07 |
 
 ---
-*Last updated: 2026-07-07 — Phase 10 planned*
+*Last updated: 2026-07-07 — v1.3 milestone shipped*
