@@ -1,0 +1,83 @@
+# Requirements: kb-mcp-server
+
+**Defined:** 2026-07-07  
+**Milestone:** v1.3 Mock CAS Admin Console  
+**Core Value:** An MCP client can reliably semantic-search ingested documents through a stable tool interface.
+
+## Milestone Goal
+
+When `CAS_MOCK=true` and `USER_AUTH_ENABLED=true`, provide a **complete user administration backend** for local/scaffold deployments: self-service registration, a built-in administrator account, account directory, and cross-user document management — without changing the production CAS swap path (`CAS_MOCK=false`).
+
+## v1.3 Requirements
+
+### Mock Local Auth & Admin Bootstrap
+
+- [ ] **ADMIN-01**: When `CAS_MOCK=true`, bootstrap admin user `admin` / `admin123` on startup (`auth_source=local`, `role=admin`)
+- [ ] **ADMIN-02**: Mock mode accepts alphanumeric `employeeId` for `local` users (admin + registered users); existing `^\d{4,10}$` rule retained for JIT `cas` users
+- [ ] **AUTH-07**: `POST /api/v1/auth/register` creates `local` user with bcrypt `password_hash` when `CAS_MOCK=true`; rejects duplicate `employee_id`
+- [ ] **AUTH-08**: Mock login validates bcrypt for `local` users; JIT `cas` users keep any-non-empty-password behavior on first login
+- [ ] **AUTH-09**: JWT payload includes `role: "admin" | "user"`; `validateAccessToken` returns role on `AuthUser`
+- [ ] **AUTH-10**: Register and admin bootstrap disabled when `CAS_MOCK=false` (404 or 403)
+
+### Admin REST API
+
+- [ ] **USER-05**: `GET /api/v1/admin/users` — admin-only; returns all accounts (id, employeeId, authSource, role, createdAt, documentCount)
+- [ ] **USER-06**: Admin JWT can list/get/delete **any** user's documents (not limited to own + system)
+- [ ] **USER-07**: Admin JWT can upload documents assigned to a target `userId` via `POST /api/v1/admin/users/:userId/documents`
+- [ ] **USER-08**: Non-admin JWT receives 403 on `/api/v1/admin/*` routes
+- [ ] **USER-09**: Regular user document routes unchanged (own + system legacy only)
+
+### Web Admin Console (简体中文)
+
+- [ ] **WEB-02**: Register page — employeeId + password + confirm; links to login; only when mock auth enabled
+- [ ] **WEB-05**: Admin-only **用户管理** tab visible when logged-in user has `role=admin`
+- [ ] **WEB-06**: User list table: employeeId, authSource, createdAt, document count; click row → user's documents
+- [ ] **WEB-07**: Admin document view: list/upload/delete for selected user (reuses upload/dedup outcomes)
+- [ ] **WEB-08**: Non-admin users do not see admin tab or routes
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| ADMIN-01 | 10 | Pending |
+| ADMIN-02 | 10 | Pending |
+| AUTH-07 | 10 | Pending |
+| AUTH-08 | 10 | Pending |
+| AUTH-09 | 10 | Pending |
+| AUTH-10 | 10 | Pending |
+| USER-05 | 11 | Pending |
+| USER-06 | 11 | Pending |
+| USER-07 | 11 | Pending |
+| USER-08 | 11 | Pending |
+| USER-09 | 11 | Pending |
+| WEB-02 | 12 | Pending |
+| WEB-05 | 12 | Pending |
+| WEB-06 | 12 | Pending |
+| WEB-07 | 12 | Pending |
+| WEB-08 | 12 | Pending |
+
+**Coverage:** 0/16
+
+## Out of Scope (v1.3)
+
+- Production `CasAuthProvider` implementation
+- Per-user MCP auth / MCP document scoping (PLAT-04)
+- Admin features when `CAS_MOCK=false`
+- Password reset / email verification
+- User disable/delete (list + doc management only)
+- OAuth / LDAP / real CAS integration
+
+## Key Decisions (locked for planning)
+
+| Decision | Rationale |
+|----------|-----------|
+| Admin only in `CAS_MOCK=true` | Scaffold/dev operator console; production uses company CAS |
+| Hardcoded `admin` / `admin123` | Explicit user request; documented in README + `.env.example` warning |
+| `role` column on `users` table | Simple RBAC without separate roles table |
+| bcrypt for `local` users | Real password validation for registered + admin accounts |
+| Admin routes under `/api/v1/admin/*` | Clear separation from user-scoped routes |
+| JWT carries `role` claim | Web can gate admin tab without extra round-trip |
+
+---
+
+*Created via `/gsd-new-milestone` 2026-07-07*
