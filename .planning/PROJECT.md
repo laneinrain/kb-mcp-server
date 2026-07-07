@@ -4,7 +4,7 @@
 
 A TypeScript/Node knowledge-base MCP server. AI clients connect via **stdio** or **Streamable HTTP** to **semantic-search** ingested documents and **expand hits** with `read_around` / `read_file`. Ingestion and administration happen through a Fastify REST API, Vite/React web admin (简体中文), and Commander CLI. Documents in txt, markdown, and text-layer PDF are chunked, embedded via CherryIn, and stored in local Chroma for semantic retrieval.
 
-**v1.2 adds:** JWT multi-user auth (`@kb/auth` with Mock CAS → production swap), per-user document isolation, and content-hash dedup on filename re-uploads.
+**v1.3 adds:** Mock-mode user administration — local registration, admin account (工号 `00000`), cross-user document management, and 简体中文 admin console (gated to `CAS_MOCK=true`).
 
 ## Core Value
 
@@ -22,38 +22,28 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - ✓ `@kb/auth` module with MockCasAuthProvider and JWT login — v1.2 Phase 7
 - ✓ Per-user document isolation (JWT + composite API_KEY service path) — v1.2 Phase 8
 - ✓ Content-hash dedup: created / unchanged / replaced outcomes — v1.2 Phase 9
-
-### Active (v1.3 — Mock CAS Admin Console)
-
-- [ ] **ADMIN-01**: Bootstrap 工号 `00000` / `admin123` when `CAS_MOCK=true`
-- [ ] **AUTH-07**: Register API with bcrypt for local users (mock mode only)
-- [ ] **AUTH-09**: JWT `role` claim (`admin` | `user`)
-- [x] **USER-05–09**: Admin REST — list all users, manage any user's documents
-- [x] **WEB-02**: Register page (简体中文)
-- [x] **WEB-05–08**: Admin 用户管理 tab — user list + per-user document management
-
-### Active Milestone Scope
-
-When `CAS_MOCK=true`: complete user admin backend — registration, hardcoded admin account, all-accounts query, cross-user document management. Disabled when `CAS_MOCK=false`.
+- ✓ Mock local auth with bcrypt + admin bootstrap (`00000`/`admin123`) — v1.3 Phase 10
+- ✓ Register API + JWT `role` claim — v1.3 Phase 10
+- ✓ Admin REST: user directory + cross-user document management — v1.3 Phase 11
+- ✓ Register page + admin 用户管理 Web console — v1.3 Phase 12
 
 ### Out of Scope (carried forward)
 
 - OCR / scanned PDF — text-layer PDF only
 - Full OAuth/OIDC/LDAP implementation — interface + mock CAS shipped; production swap documented
-- WEB-02 user registration page — **in scope v1.3** (mock mode only)
-- Per-user MCP tool auth — MCP stays global corpus
+- Per-user MCP tool auth — MCP stays global corpus (PLAT-04)
 - Hybrid BM25 / rerank — deferred (RETR-01/02)
 - Upload/CRUD via MCP tools — ingestion remains backend/CLI/Web
+- User account delete/disable — admin list + doc management only
+- Admin features when `CAS_MOCK=false` — production uses company CAS
 
-## Current State (v1.3 planned 2026-07-07)
+## Current State (2026-07-07)
 
-**Shipped milestones:** v1.0 (Phases 1–4) + v1.1 (Phases 5–6) + v1.2 (Phases 7–9) — 9 phases, 27 plans.
-
-**Active milestone:** v1.3 Mock CAS Admin Console — **COMPLETE** (Phases 10–12, 16/16 requirements).
+**Shipped milestones:** v1.0 (Phases 1–4) + v1.1 (Phases 5–6) + v1.2 (Phases 7–9) + v1.3 (Phases 10–12) — 12 phases, 36 plans.
 
 **MCP tools:** `search_knowledge`, `read_around`, `read_file` — global corpus.
 
-**Auth:** Optional `USER_AUTH_ENABLED` with JWT (Web) and `API_KEY` (CLI service ingest). Mock CAS for dev; `CAS_MOCK=false` + `CAS_SERVER_URL` for production.
+**Auth:** Optional `USER_AUTH_ENABLED` with JWT (Web) and `API_KEY` (CLI service ingest). Mock CAS for dev with local registration and admin console; `CAS_MOCK=false` + `CAS_SERVER_URL` for production.
 
 **Upload dedup:** `(user_id, filename)` key; SHA-256 of normalized parsed text; outcomes surfaced in REST/Web/CLI.
 
@@ -77,22 +67,25 @@ When `CAS_MOCK=true`: complete user admin backend — registration, hardcoded ad
 |----------|-----------|---------|
 | MCP retrieval-only; ingestion via backend | Simple MCP tools | ✓ Good |
 | `@kb/auth` swappable module | Production CAS swap without Web changes | ✓ Good (v1.2) |
-| Mock CAS + employeeId JIT users | Company auth pattern; no register page in v1.2 | ✓ Good |
+| Mock CAS + employeeId JIT users | Company auth pattern | ✓ Good |
 | Composite JWT + API_KEY | Web users vs CLI bulk ingest | ✓ Good (v1.2) |
 | Hash on parsed text, keyed by `(user_id, filename)` | Skip redundant embeds on re-upload | ✓ Good (v1.2) |
 | MCP global corpus | User isolation on REST/Web only | ✓ Good (by design) |
+| Admin only in `CAS_MOCK=true` | Scaffold operator console | ✓ Good (v1.3) |
+| `role` column + JWT claim | Simple RBAC without roles table | ✓ Good (v1.3) |
 | Chroma local vector store | Lightweight single-machine scaffold | ✓ Good |
 | Text-layer PDF only | Reduces v1 complexity | ✓ Good |
 
 <details>
-<summary>Prior milestone context (v1.0–v1.1)</summary>
+<summary>Prior milestone context (v1.0–v1.2)</summary>
 
 - ContextService shared by MCP + backend SQLite settings (v1.1)
 - DATA_DIR/SQLITE_PATH resolve to monorepo root
 - Optional single API key bearer (v1.0)
 - Streamable HTTP over legacy SSE
+- WEB-02 register page deferred in v1.2, shipped in v1.3
 
 </details>
 
 ---
-*Last updated: 2026-07-07 — v1.3 milestone planned*
+*Last updated: 2026-07-07 — v1.3 milestone shipped*
