@@ -43,7 +43,7 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 <details>
 <summary>🚧 v1.3 Mock CAS Admin Console (Phases 10–12) — PLANNED</summary>
 
-- [ ] Phase 10: Mock Local Auth & Admin Bootstrap (0/3 plans)
+- [ ] Phase 10: Mock Local Auth & Admin Bootstrap (0/3 plans) — **planned**
 - [ ] Phase 11: Admin REST API (0/3 plans)
 - [ ] Phase 12: Web Admin Console (0/3 plans)
 
@@ -64,4 +64,4 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 | 12. Web Admin Console | v1.3 | 0/3 | Planned | — |
 
 ---
-*Last updated: 2026-07-07 — v1.3 milestone planned*
+*Last updated: 2026-07-07 — Phase 10 planned*
