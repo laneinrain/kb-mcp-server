@@ -48,7 +48,10 @@ async function main(): Promise<void> {
   });
 
   await registerHealthRoutes(app, { vectorStore, embeddingClient });
-  await registerAuthRoutes(app, { authProvider: services.authProvider });
+  await registerAuthRoutes(app, {
+    authProvider: services.authProvider,
+    casMock: config.CAS_MOCK,
+  });
   await registerBearerAuthIfEnabled(app, config);
   const routeOpts = createProtectedRouteOpts(config, app, services.authProvider);
   await registerDocumentRoutes(app, {

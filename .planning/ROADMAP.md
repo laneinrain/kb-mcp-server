@@ -41,9 +41,9 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 </details>
 
 <details>
-<summary>🚧 v1.3 Mock CAS Admin Console (Phases 10–12) — PLANNED</summary>
+<summary>🚧 v1.3 Mock CAS Admin Console (Phases 10–12) — IN PROGRESS</summary>
 
-- [ ] Phase 10: Mock Local Auth & Admin Bootstrap (0/3 plans) — **planned**
+- [x] Phase 10: Mock Local Auth & Admin Bootstrap (3/3 plans) — **complete 2026-07-07**
 - [ ] Phase 11: Admin REST API (0/3 plans)
 - [ ] Phase 12: Web Admin Console (0/3 plans)
 
@@ -59,7 +59,7 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 | 7. Auth Center Module | v1.2 | 3/3 | Complete | 2026-07-05 |
 | 8. Multi-User Backend & Web Auth | v1.2 | 3/3 | Complete | 2026-07-05 |
 | 9. Filename Content-Hash Dedup | v1.2 | 3/3 | Complete | 2026-07-05 |
-| 10. Mock Local Auth & Admin Bootstrap | v1.3 | 0/3 | Planned | — |
+| 10. Mock Local Auth & Admin Bootstrap | v1.3 | 3/3 | Complete | 2026-07-07 |
 | 11. Admin REST API | v1.3 | 0/3 | Planned | — |
 | 12. Web Admin Console | v1.3 | 0/3 | Planned | — |
 

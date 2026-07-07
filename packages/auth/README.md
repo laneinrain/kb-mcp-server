@@ -30,17 +30,14 @@ interface AuthProvider {
 
 
 
-When `CAS_MOCK=true` (scaffold default), login succeeds if:
+When `CAS_MOCK=true` (scaffold default):
 
+- **JIT CAS users** (`auth_source=cas`): login with valid 工号 + any non-empty password; user created on first login.
+- **Local users** (`auth_source=local`): bcrypt password verification (register + admin).
+- **Admin bootstrap**: 工号 `00000` / password `admin123` created on backend startup when `CAS_MOCK=true` (**scaffold only — do not expose to public networks**).
+- **`POST /api/v1/auth/register`**: create local user (min 8 char password); disabled when `CAS_MOCK=false`.
 
-
-- `employeeId` matches `^\d{4,10}$` (工号)
-
-- `password` is non-empty (**any password** — mock does not validate correctness)
-
-
-
-No call to a real CAS server. Users are JIT-created in SQLite on first login.
+JWT includes `role: admin | user`.
 
 
 
@@ -120,7 +117,7 @@ Separate from legacy `AUTH_ENABLED` / `API_KEY` (service/API-key mode).
 
 
 
-When `USER_AUTH_ENABLED=true`, CLI ingest requires `AUTH_ENABLED=true` and `API_KEY` (REST path). Per-user CLI login is deferred. User self-registration (WEB-02) is deferred — JIT on first login only.
+When `USER_AUTH_ENABLED=true`, CLI ingest requires `AUTH_ENABLED=true` and `API_KEY` (REST path). Per-user CLI login is deferred. Mock-mode register + admin console ship in v1.3 Phase 10–12.
 
 
 
