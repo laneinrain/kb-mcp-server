@@ -154,21 +154,35 @@ pnpm --filter @kb/web build
 pnpm build
 ```
 
-**在 Backend 上同时提供 API + 静态页面：**
+**一键生产/一体化启动（推荐）：**
+
+```bash
+pnpm start:prod
+```
+
+等价于：`pnpm build` → 设置 `NODE_ENV=production` → 启动 Chroma + Backend（`:3000` 托管 API + 静态 Web）+ MCP HTTP（`:3100`）。
+
+已构建过可跳过编译：
+
+```bash
+pnpm start:prod -- --skip-build
+```
+
+浏览器打开 **http://127.0.0.1:3000**（页面与 API 同端口）。
+
+**手动分步（可选）：**
 
 ```bash
 # 方式 A：开发环境验证「单端口部署」（PowerShell）
 pnpm --filter @kb/web build
 $env:SERVE_WEB="true"; pnpm --filter @kb/backend dev
 
-# 方式 B：生产模式（NODE_ENV=production 也会自动托管静态页）
+# 方式 B：仅 Backend 生产模式（需自行启动 Chroma / MCP）
 pnpm build
-$env:NODE_ENV="production"; pnpm --filter @kb/backend dev
+$env:NODE_ENV="production"; pnpm --filter @kb/backend start
 ```
 
 Linux / macOS 将 `$env:SERVE_WEB="true"` 换成 `SERVE_WEB=true` 前缀即可。
-
-访问 **http://127.0.0.1:3000**（页面与 API 均在 3000）。
 
 > 默认只运行 `pnpm --filter @kb/backend dev` 且未设置 `SERVE_WEB` 时，`:3000` **仅提供 REST API**，不提供 Web 界面。
 
@@ -184,8 +198,8 @@ pnpm --filter @kb/web preview
 | 场景 | 命令 | 浏览器打开 |
 |------|------|------------|
 | 改 Web UI、本地上传/搜索测试 | `pnpm dev` | http://localhost:5173 |
-| 验证单端口部署形态 | `pnpm --filter @kb/web build` + `SERVE_WEB=true` 启动 backend | http://127.0.0.1:3000 |
-| 正式构建产物 | `pnpm build` | 生产环境 Backend 监听 3000 |
+| 验证单端口部署形态 | `pnpm start:prod` 或 `SERVE_WEB=true` 启动 backend | http://127.0.0.1:3000 |
+| 正式构建产物 | `pnpm start:prod` | Backend :3000 + MCP :3100 |
 
 ## MCP 配置
 

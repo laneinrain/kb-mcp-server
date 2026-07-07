@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "tsx watch src/http.ts",
     "dev:stdio": "tsx src/stdio.ts",
+    "start": "node dist/http.js",
     "build": "tsc -p tsconfig.json",
     "test": "vitest run"
   },

@@ -74,9 +74,9 @@ function resolveRepoRelativePath(relativePath: string): string {
   return path.resolve(findMonorepoRoot(...roots), relativePath);
 }
 
-if (process.env.NODE_ENV !== "production") {
-  const envPath = findEnvFile();
-  loadDotenv(envPath ? { path: envPath, quiet: true } : { quiet: true });
+const envPath = findEnvFile();
+if (envPath) {
+  loadDotenv({ path: envPath, quiet: true });
 }
 
 /** Dev-only JWT for mock CAS login; never used when NODE_ENV=production. */
