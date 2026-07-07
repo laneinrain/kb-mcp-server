@@ -45,7 +45,7 @@ Plan: none
 | Decision | Rationale |
 |----------|-----------|
 | Admin console only when `CAS_MOCK=true` | Scaffold operator tool; production CAS unchanged |
-| Hardcoded `admin` / `admin123` | User request; documented security warning |
+| Hardcoded 工号 `00000` / `admin123` | User request; documented security warning |
 | `role` column + JWT claim | Simple RBAC for admin vs user |
 | bcrypt for `local` auth_source | Real passwords for register + admin |
 | Admin routes at `/api/v1/admin/*` | Clear separation from user routes |

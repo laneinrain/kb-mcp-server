@@ -12,8 +12,8 @@ When `CAS_MOCK=true` and `USER_AUTH_ENABLED=true`, provide a **complete user adm
 
 ### Mock Local Auth & Admin Bootstrap
 
-- [ ] **ADMIN-01**: When `CAS_MOCK=true`, bootstrap admin user `admin` / `admin123` on startup (`auth_source=local`, `role=admin`)
-- [ ] **ADMIN-02**: Mock mode accepts alphanumeric `employeeId` for `local` users (admin + registered users); existing `^\d{4,10}$` rule retained for JIT `cas` users
+- [ ] **ADMIN-01**: When `CAS_MOCK=true`, bootstrap admin user 工号 `00000` / `admin123` on startup (`auth_source=local`, `role=admin`)
+- [ ] **ADMIN-02**: `00000` reserved for admin bootstrap; `00000000` remains system-only (non-loginable); registered `local` users use `^\d{4,10}$` or alphanumeric per register validation
 - [ ] **AUTH-07**: `POST /api/v1/auth/register` creates `local` user with bcrypt `password_hash` when `CAS_MOCK=true`; rejects duplicate `employee_id`
 - [ ] **AUTH-08**: Mock login validates bcrypt for `local` users; JIT `cas` users keep any-non-empty-password behavior on first login
 - [ ] **AUTH-09**: JWT payload includes `role: "admin" | "user"`; `validateAccessToken` returns role on `AuthUser`
@@ -72,7 +72,7 @@ When `CAS_MOCK=true` and `USER_AUTH_ENABLED=true`, provide a **complete user adm
 | Decision | Rationale |
 |----------|-----------|
 | Admin only in `CAS_MOCK=true` | Scaffold/dev operator console; production uses company CAS |
-| Hardcoded `admin` / `admin123` | Explicit user request; documented in README + `.env.example` warning |
+| Hardcoded 工号 `00000` / `admin123` | Explicit user request; documented in README + `.env.example` warning |
 | `role` column on `users` table | Simple RBAC without separate roles table |
 | bcrypt for `local` users | Real password validation for registered + admin accounts |
 | Admin routes under `/api/v1/admin/*` | Clear separation from user-scoped routes |
