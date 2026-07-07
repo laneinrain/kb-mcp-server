@@ -29,11 +29,11 @@ When `CAS_MOCK=true` and `USER_AUTH_ENABLED=true`, provide a **complete user adm
 
 ### Web Admin Console (简体中文)
 
-- [ ] **WEB-02**: Register page — employeeId + password + confirm; links to login; only when mock auth enabled
-- [ ] **WEB-05**: Admin-only **用户管理** tab visible when logged-in user has `role=admin`
-- [ ] **WEB-06**: User list table: employeeId, authSource, createdAt, document count; click row → user's documents
-- [ ] **WEB-07**: Admin document view: list/upload/delete for selected user (reuses upload/dedup outcomes)
-- [ ] **WEB-08**: Non-admin users do not see admin tab or routes
+- [x] **WEB-02**: Register page — employeeId + password + confirm; links to login; only when mock auth enabled
+- [x] **WEB-05**: Admin-only **用户管理** tab visible when logged-in user has `role=admin`
+- [x] **WEB-06**: User list table: employeeId, authSource, createdAt, document count; click row → user's documents
+- [x] **WEB-07**: Admin document view: list/upload/delete for selected user (reuses upload/dedup outcomes)
+- [x] **WEB-08**: Non-admin users do not see admin tab or routes
 
 ## Traceability
 
@@ -50,13 +50,13 @@ When `CAS_MOCK=true` and `USER_AUTH_ENABLED=true`, provide a **complete user adm
 | USER-07 | 11 | Complete |
 | USER-08 | 11 | Complete |
 | USER-09 | 11 | Complete |
-| WEB-02 | 12 | Pending |
-| WEB-05 | 12 | Pending |
-| WEB-06 | 12 | Pending |
-| WEB-07 | 12 | Pending |
-| WEB-08 | 12 | Pending |
+| WEB-02 | 12 | Complete |
+| WEB-05 | 12 | Complete |
+| WEB-06 | 12 | Complete |
+| WEB-07 | 12 | Complete |
+| WEB-08 | 12 | Complete |
 
-**Coverage:** 11/16
+**Coverage:** 16/16
 
 ## Out of Scope (v1.3)
 

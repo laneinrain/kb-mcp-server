@@ -445,3 +445,57 @@ body {
   min-height: 44px;
   margin-top: 8px;
 }
+
+.login-footer-link {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: #71717a;
+}
+
+.login-footer-link a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-footer-link a:hover {
+  text-decoration: underline;
+}
+
+.header-employee-id {
+  margin-left: auto;
+  margin-right: 12px;
+  font-size: 13px;
+}
+
+.section-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.admin-panel {
+  gap: 32px;
+}
+
+.admin-user-table .admin-user-row {
+  cursor: pointer;
+}
+
+.admin-user-table .admin-user-row:hover {
+  background: #f4f4f5;
+}
+
+.admin-user-table .admin-user-row.selected {
+  background: #eff6ff;
+}
+
+.admin-user-docs {
+  border-top: 1px solid #e4e4e7;
+  padding-top: 24px;
+}
+
+.admin-upload-hint {
+  margin: 0 0 12px;
+}

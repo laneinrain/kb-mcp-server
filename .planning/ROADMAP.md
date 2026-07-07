@@ -7,7 +7,7 @@
 - ✅ **v1.0 Initial Release** — Phases 1–4 (shipped 2026-07-05)
 - ✅ **v1.1 MCP Context Tools** — Phases 5–6 (shipped 2026-07-05)
 - ✅ **v1.2 Multi-User Auth & Hash Upload** — Phases 7–9 (shipped 2026-07-05)
-- 🚧 **v1.3 Mock CAS Admin Console** — Phases 10–12 (planned 2026-07-07)
+- 🚧 **v1.3 Mock CAS Admin Console** — Phases 10–12 (complete 2026-07-07)
 
 See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived milestone details.
 
@@ -41,11 +41,11 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 </details>
 
 <details>
-<summary>🚧 v1.3 Mock CAS Admin Console (Phases 10–12) — IN PROGRESS</summary>
+<summary>✅ v1.3 Mock CAS Admin Console (Phases 10–12) — COMPLETE 2026-07-07</summary>
 
-- [x] Phase 10: Mock Local Auth & Admin Bootstrap (3/3 plans) — **complete 2026-07-07**
-- [x] Phase 11: Admin REST API (3/3 plans) — **complete 2026-07-07**
-- [ ] Phase 12: Web Admin Console (0/3 plans)
+- [x] Phase 10: Mock Local Auth & Admin Bootstrap (3/3 plans)
+- [x] Phase 11: Admin REST API (3/3 plans)
+- [x] Phase 12: Web Admin Console (3/3 plans)
 
 </details>
 
@@ -61,7 +61,7 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 | 9. Filename Content-Hash Dedup | v1.2 | 3/3 | Complete | 2026-07-05 |
 | 10. Mock Local Auth & Admin Bootstrap | v1.3 | 3/3 | Complete | 2026-07-07 |
 | 11. Admin REST API | v1.3 | 3/3 | Complete | 2026-07-07 |
-| 12. Web Admin Console | v1.3 | 0/3 | Planned | — |
+| 12. Web Admin Console | v1.3 | 3/3 | Complete | 2026-07-07 |
 
 ---
 *Last updated: 2026-07-07 — Phase 10 planned*

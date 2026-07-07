@@ -29,8 +29,8 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - [ ] **AUTH-07**: Register API with bcrypt for local users (mock mode only)
 - [ ] **AUTH-09**: JWT `role` claim (`admin` | `user`)
 - [x] **USER-05–09**: Admin REST — list all users, manage any user's documents
-- [ ] **WEB-02**: Register page (简体中文)
-- [ ] **WEB-05–08**: Admin 用户管理 tab — user list + per-user document management
+- [x] **WEB-02**: Register page (简体中文)
+- [x] **WEB-05–08**: Admin 用户管理 tab — user list + per-user document management
 
 ### Active Milestone Scope
 
@@ -49,7 +49,7 @@ When `CAS_MOCK=true`: complete user admin backend — registration, hardcoded ad
 
 **Shipped milestones:** v1.0 (Phases 1–4) + v1.1 (Phases 5–6) + v1.2 (Phases 7–9) — 9 phases, 27 plans.
 
-**Active milestone:** v1.3 Mock CAS Admin Console (Phases 10–12) — register, admin account, user directory, cross-user doc management (mock mode only).
+**Active milestone:** v1.3 Mock CAS Admin Console — **COMPLETE** (Phases 10–12, 16/16 requirements).
 
 **MCP tools:** `search_knowledge`, `read_around`, `read_file` — global corpus.
 

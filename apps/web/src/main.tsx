@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App.js";
 import { LoginPage } from "./pages/LoginPage.js";
+import { RegisterPage } from "./pages/RegisterPage.js";
 import { hasAccessToken } from "./lib/auth-token.js";
 import "./App.css";
 
@@ -15,6 +16,15 @@ function Root() {
   }
 
   const path = window.location.pathname;
+
+  if (path === "/register") {
+    if (hasAccessToken()) {
+      window.location.replace("/");
+      return null;
+    }
+    return <RegisterPage />;
+  }
+
   if (path === "/login") {
     if (hasAccessToken()) {
       window.location.replace("/");
