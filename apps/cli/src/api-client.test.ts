@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { AppConfig } from "@kb/config";
 import { createApiClient } from "./api-client.js";
 
 const baseConfig = {
@@ -8,8 +9,14 @@ const baseConfig = {
   CHROMA_PORT: 8000,
   CHUNK_SIZE: 1024,
   CHUNK_OVERLAP: 154,
+  READ_AROUND_WINDOW_DEFAULT: 1,
+  READ_AROUND_WINDOW_MAX: 3,
+  READ_AROUND_MAX_CHARS: 32000,
+  READ_FILE_MAX_CHUNKS: 50,
+  READ_FILE_MAX_CHARS: 64000,
   SQLITE_PATH: "./data/sqlite/registry.db",
   DATA_DIR: "./data",
+  AUTH_SQLITE_PATH: "./data/sqlite/auth.db",
   BACKEND_HOST: "127.0.0.1",
   BACKEND_PORT: 3000,
   MCP_HTTP_HOST: "127.0.0.1",
@@ -18,7 +25,11 @@ const baseConfig = {
   EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
   EMBEDDING_DIMENSIONS: 1024,
   AUTH_ENABLED: false,
-} as const;
+  USER_AUTH_ENABLED: false,
+  JWT_EXPIRES_IN: 604800,
+  AUTH_PROVIDER: "cas",
+  CAS_MOCK: true,
+} as AppConfig;
 
 afterEach(() => {
   vi.restoreAllMocks();
