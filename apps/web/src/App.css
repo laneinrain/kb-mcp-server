@@ -414,7 +414,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 24px 16px;
-  background: #7ec8e3 url("/login_in_backgrand.png") center / cover no-repeat;
+  background: #7ec8e3 center / cover no-repeat;
 }
 
 .login-card {

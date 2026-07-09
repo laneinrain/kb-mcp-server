@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import loginBackgroundUrl from "../../png/login_in_backgrand.png?url";
 import { isRegisterAvailable, login } from "../api/auth.js";
 import { ApiError } from "../types.js";
 import {
@@ -52,7 +53,10 @@ export function LoginPage() {
   }
 
   return (
-    <div className="login-page">
+    <div
+      className="login-page"
+      style={{ backgroundImage: `url(${loginBackgroundUrl})` }}
+    >
       <form className="login-card panel" onSubmit={handleSubmit}>
         <h1>登录</h1>
         <p className="login-hint">
