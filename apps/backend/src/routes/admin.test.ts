@@ -156,9 +156,14 @@ describe("admin routes", () => {
       employeeId: string;
       role: string;
       documentCount: number;
+      createdAt: string;
+      lastLoginAt: string | null;
     }>;
     expect(body.some((user) => user.employeeId === ADMIN_EMPLOYEE_ID)).toBe(true);
     expect(body.some((user) => user.employeeId === "12345678")).toBe(true);
+    const adminRow = body.find((user) => user.employeeId === ADMIN_EMPLOYEE_ID);
+    expect(adminRow?.lastLoginAt).toMatch(/^\d{4}-\d{2}-\d{2}/);
+    expect(adminRow?.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}/);
   });
 
   it("GET /api/v1/admin/users returns 403 for non-admin JWT", async () => {

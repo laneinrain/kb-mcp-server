@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS users (
   password_hash TEXT,
   auth_source TEXT NOT NULL DEFAULT 'cas',
   role TEXT NOT NULL DEFAULT 'user',
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  last_login_at TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_employee_id ON users(employee_id);

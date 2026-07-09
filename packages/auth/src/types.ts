@@ -7,6 +7,7 @@ export interface AuthUser {
   authSource: "cas" | "local" | "system";
   role: UserRole;
   createdAt: string;
+  lastLoginAt: string | null;
 }
 
 export interface LoginInput {

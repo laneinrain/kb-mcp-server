@@ -21,6 +21,7 @@ interface UserRow {
   auth_source: "cas" | "local" | "system";
   role: UserRole;
   created_at: string;
+  last_login_at: string | null;
 }
 
 function mapRow(row: UserRow): AuthUser {
@@ -31,6 +32,7 @@ function mapRow(row: UserRow): AuthUser {
     authSource: row.auth_source,
     role: row.role ?? "user",
     createdAt: row.created_at,
+    lastLoginAt: row.last_login_at ?? null,
   };
 }
 
@@ -58,7 +60,7 @@ export function openAuthDatabase(dbPath: string): Database.Database {
 }
 
 const USER_SELECT = `
-  SELECT id, employee_id, email, password_hash, auth_source, role, created_at
+  SELECT id, employee_id, email, password_hash, auth_source, role, created_at, last_login_at
   FROM users
 `;
 
@@ -69,6 +71,8 @@ export class UserStore {
   private readonly insertSystemUserStmt;
   private readonly insertLocalUserStmt;
   private readonly listAllUsersStmt;
+  private readonly recordLastLoginStmt;
+  private readonly promoteAdminUserStmt;
 
   constructor(private readonly db: Database.Database) {
     this.findByEmployeeIdStmt = db.prepare(`${USER_SELECT} WHERE employee_id = ?`);
@@ -89,6 +93,14 @@ export class UserStore {
       ${USER_SELECT}
       ORDER BY created_at ASC
     `);
+    this.recordLastLoginStmt = db.prepare(`
+      UPDATE users SET last_login_at = datetime('now') WHERE id = ?
+    `);
+    this.promoteAdminUserStmt = db.prepare(`
+      UPDATE users
+      SET password_hash = @passwordHash, auth_source = 'local', role = 'admin'
+      WHERE employee_id = @employeeId
+    `);
   }
 
   findByEmployeeId(employeeId: string): AuthUser | undefined {
@@ -108,6 +120,11 @@ export class UserStore {
   listAllUsers(): AuthUser[] {
     const rows = this.listAllUsersStmt.all() as UserRow[];
     return rows.map(mapRow);
+  }
+
+  recordLastLogin(userId: string): AuthUser | undefined {
+    this.recordLastLoginStmt.run(userId);
+    return this.findById(userId);
   }
 
   upsertCasUser(employeeId: string): AuthUser {
@@ -137,7 +154,15 @@ export class UserStore {
   ensureAdminUser(passwordHash: string): AuthUser {
     const existing = this.findByEmployeeId(ADMIN_EMPLOYEE_ID);
     if (existing) {
-      return existing;
+      if (existing.role === "admin" && existing.authSource === "local") {
+        return existing;
+      }
+      // Repair JIT CAS user created before admin bootstrap (00000 + any password).
+      this.promoteAdminUserStmt.run({
+        employeeId: ADMIN_EMPLOYEE_ID,
+        passwordHash,
+      });
+      return this.findByEmployeeId(ADMIN_EMPLOYEE_ID)!;
     }
     const id = randomUUID();
     this.insertLocalUserStmt.run({

@@ -47,6 +47,18 @@ describe("UserStore", () => {
     expect(again.id).toBe(admin.id);
   });
 
+  it("ensureAdminUser repairs JIT cas 00000 to local admin", async () => {
+    const store = createStore();
+    store.upsertCasUser(ADMIN_EMPLOYEE_ID);
+    expect(store.findByEmployeeId(ADMIN_EMPLOYEE_ID)?.role).toBe("user");
+
+    const hash = await hashPassword(ADMIN_DEFAULT_PASSWORD);
+    const admin = store.ensureAdminUser(hash);
+
+    expect(admin.role).toBe("admin");
+    expect(admin.authSource).toBe("local");
+  });
+
   it("registerLocalUser stores bcrypt hash and role=user", async () => {
     const store = createStore();
     const hash = await hashPassword("password123");
@@ -92,5 +104,18 @@ describe("UserStore", () => {
     expect(() =>
       store.registerLocalUser({ employeeId: "12345", passwordHash: hash }),
     ).toThrow(AuthConflictError);
+  });
+
+  it("recordLastLogin updates lastLoginAt", () => {
+    const store = createStore();
+    store.upsertCasUser("12345678");
+
+    expect(store.findByEmployeeId("12345678")?.lastLoginAt).toBeNull();
+
+    const updated = store.recordLastLogin(
+      store.findByEmployeeId("12345678")!.id,
+    );
+
+    expect(updated?.lastLoginAt).toMatch(/^\d{4}-\d{2}-\d{2}/);
   });
 });

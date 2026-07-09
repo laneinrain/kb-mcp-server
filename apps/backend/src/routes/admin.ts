@@ -37,6 +37,7 @@ export async function registerAdminRoutes(
         authSource: user.authSource,
         role: user.role,
         createdAt: user.createdAt,
+        lastLoginAt: user.lastLoginAt,
         documentCount: deps.registry.countDocumentsByUserId(user.id),
       }));
     } finally {

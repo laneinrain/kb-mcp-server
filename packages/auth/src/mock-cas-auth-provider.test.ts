@@ -105,6 +105,7 @@ describe("MockCasAuthProvider", () => {
 
     expect(result.user.role).toBe("admin");
     expect(result.user.employeeId).toBe(ADMIN_EMPLOYEE_ID);
+    expect(result.user.lastLoginAt).toMatch(/^\d{4}-\d{2}-\d{2}/);
   });
 
   it("rejects wrong admin password", async () => {
