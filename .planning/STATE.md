@@ -4,7 +4,7 @@ milestone: v1.3
 milestone_name: Mock CAS Admin Console
 status: shipped
 last_updated: "2026-07-07T08:15:00.000Z"
-last_activity: 2026-07-07 -- v1.3 milestone archived and tagged
+last_activity: 2026-07-09 -- Completed quick task 260709: login page background image
 progress:
   total_phases: 3
   completed_phases: 3
@@ -55,3 +55,9 @@ Last activity: 2026-07-07 — milestone archived
 ## Blockers
 
 None
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260709 | Login page beach background image | 2026-07-09 | (pending) | [260709-login-bg](./quick/260709-login-bg/) |
