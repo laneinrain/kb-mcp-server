@@ -103,6 +103,8 @@ export class MockCasAuthProvider implements AuthProvider {
       user = this.store.upsertCasUser(input.employeeId);
     }
 
+    user = this.store.recordLastLogin(user.id) ?? user;
+
     const accessToken = await signAccessToken({
       userId: user.id,
       employeeId: user.employeeId,

@@ -8,6 +8,7 @@ export interface AdminUser {
   authSource: "cas" | "local" | "system";
   role: "admin" | "user";
   createdAt: string;
+  lastLoginAt: string | null;
   documentCount: number;
 }
 

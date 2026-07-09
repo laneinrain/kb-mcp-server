@@ -11,7 +11,10 @@ import {
 import { DocumentTable } from "./DocumentTable.js";
 import { UploadPanel } from "./UploadPanel.js";
 
-function formatDate(iso: string): string {
+function formatDate(iso: string | null): string {
+  if (!iso) {
+    return "从未登录";
+  }
   return iso.slice(0, 16).replace("T", " ");
 }
 
@@ -63,11 +66,12 @@ export function AdminUsersPanel() {
           <table className="doc-table admin-user-table">
             <thead>
               <tr>
-                <th>工号</th>
+                <th>工号（用户名）</th>
                 <th>来源</th>
                 <th>角色</th>
                 <th>文档数</th>
-                <th>创建时间</th>
+                <th>注册时间</th>
+                <th>最后登录</th>
               </tr>
             </thead>
             <tbody>
@@ -84,6 +88,7 @@ export function AdminUsersPanel() {
                   <td>{user.role === "admin" ? "管理员" : "用户"}</td>
                   <td>{user.documentCount}</td>
                   <td className="muted">{formatDate(user.createdAt)}</td>
+                  <td className="muted">{formatDate(user.lastLoginAt)}</td>
                 </tr>
               ))}
             </tbody>
