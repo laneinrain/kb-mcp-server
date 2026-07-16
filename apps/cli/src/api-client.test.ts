@@ -24,6 +24,8 @@ const baseConfig = {
   DEFAULT_COLLECTION: "default",
   EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
   EMBEDDING_DIMENSIONS: 1024,
+  RERANK_ENABLED: false,
+  RERANK_CANDIDATES: 30,
   AUTH_ENABLED: false,
   USER_AUTH_ENABLED: false,
   JWT_EXPIRES_IN: 604800,

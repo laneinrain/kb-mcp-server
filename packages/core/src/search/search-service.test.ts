@@ -1,5 +1,25 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
+import { RerankError } from "../rerank/errors.js";
 import { SearchService } from "./search-service.js";
+
+function makeHit(
+  overrides: Partial<{
+    documentId: string;
+    filename: string;
+    chunkIndex: number;
+    text: string;
+    distance: number;
+  }> = {},
+) {
+  return {
+    documentId: "abc",
+    filename: "doc.txt",
+    chunkIndex: 0,
+    text: "snippet",
+    distance: 0.15,
+    ...overrides,
+  };
+}
 
 describe("SearchService", () => {
   beforeEach(() => {
@@ -8,15 +28,7 @@ describe("SearchService", () => {
 
   it("search() calls embedQuery then vectorStore.query with default topK=5", async () => {
     const embedQuery = vi.fn().mockResolvedValue([0.1, 0.2]);
-    const query = vi.fn().mockResolvedValue([
-      {
-        documentId: "abc",
-        filename: "doc.txt",
-        chunkIndex: 0,
-        text: "snippet",
-        distance: 0.15,
-      },
-    ]);
+    const query = vi.fn().mockResolvedValue([makeHit()]);
     const service = new SearchService(
       { query } as never,
       { embedQuery } as never,
@@ -67,13 +79,7 @@ describe("SearchService", () => {
   it("score = clamp(1 - distance, 0, 1) rounded to 4 decimals", async () => {
     const embedQuery = vi.fn().mockResolvedValue([0.1]);
     const query = vi.fn().mockResolvedValue([
-      {
-        documentId: "abc",
-        filename: "doc.txt",
-        chunkIndex: 0,
-        text: "snippet",
-        distance: 0.333333,
-      },
+      makeHit({ distance: 0.333333 }),
     ]);
     const service = new SearchService(
       { query } as never,
@@ -89,15 +95,7 @@ describe("SearchService", () => {
   it("text truncated to 500 chars with trailing ellipsis when longer", async () => {
     const longText = "a".repeat(600);
     const embedQuery = vi.fn().mockResolvedValue([0.1]);
-    const query = vi.fn().mockResolvedValue([
-      {
-        documentId: "abc",
-        filename: "doc.txt",
-        chunkIndex: 0,
-        text: longText,
-        distance: 0.1,
-      },
-    ]);
+    const query = vi.fn().mockResolvedValue([makeHit({ text: longText })]);
     const service = new SearchService(
       { query } as never,
       { embedQuery } as never,
@@ -111,18 +109,112 @@ describe("SearchService", () => {
     expect(results[0]?.text.startsWith("a".repeat(500))).toBe(true);
   });
 
-  it("SearchService.create factory mirrors IngestionService.create", () => {
+  it("SearchService.create factory wires rerank when enabled", () => {
     const vectorStore = { query: vi.fn() } as never;
     const embeddingClient = { embedQuery: vi.fn() } as never;
+    const rerankClient = { rerank: vi.fn() } as never;
     const config = {
       DEFAULT_COLLECTION: "custom",
+      RERANK_ENABLED: true,
+      RERANK_CANDIDATES: 30,
     } as never;
 
     const service = SearchService.create(config, {
       vectorStore,
       embeddingClient,
+      rerankClient,
     });
 
     expect(service).toBeInstanceOf(SearchService);
+  });
+
+  it("recalls RERANK_CANDIDATES when rerank enabled", async () => {
+    const embedQuery = vi.fn().mockResolvedValue([0.1]);
+    const query = vi.fn().mockResolvedValue([makeHit()]);
+    const rerank = vi.fn().mockResolvedValue([{ index: 0, relevanceScore: 0.95 }]);
+    const service = new SearchService(
+      { query } as never,
+      { embedQuery } as never,
+      "default",
+      { client: { rerank } as never, enabled: true, candidates: 30 },
+    );
+
+    await service.search("query", { topK: 5 });
+
+    expect(query).toHaveBeenCalledWith(
+      expect.objectContaining({ topK: 30 }),
+    );
+  });
+
+  it("uses rerank relevance_score and full chunk text for rerank input", async () => {
+    const fullText = "b".repeat(600);
+    const embedQuery = vi.fn().mockResolvedValue([0.1]);
+    const query = vi.fn().mockResolvedValue([makeHit({ text: fullText })]);
+    const rerank = vi.fn().mockResolvedValue([{ index: 0, relevanceScore: 0.87654 }]);
+    const service = new SearchService(
+      { query } as never,
+      { embedQuery } as never,
+      "default",
+      { client: { rerank } as never, enabled: true, candidates: 30 },
+    );
+
+    const results = await service.search("query");
+
+    expect(rerank).toHaveBeenCalledWith("query", [fullText], { topN: 5 });
+    expect(results[0]?.score).toBe(0.8765);
+    expect(results[0]?.text).toHaveLength(501);
+  });
+
+  it("filters ACL before rerank", async () => {
+    const embedQuery = vi.fn().mockResolvedValue([0.1]);
+    const query = vi.fn().mockResolvedValue([
+      makeHit({ documentId: "denied", text: "denied chunk" }),
+      makeHit({ documentId: "allowed", text: "allowed chunk", chunkIndex: 1 }),
+    ]);
+    const rerank = vi.fn().mockResolvedValue([{ index: 0, relevanceScore: 0.9 }]);
+    const service = new SearchService(
+      { query } as never,
+      { embedQuery } as never,
+      "default",
+      { client: { rerank } as never, enabled: true, candidates: 30 },
+    );
+
+    const results = await service.search("query", {
+      allowedDocumentIds: new Set(["allowed"]),
+    });
+
+    expect(rerank).toHaveBeenCalledWith("query", ["allowed chunk"], { topN: 5 });
+    expect(results[0]?.documentId).toBe("allowed");
+  });
+
+  it("falls back to vector ranking when rerank fails", async () => {
+    const embedQuery = vi.fn().mockResolvedValue([0.1]);
+    const query = vi.fn().mockResolvedValue([makeHit({ distance: 0.2 })]);
+    const rerank = vi.fn().mockRejectedValue(new RerankError("down", 503));
+    const service = new SearchService(
+      { query } as never,
+      { embedQuery } as never,
+      "default",
+      { client: { rerank } as never, enabled: true, candidates: 30 },
+    );
+
+    const results = await service.search("query");
+
+    expect(results[0]?.score).toBe(0.8);
+  });
+
+  it("skips rerank when disabled in options", async () => {
+    const embedQuery = vi.fn().mockResolvedValue([0.1]);
+    const query = vi.fn().mockResolvedValue([makeHit({ distance: 0.25 })]);
+    const service = new SearchService(
+      { query } as never,
+      { embedQuery } as never,
+      "default",
+    );
+
+    const results = await service.search("query");
+
+    expect(results[0]?.score).toBe(0.75);
+    expect(query).toHaveBeenCalledWith(expect.objectContaining({ topK: 5 }));
   });
 });

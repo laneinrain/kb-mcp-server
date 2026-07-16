@@ -28,6 +28,8 @@ describe("loadConfig", () => {
     expect(config.READ_FILE_MAX_CHUNKS).toBe(50);
     expect(config.READ_FILE_MAX_CHARS).toBe(64000);
     expect(config.CHERRYIN_BASE_URL).toBe("https://open.cherryin.cc/v1");
+    expect(config.RERANK_ENABLED).toBe(true);
+    expect(config.RERANK_CANDIDATES).toBe(30);
     expect(config.AUTH_ENABLED).toBe(false);
     expect(config.API_KEY).toBeUndefined();
     expect(path.isAbsolute(config.SQLITE_PATH)).toBe(true);

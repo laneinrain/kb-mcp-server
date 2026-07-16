@@ -19,16 +19,16 @@ Add **two-stage retrieval** to search: Chroma vector recall followed by **Qwen3 
 
 ### Search Pipeline Integration
 
-- [ ] **RETR-06**: When `RERANK_ENABLED=true`, `SearchService` recalls `RERANK_CANDIDATES` (default 30) from Chroma, then reranks to final `topK`
-- [ ] **RETR-07**: Returned `score` reflects rerank `relevance_score` (not vector cosine) when rerank applied
-- [ ] **RETR-08**: ACL `allowedDocumentIds` filter applied **after** vector recall, **before** rerank (same REST user isolation semantics)
-- [ ] **RETR-09**: When `RERANK_ENABLED=false` or rerank API fails, fall back to vector-only ranking (no search failure)
-- [ ] **RETR-10**: Rerank uses **full chunk text** from Chroma (not 500-char display snippet)
+- [x] **RETR-06**: When `RERANK_ENABLED=true`, `SearchService` recalls `RERANK_CANDIDATES` (default 30) from Chroma, then reranks to final `topK`
+- [x] **RETR-07**: Returned `score` reflects rerank `relevance_score` (not vector cosine) when rerank applied
+- [x] **RETR-08**: ACL `allowedDocumentIds` filter applied **after** vector recall, **before** rerank (same REST user isolation semantics)
+- [x] **RETR-09**: When `RERANK_ENABLED=false` or rerank API fails, fall back to vector-only ranking (no search failure)
+- [x] **RETR-10**: Rerank uses **full chunk text** from Chroma (not 500-char display snippet)
 
 ### Configuration & Surfaces
 
-- [ ] **RETR-11**: Env config: `RERANK_ENABLED` (default `true`), `RERANK_MODEL`, `RERANK_CANDIDATES` (default 30, max 50)
-- [ ] **RETR-12**: REST `POST /api/v1/search` and MCP `search_knowledge` both use reranked `SearchService` (no separate code paths)
+- [x] **RETR-11**: Env config: `RERANK_ENABLED` (default `true`), `RERANK_MODEL`, `RERANK_CANDIDATES` (default 30, max 50)
+- [x] **RETR-12**: REST `POST /api/v1/search` and MCP `search_knowledge` both use reranked `SearchService` (no separate code paths)
 - [ ] **RETR-13**: README + `.env.example` document rerank settings and two-stage retrieval behavior
 
 ## Traceability
@@ -39,16 +39,16 @@ Add **two-stage retrieval** to search: Chroma vector recall followed by **Qwen3 
 | RETR-03 | 13 | Complete |
 | RETR-04 | 13 | Complete |
 | RETR-05 | 13 | Complete |
-| RETR-06 | 14 | Pending |
-| RETR-07 | 14 | Pending |
-| RETR-08 | 14 | Pending |
-| RETR-09 | 14 | Pending |
-| RETR-10 | 14 | Pending |
-| RETR-11 | 15 | Pending |
-| RETR-12 | 15 | Pending |
+| RETR-06 | 14 | Complete |
+| RETR-07 | 14 | Complete |
+| RETR-08 | 14 | Complete |
+| RETR-09 | 14 | Complete |
+| RETR-10 | 14 | Complete |
+| RETR-11 | 14 | Complete |
+| RETR-12 | 14 | Complete |
 | RETR-13 | 15 | Pending |
 
-**Coverage:** 4/12
+**Coverage:** 11/12
 
 ## Out of Scope (v1.4)
 
