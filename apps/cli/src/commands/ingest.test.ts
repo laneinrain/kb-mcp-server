@@ -29,6 +29,9 @@ const baseConfig = {
   DEFAULT_COLLECTION: "default",
   EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
   EMBEDDING_DIMENSIONS: 1024,
+  RERANK_ENABLED: false,
+  RERANK_CANDIDATES: 30,
+  RERANK_MODEL: "qwen/qwen3-reranker-0.6b",
   AUTH_ENABLED: false,
 } as AppConfig;
 

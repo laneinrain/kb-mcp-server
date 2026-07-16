@@ -1,5 +1,47 @@
 # Milestones: kb-mcp-server
 
+## v1.4 Qwen Rerank Search
+
+**Shipped:** 2026-07-16  
+**Timeline:** 2026-07-16  
+**Phases:** 13–15 | **Plans:** 7
+
+### Delivered
+
+Two-stage search retrieval: Chroma vector recall (`RERANK_CANDIDATES` default 30) followed by CherryIn Qwen3 rerank (`qwen/qwen3-reranker-0.6b`). Applies to REST `POST /api/v1/search` and MCP `search_knowledge` via shared `SearchService`. Graceful fallback to vector-only when rerank disabled or API unavailable.
+
+### Key Accomplishments
+
+1. **RerankClient** — CherryIn `/v1/rerank`, Cohere/Jina response mapping, 429 retry
+2. **Search pipeline** — recall → ACL filter → rerank → topK; full chunk text for rerank
+3. **Config** — `RERANK_ENABLED`, `RERANK_CANDIDATES`, `RERANK_MODEL` env vars
+4. **Docs** — README 检索与 Rerank section, `.env.example` updates
+5. **Resolves v1.0 deferral** — RETR-02 cross-encoder reranking
+
+### Stats
+
+| Metric | Value |
+|--------|-------|
+| v1.4 requirements | 12/12 shipped |
+| Resolves v1.0 deferral | RETR-02 reranking |
+| Git range | v1.3 → feat(phase-15) |
+
+### Archives
+
+- [v1.4-ROADMAP.md](milestones/v1.4-ROADMAP.md)
+- [v1.4-REQUIREMENTS.md](milestones/v1.4-REQUIREMENTS.md)
+
+### Known Gaps
+
+- Hybrid BM25 deferred (RETR-01)
+- Web settings rerank toggle deferred
+- Rerank evaluation harness not built
+- Per-user MCP auth deferred (PLAT-04)
+- CONF-03 bearer auth manual UAT still not run (carried from v1.0)
+
+---
+*Milestone completed via `/gsd-complete-milestone`*
+
 ## v1.3 Mock CAS Admin Console
 
 **Shipped:** 2026-07-07  

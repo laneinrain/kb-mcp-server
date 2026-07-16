@@ -11,6 +11,7 @@
 | 本地 Chroma 向量存储 | ✅ |
 | REST API（上传、列表、搜索、健康检查） | ✅ |
 | MCP 工具 `search_knowledge`（stdio + HTTP） | ✅ |
+| 两阶段检索 + Qwen3 Rerank（`qwen/qwen3-reranker-0.6b`） | ✅ v1.4 |
 | Web 管理界面、JWT 登录、可选 API Key（CLI/服务） | ✅ Phase 4–8 |
 
 ## 架构
@@ -21,10 +22,15 @@
 │  (backend)  │                 │ Ingestion    │                │ :8000   │
 └─────────────┘                 └──────────────┘                └────▲────┘
                                                                    │
-┌─────────────┐     search      ┌──────────────┐                   │
-│ MCP Client  │ ──────────────► │ SearchService│ ──────────────────┘
-│ (stdio/HTTP)│                 │ (@kb/core)   │
-└─────────────┘                 └──────────────┘
+┌─────────────┐     search      ┌──────────────┐     rerank     ┌──────────┐
+│ MCP Client  │ ──────────────► │ SearchService│ ─────────────► │ CherryIn │
+│ (stdio/HTTP)│                 │ recall→rank  │                │ rerank   │
+└─────────────┘                 └──────────────┘                └──────────┘
+                                       │
+                                       ▼
+                                  ┌─────────┐
+                                  │ Chroma  │
+                                  └─────────┘
 ```
 
 | 端口 | 服务 | 说明 |
@@ -36,6 +42,17 @@
 | — | MCP stdio | Cursor 等本地客户端，无端口 |
 
 MCP 层**仅负责检索**；入库、删除等管理操作通过 Backend 或 CLI 完成。
+
+## 检索与 Rerank（v1.4）
+
+搜索采用**两阶段检索**，由 `SearchService` 统一处理（REST `POST /api/v1/search` 与 MCP `search_knowledge` 共用同一路径）：
+
+1. **向量召回** — 用 `qwen/qwen3-embedding-8b` 嵌入查询，从 Chroma 取 `RERANK_CANDIDATES` 条候选（默认 30）
+2. **精排** — 调用 CherryIn `qwen/qwen3-reranker-0.6b`（免费），对候选 chunk 全文重排，返回最终 `top_k`（默认 5，最大 10）
+
+JWT 用户搜索时，在 rerank 前会按用户文档 ACL 过滤候选。若 `RERANK_ENABLED=false` 或 rerank API 不可用，自动回退为纯向量排序，搜索不会失败。
+
+返回的 `score` 在启用 rerank 时为 rerank 相关度分数；回退时为向量余弦相似度。
 
 ## 环境要求
 
@@ -283,6 +300,9 @@ Cursor MCP 配置示例：
 | `MCP_HTTP_HOST` / `MCP_HTTP_PORT` | `127.0.0.1` / `3100` | MCP HTTP |
 | `DEFAULT_COLLECTION` | `default` | 默认向量集合 |
 | `EMBEDDING_MODEL` | `qwen/qwen3-embedding-8b` | 嵌入模型 |
+| `RERANK_ENABLED` | `true` | 是否启用两阶段 rerank |
+| `RERANK_CANDIDATES` | `30` | 向量召回条数（1–50），再精排为 `top_k` |
+| `RERANK_MODEL` | `qwen/qwen3-reranker-0.6b` | CherryIn rerank 模型（与嵌入共用 API Key） |
 | `CHUNK_SIZE` / `CHUNK_OVERLAP` | `1024` / `154` | 分块参数 |
 | `DATA_DIR` | `./data` | 本地数据目录（SQLite、上传缓存） |
 | `AUTH_ENABLED` | `false` | 全局 API Key（CLI/服务访问） |

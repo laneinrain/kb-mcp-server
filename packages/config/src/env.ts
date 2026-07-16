@@ -132,6 +132,17 @@ const envSchema = z.object({
   DEFAULT_COLLECTION: z.string().default("default"),
   EMBEDDING_MODEL: z.string().default("qwen/qwen3-embedding-8b"),
   EMBEDDING_DIMENSIONS: z.coerce.number().default(1024),
+  RERANK_ENABLED: z
+    .union([z.boolean(), z.string()])
+    .optional()
+    .transform((val) => booleanFromEnv(val, true))
+    .default(true),
+  RERANK_CANDIDATES: z.coerce
+    .number()
+    .min(1)
+    .max(50)
+    .default(30),
+  RERANK_MODEL: z.string().default("qwen/qwen3-reranker-0.6b"),
   AUTH_ENABLED: z
     .union([z.boolean(), z.string()])
     .optional()

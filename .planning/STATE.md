@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.3
-milestone_name: Mock CAS Admin Console
+milestone: v1.4
+milestone_name: Qwen Rerank Search
 status: shipped
-last_updated: "2026-07-07T08:15:00.000Z"
-last_activity: 2026-07-09 -- Completed quick task 260709: login page background image
+last_updated: "2026-07-16T15:35:00.000Z"
+last_activity: 2026-07-16 -- v1.4 milestone archived and tagged
 progress:
   total_phases: 3
   completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 7
+  completed_plans: 7
   percent: 100
 ---
 
@@ -17,7 +17,7 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-07-07)
+See: .planning/PROJECT.md (updated 2026-07-16)
 
 **Core value:** An MCP client can reliably semantic-search ingested documents through a stable tool interface.
 
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-07-07)
 
 ## Current Position
 
-Milestone: v1.3 — **SHIPPED** 2026-07-07  
-Tag: `v1.3`  
-Last activity: 2026-07-07 — milestone archived
+Milestone: v1.4 — **SHIPPED** 2026-07-16  
+Tag: `v1.4`  
+Last activity: 2026-07-16 — milestone archived
 
 ## Performance Metrics
 
@@ -36,28 +36,24 @@ Last activity: 2026-07-07 — milestone archived
 | v1.0 | Shipped 2026-07-05 |
 | v1.1 | Shipped 2026-07-05 |
 | v1.2 | Shipped 2026-07-05 |
-| v1.3 | Shipped 2026-07-07 (16/16 reqs) |
-| Total plans executed | 36 |
+| v1.3 | Shipped 2026-07-07 |
+| v1.4 | Shipped 2026-07-16 (12/12 reqs) |
+| Total plans executed | 43 |
 
 ## Deferred Items
 
 | Item | Source | Notes |
 |------|--------|-------|
+| Hybrid BM25 | RETR-01 | Semantic + rerank shipped; BM25 still deferred |
 | Per-user MCP auth | PLAT-04 | MCP stays global corpus |
-| Production CasAuthProvider | v1.3 out of scope | Mock CAS swap path documented |
+| Rerank eval harness | v1.4 out of scope | Manual UAT only |
+| Web rerank settings toggle | v1.4 out of scope | Env-only config |
 | CONF-03 bearer auth UAT | v1.0 | Manual UAT still not run |
-| User account delete/disable | v1.3 out of scope | Admin list + doc management only |
 
 ## Todos
 
-- [ ] `/gsd-new-milestone` — define v1.4 scope
+- [ ] `/gsd-new-milestone` — define v1.5 scope
 
 ## Blockers
 
 None
-
-### Quick Tasks Completed
-
-| # | Description | Date | Commit | Directory |
-|---|-------------|------|--------|-----------|
-| 260709 | Login page beach background image | 2026-07-09 | 559dd0c | [260709-login-bg](./quick/260709-login-bg/) |
