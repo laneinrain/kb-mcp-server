@@ -2,6 +2,42 @@
 
 Living document — append a section per shipped milestone.
 
+## Milestone: v1.4 — Qwen Rerank Search
+
+**Shipped:** 2026-07-16  
+**Phases:** 3 | **Plans:** 7
+
+### What Was Built
+
+- `RerankClient` for CherryIn `qwen/qwen3-reranker-0.6b` (Phase 13)
+- `SearchService` two-stage recall → ACL → rerank pipeline (Phase 14)
+- Env config + README + `.env.example` (Phase 15)
+
+### What Worked
+
+- Reusing CherryIn credentials avoided new API key management
+- `SearchService.create()` wiring gave REST + MCP rerank for free
+- Fallback to vector order kept search resilient when rerank API unavailable
+- Injectable `fetch` in RerankClient simplified unit testing
+
+### What Was Inefficient
+
+- Phase 14 pulled env config forward from Phase 15 plan — minor plan overlap
+- No offline rerank evaluation harness — quality improvement not quantified
+
+### Patterns Established
+
+- Two-stage retrieve-then-rerank in `SearchService`
+- ACL filter between recall and rerank (not after)
+- `score` semantics switch: rerank relevance vs vector cosine
+
+### Key Lessons
+
+- Chroma has no built-in rerank — application-layer two-stage is the right integration point
+- Rerank on full chunk text matters; snippet truncation is display-only
+
+---
+
 ## Milestone: v1.3 — Mock CAS Admin Console
 
 **Shipped:** 2026-07-07  
@@ -81,3 +117,4 @@ Living document — append a section per shipped milestone.
 | v1.1 | 2 | 5 | Context expansion tools |
 | v1.2 | 3 | 9 | Multi-user + hash dedup |
 | v1.3 | 3 | 9 | Mock admin console + register |
+| v1.4 | 3 | 7 | Qwen rerank two-stage search |

@@ -33,18 +33,16 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - OCR / scanned PDF — text-layer PDF only
 - Full OAuth/OIDC/LDAP implementation — interface + mock CAS shipped; production swap documented
 - Per-user MCP tool auth — MCP stays global corpus (PLAT-04)
-- Hybrid BM25 — deferred (RETR-01); rerank in scope v1.4
+- Hybrid BM25 — deferred (RETR-01)
 - Upload/CRUD via MCP tools — ingestion remains backend/CLI/Web
 - User account delete/disable — admin list + doc management only
 - Admin features when `CAS_MOCK=false` — production uses company CAS
 
 ## Current State (2026-07-16)
 
-**Shipped milestones:** v1.0–v1.3 + v1.4 (Phases 13–15) — 15 phases, 43 plans.
+**Shipped milestones:** v1.0 (Phases 1–4) + v1.1 (Phases 5–6) + v1.2 (Phases 7–9) + v1.3 (Phases 10–12) + v1.4 (Phases 13–15) — 15 phases, 43 plans.
 
-**Active milestone:** v1.4 Qwen Rerank Search — **COMPLETE** (12/12 requirements).
-
-**Search:** Two-stage retrieval — Chroma recall (`RERANK_CANDIDATES`) + CherryIn `qwen/qwen3-reranker-0.6b` rerank.
+**Search:** Two-stage retrieval — Chroma recall (`RERANK_CANDIDATES`) + CherryIn `qwen/qwen3-reranker-0.6b` rerank (default enabled).
 
 **MCP tools:** `search_knowledge`, `read_around`, `read_file` — global corpus.
 
@@ -78,7 +76,7 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 | MCP global corpus | User isolation on REST/Web only | ✓ Good (by design) |
 | Admin only in `CAS_MOCK=true` | Scaffold operator console | ✓ Good (v1.3) |
 | `role` column + JWT claim | Simple RBAC without roles table | ✓ Good (v1.3) |
-| Two-stage recall + rerank | Precision boost without changing ingest | Planned (v1.4) |
+| Two-stage recall + rerank | Precision boost without changing ingest | ✓ Good (v1.4) |
 | Chroma local vector store | Lightweight single-machine scaffold | ✓ Good |
 | Text-layer PDF only | Reduces v1 complexity | ✓ Good |
 
@@ -94,4 +92,4 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 </details>
 
 ---
-*Last updated: 2026-07-16 — v1.4 milestone planned*
+*Last updated: 2026-07-16 — v1.4 milestone shipped*
