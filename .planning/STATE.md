@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: MCP User Isolation
-status: planning
-last_updated: "2026-07-16T16:15:00.000Z"
-last_activity: 2026-07-16 -- Phase 16 planned (3 plans)
+status: in_progress
+last_updated: "2026-07-16T16:10:00.000Z"
+last_activity: 2026-07-16 -- Phase 16 complete
 progress:
   total_phases: 3
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 9
-  completed_plans: 0
-  percent: 0
+  completed_plans: 3
+  percent: 33
 ---
 
 # Project State: kb-mcp-server
@@ -21,25 +21,21 @@ See: .planning/PROJECT.md (updated 2026-07-16)
 
 **Core value:** An MCP client can reliably semantic-search ingested documents through a stable tool interface.
 
-**Current focus:** v1.5 Phase 16 — MCP Request Identity (planned, ready to execute)
+**Current focus:** v1.5 Phase 17 — Scoped MCP Tools
 
 ## Current Position
 
-Milestone: v1.5 — **PLANNING** (Phase 16 planned)  
-Previous: v1.4 SHIPPED 2026-07-16 (tag `v1.4`)  
-Last activity: 2026-07-16 — `/gsd-plan-phase 16`
+Milestone: v1.5 — **IN PROGRESS**  
+Phase 16: **COMPLETE** (identity/auth layer)  
+Next: `/gsd-plan-phase 17` or `/gsd-execute-phase 17` if plans exist  
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
-| v1.0 | Shipped 2026-07-05 |
-| v1.1 | Shipped 2026-07-05 |
-| v1.2 | Shipped 2026-07-05 |
-| v1.3 | Shipped 2026-07-07 |
-| v1.4 | Shipped 2026-07-16 (12/12 reqs) |
-| v1.5 | Planning (0/13 reqs) |
-| Total plans executed | 43 |
+| v1.0–v1.4 | Shipped |
+| v1.5 Phase 16 | Complete 2026-07-16 |
+| Total plans executed | 46 |
 
 ## Deferred Items
 
@@ -53,9 +49,10 @@ Last activity: 2026-07-16 — `/gsd-plan-phase 16`
 
 ## Todos
 
-- [x] `/gsd-plan-phase 16` — MCP Request Identity (3 plans)
-- [ ] `/gsd-execute-phase 16` — implement auth layer
-- [ ] `/gsd-execute-phase 17` — scoped tool handlers
+- [x] `/gsd-plan-phase 16` — MCP Request Identity
+- [x] `/gsd-execute-phase 16` — auth layer shipped
+- [ ] `/gsd-plan-phase 17` — Scoped MCP Tools
+- [ ] `/gsd-execute-phase 17`
 - [ ] `/gsd-execute-phase 18` — config, docs, tests
 
 ## Blockers

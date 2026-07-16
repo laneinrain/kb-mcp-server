@@ -1,5 +1,9 @@
 import bearerAuth from "@fastify/bearer-auth";
-import type { AuthProvider } from "@kb/auth";
+import {
+  BearerAuthError,
+  resolveBearerToken,
+  type AuthProvider,
+} from "@kb/auth";
 import type { AppConfig } from "@kb/config";
 import type { FastifyInstance, preHandlerHookHandler } from "fastify";
 import "./types.js";
@@ -52,32 +56,43 @@ export function createProtectedRouteOpts(
   return {
     preHandler: async (request, reply) => {
       const header = request.headers.authorization;
-      if (!header?.startsWith("Bearer ")) {
-        return reply.code(401).send({
-          error: "unauthorized",
-          message: "Missing Bearer token",
-        });
-      }
-
-      const token = header.slice(7);
+      const token = header?.startsWith("Bearer ")
+        ? header.slice(7)
+        : undefined;
 
       try {
-        request.authUser = await authProvider.validateAccessToken(token);
-        request.authMode = "user";
-        return;
-      } catch {
-        // Fall through to service API key when enabled.
-      }
+        const result = await resolveBearerToken(token, {
+          userAuthEnabled: true,
+          authEnabled: config.AUTH_ENABLED,
+          apiKey: config.API_KEY,
+          authProvider,
+        });
 
-      if (config.AUTH_ENABLED && config.API_KEY && token === config.API_KEY) {
-        request.authMode = "service";
-        return;
-      }
+        if (result.mode === "user") {
+          request.authUser = result.user;
+          request.authMode = "user";
+          return;
+        }
 
-      return reply.code(401).send({
-        error: "unauthorized",
-        message: "Invalid or expired token",
-      });
+        if (result.mode === "service") {
+          request.authMode = "service";
+          return;
+        }
+
+        return reply.code(401).send({
+          error: "unauthorized",
+          message: "Invalid or expired token",
+        });
+      } catch (error) {
+        const message =
+          error instanceof BearerAuthError
+            ? error.message
+            : "Invalid or expired token";
+        return reply.code(401).send({
+          error: "unauthorized",
+          message,
+        });
+      }
     },
   };
 }

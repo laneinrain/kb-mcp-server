@@ -63,7 +63,7 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 <details>
 <summary>🚧 v1.5 MCP User Isolation (Phases 16–18) — IN PROGRESS</summary>
 
-- [ ] Phase 16: MCP Request Identity (0/3 plans) — **planned**
+- [x] Phase 16: MCP Request Identity (3/3 plans)
 - [ ] Phase 17: Scoped MCP Tools (0/3 plans)
 - [ ] Phase 18: Config, Docs & Verification (0/3 plans)
 
@@ -85,9 +85,9 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 | 13. Rerank Client | v1.4 | 2/2 | Complete | 2026-07-16 |
 | 14. Search Pipeline | v1.4 | 3/3 | Complete | 2026-07-16 |
 | 15. Config & Documentation | v1.4 | 2/2 | Complete | 2026-07-16 |
-| 16. MCP Request Identity | v1.5 | 0/3 | Planning | — |
+| 16. MCP Request Identity | v1.5 | 3/3 | Complete | 2026-07-16 |
 | 17. Scoped MCP Tools | v1.5 | 0/3 | Planning | — |
 | 18. Config, Docs & Verification | v1.5 | 0/3 | Planning | — |
 
 ---
-*Last updated: 2026-07-16 — v1.5 milestone planning*
+*Last updated: 2026-07-16 — Phase 16 complete*

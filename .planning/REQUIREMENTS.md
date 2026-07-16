@@ -12,12 +12,12 @@ Close **PLAT-04**: scope MCP tools (`search_knowledge`, `read_around`, `read_fil
 
 ### MCP Authentication
 
-- [ ] **PLAT-04**: MCP tools respect per-user document isolation (resolves v1.0–v1.4 deferral)
-- [ ] **PLAT-05**: HTTP `/mcp` validates `Authorization: Bearer <token>` on every request when user auth is active
-- [ ] **PLAT-06**: stdio transport reads `MCP_USER_TOKEN` env at startup to bind a single user scope (documented dev/single-user path)
-- [ ] **PLAT-07**: Valid `API_KEY` bearer acts as service account with global corpus access (parity with REST composite auth)
-- [ ] **PLAT-08**: When `USER_AUTH_ENABLED=false`, MCP retains legacy global corpus with no auth gate
-- [ ] **PLAT-09**: When user auth is required, missing or invalid token returns 401 (HTTP) or tool error (stdio) — fail closed
+- [~] **PLAT-04**: MCP tools respect per-user document isolation (auth layer done Phase 16; tool ACL Phase 17)
+- [x] **PLAT-05**: HTTP `/mcp` validates `Authorization: Bearer <token>` on every request when user auth is active
+- [x] **PLAT-06**: stdio transport reads `MCP_USER_TOKEN` env at startup to bind a single user scope (documented dev/single-user path)
+- [x] **PLAT-07**: Valid `API_KEY` bearer acts as service account with global corpus access (parity with REST composite auth)
+- [x] **PLAT-08**: When `USER_AUTH_ENABLED=false`, MCP retains legacy global corpus with no auth gate
+- [x] **PLAT-09**: When user auth is required, missing or invalid token returns 401 (HTTP) or tool error (stdio) — fail closed
 
 ### Tool Scoping
 
@@ -36,12 +36,12 @@ Close **PLAT-04**: scope MCP tools (`search_knowledge`, `read_around`, `read_fil
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PLAT-04 | 16–17 | Pending |
-| PLAT-05 | 16 | Pending |
-| PLAT-06 | 16 | Pending |
-| PLAT-07 | 16–17 | Pending |
-| PLAT-08 | 16–17 | Pending |
-| PLAT-09 | 16 | Pending |
+| PLAT-04 | 16–17 | Partial (auth done) |
+| PLAT-05 | 16 | Complete |
+| PLAT-06 | 16 | Complete |
+| PLAT-07 | 16–17 | Complete (resolver) |
+| PLAT-08 | 16–17 | Complete (resolver) |
+| PLAT-09 | 16 | Complete |
 | PLAT-10 | 17 | Pending |
 | PLAT-11 | 17 | Pending |
 | PLAT-12 | 17 | Pending |
@@ -50,7 +50,7 @@ Close **PLAT-04**: scope MCP tools (`search_knowledge`, `read_around`, `read_fil
 | PLAT-15 | 18 | Pending |
 | PLAT-16 | 18 | Pending |
 
-**Coverage:** 0/13
+**Coverage:** 5/13 (auth layer); tool ACL + docs remaining
 
 ## Out of Scope (v1.5)
 

@@ -1,15 +1,39 @@
 import type { AppConfig } from "@kb/config";
-import type { ContextService, SearchService } from "@kb/core";
+import type { ContextService, DocumentRegistry, SearchService } from "@kb/core";
 import request from "supertest";
 import { describe, expect, it, vi } from "vitest";
+import { McpAuthError, McpAuthResolver } from "./auth/mcp-auth-resolver.js";
+import type { McpCallerContext } from "./auth/types.js";
 import { createMcpHttpApp } from "./http.js";
+import type { McpServices } from "./services.js";
 
-const mockConfig = {
-  MCP_HTTP_HOST: "127.0.0.1",
-  MCP_HTTP_PORT: 3100,
-} as AppConfig;
+function mockConfig(overrides: Partial<AppConfig> = {}): AppConfig {
+  return {
+    MCP_HTTP_HOST: "127.0.0.1",
+    MCP_HTTP_PORT: 3100,
+    USER_AUTH_ENABLED: false,
+    AUTH_ENABLED: false,
+    ...overrides,
+  } as AppConfig;
+}
 
-function mockServices(search?: SearchService["search"]) {
+function mockAuthResolver(
+  resolveImpl?: (token: string | undefined) => Promise<McpCallerContext>,
+): McpAuthResolver {
+  return {
+    resolve:
+      resolveImpl ??
+      (async () => ({ authMode: "global" }) as McpCallerContext),
+  } as unknown as McpAuthResolver;
+}
+
+function mockServices(
+  search?: SearchService["search"],
+  options?: {
+    config?: AppConfig;
+    authResolver?: McpAuthResolver;
+  },
+): McpServices {
   const searchService = {
     search: vi.fn(search ?? (async () => [])),
   } as unknown as SearchService;
@@ -43,9 +67,13 @@ function mockServices(search?: SearchService["search"]) {
   } as unknown as ContextService;
 
   return {
-    config: mockConfig,
+    config: options?.config ?? mockConfig(),
     searchService,
     contextService,
+    registry: {} as DocumentRegistry,
+    authProvider: null,
+    systemUserId: null,
+    authResolver: options?.authResolver ?? mockAuthResolver(),
   };
 }
 
@@ -206,5 +234,70 @@ describe("MCP HTTP /mcp", () => {
 
     expect(httpSource).toMatch(/StreamableHTTPServerTransport/);
     expect(httpSource).not.toMatch(/SSEServerTransport/);
+  });
+});
+
+describe("MCP HTTP auth", () => {
+  it("POST /mcp without Bearer returns 401 when user auth enabled", async () => {
+    const authResolver = mockAuthResolver(async () => {
+      throw new McpAuthError("Missing Bearer token");
+    });
+    const app = await createMcpHttpApp(
+      mockServices(undefined, {
+        config: mockConfig({ USER_AUTH_ENABLED: true }),
+        authResolver,
+      }),
+    );
+
+    const response = await request(app)
+      .post("/mcp")
+      .set("Accept", MCP_ACCEPT)
+      .send(initializeBody);
+
+    expect(response.status).toBe(401);
+    expect(response.body).toMatchObject({
+      error: "unauthorized",
+      message: "Missing Bearer token",
+    });
+  });
+
+  it("POST /mcp initialize succeeds with valid auth context", async () => {
+    const authResolver = mockAuthResolver(async () => ({
+      authMode: "user",
+      allowedDocumentIds: new Set(["d1"]),
+    }));
+    const app = await createMcpHttpApp(
+      mockServices(undefined, {
+        config: mockConfig({ USER_AUTH_ENABLED: true }),
+        authResolver,
+      }),
+    );
+
+    const response = await request(app)
+      .post("/mcp")
+      .set("Accept", MCP_ACCEPT)
+      .set("Authorization", "Bearer valid-jwt")
+      .send(initializeBody);
+
+    expect(response.status).toBe(200);
+    expect(response.headers["mcp-session-id"]).toBeDefined();
+  });
+
+  it("GET /mcp without Bearer returns 401 when user auth enabled", async () => {
+    const authResolver = mockAuthResolver(async () => {
+      throw new McpAuthError("Missing Bearer token");
+    });
+    const app = await createMcpHttpApp(
+      mockServices(undefined, {
+        config: mockConfig({ USER_AUTH_ENABLED: true }),
+        authResolver,
+      }),
+    );
+
+    const response = await request(app)
+      .get("/mcp")
+      .set("Accept", MCP_ACCEPT);
+
+    expect(response.status).toBe(401);
   });
 });

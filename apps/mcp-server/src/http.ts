@@ -3,59 +3,96 @@ import express from "express";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import type { AppConfig } from "@kb/config";
+import { McpAuthError } from "./auth/mcp-auth-resolver.js";
+import { runWithMcpCallerContext } from "./auth/mcp-request-context.js";
+import type { McpCallerContext } from "./auth/types.js";
 import type { McpServices } from "./services.js";
 import { createMcpServices } from "./services.js";
 import { buildMcpServer } from "./server.js";
 import { logError, logInfo } from "./logger.js";
 
+function extractBearerToken(req: express.Request): string | undefined {
+  const header = req.headers.authorization;
+  if (!header?.startsWith("Bearer ")) {
+    return undefined;
+  }
+  return header.slice(7);
+}
+
 export async function createMcpHttpApp(
   services?: McpServices,
 ): Promise<express.Application> {
   const resolved = services ?? (await createMcpServices());
-  const { searchService, contextService } = resolved;
+  const { searchService, contextService, authResolver } = resolved;
   const transports: Record<string, StreamableHTTPServerTransport> = {};
 
   const app = express();
   app.use(express.json());
+
+  async function authenticateRequest(
+    req: express.Request,
+    res: express.Response,
+  ): Promise<McpCallerContext | null> {
+    try {
+      return await authResolver.resolve(extractBearerToken(req));
+    } catch (error) {
+      const message =
+        error instanceof McpAuthError
+          ? error.message
+          : "Invalid or expired token";
+      res.status(401).json({
+        error: "unauthorized",
+        message,
+      });
+      return null;
+    }
+  }
 
   async function handleMcpPost(
     req: express.Request,
     res: express.Response,
   ): Promise<void> {
     try {
-      const sessionId = req.headers["mcp-session-id"] as string | undefined;
-      let transport: StreamableHTTPServerTransport | undefined;
-
-      if (sessionId && transports[sessionId]) {
-        transport = transports[sessionId];
-      } else if (!sessionId && isInitializeRequest(req.body)) {
-        transport = new StreamableHTTPServerTransport({
-          sessionIdGenerator: () => randomUUID(),
-          onsessioninitialized: (id) => {
-            transports[id] = transport!;
-          },
-        });
-        transport.onclose = () => {
-          const sid = transport?.sessionId;
-          if (sid) {
-            delete transports[sid];
-          }
-        };
-        const server = buildMcpServer(searchService, contextService);
-        await server.connect(transport);
-      } else {
-        res.status(400).json({
-          jsonrpc: "2.0",
-          error: {
-            code: -32000,
-            message: "Bad Request: No valid session ID provided",
-          },
-          id: null,
-        });
+      const callerContext = await authenticateRequest(req, res);
+      if (!callerContext) {
         return;
       }
 
-      await transport.handleRequest(req, res, req.body);
+      await runWithMcpCallerContext(callerContext, async () => {
+        const sessionId = req.headers["mcp-session-id"] as string | undefined;
+        let transport: StreamableHTTPServerTransport | undefined;
+
+        if (sessionId && transports[sessionId]) {
+          transport = transports[sessionId];
+        } else if (!sessionId && isInitializeRequest(req.body)) {
+          transport = new StreamableHTTPServerTransport({
+            sessionIdGenerator: () => randomUUID(),
+            onsessioninitialized: (id) => {
+              transports[id] = transport!;
+            },
+          });
+          transport.onclose = () => {
+            const sid = transport?.sessionId;
+            if (sid) {
+              delete transports[sid];
+            }
+          };
+          const server = buildMcpServer(searchService, contextService);
+          await server.connect(transport);
+        } else {
+          res.status(400).json({
+            jsonrpc: "2.0",
+            error: {
+              code: -32000,
+              message: "Bad Request: No valid session ID provided",
+            },
+            id: null,
+          });
+          return;
+        }
+
+        await transport.handleRequest(req, res, req.body);
+      });
     } catch (error) {
       logError(error);
       if (!res.headersSent) {
@@ -73,14 +110,21 @@ export async function createMcpHttpApp(
     res: express.Response,
   ): Promise<void> {
     try {
-      const sessionId = req.headers["mcp-session-id"] as string | undefined;
-      if (!sessionId || !transports[sessionId]) {
-        // Optional SSE probe before session exists — client treats 405 as "no standalone GET stream"
-        res.status(405).send("Method Not Allowed");
+      const callerContext = await authenticateRequest(req, res);
+      if (!callerContext) {
         return;
       }
 
-      await transports[sessionId].handleRequest(req, res);
+      await runWithMcpCallerContext(callerContext, async () => {
+        const sessionId = req.headers["mcp-session-id"] as string | undefined;
+        if (!sessionId || !transports[sessionId]) {
+          // Optional SSE probe before session exists — client treats 405 as "no standalone GET stream"
+          res.status(405).send("Method Not Allowed");
+          return;
+        }
+
+        await transports[sessionId].handleRequest(req, res);
+      });
     } catch (error) {
       logError(error);
       if (!res.headersSent) {
@@ -94,13 +138,20 @@ export async function createMcpHttpApp(
     res: express.Response,
   ): Promise<void> {
     try {
-      const sessionId = req.headers["mcp-session-id"] as string | undefined;
-      if (!sessionId || !transports[sessionId]) {
-        res.status(400).send("Invalid or missing session ID");
+      const callerContext = await authenticateRequest(req, res);
+      if (!callerContext) {
         return;
       }
 
-      await transports[sessionId].handleRequest(req, res);
+      await runWithMcpCallerContext(callerContext, async () => {
+        const sessionId = req.headers["mcp-session-id"] as string | undefined;
+        if (!sessionId || !transports[sessionId]) {
+          res.status(400).send("Invalid or missing session ID");
+          return;
+        }
+
+        await transports[sessionId].handleRequest(req, res);
+      });
     } catch (error) {
       logError(error);
       if (!res.headersSent) {

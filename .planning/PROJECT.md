@@ -32,9 +32,9 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 
 ### Active (v1.5)
 
-- [ ] MCP per-user document isolation (PLAT-04) — JWT on HTTP, `MCP_USER_TOKEN` on stdio
-- [ ] Scoped `search_knowledge`, `read_around`, `read_file` with `allowedDocumentIds`
-- [ ] Service-account `API_KEY` global bypass parity with REST
+- [~] MCP auth layer (Phase 16) — JWT on HTTP, `MCP_USER_TOKEN` on stdio, ALS context
+- [ ] Scoped `search_knowledge`, `read_around`, `read_file` with `allowedDocumentIds` (Phase 17)
+- [x] Service-account `API_KEY` global bypass parity with REST (resolver)
 
 ### Out of Scope (carried forward)
 
