@@ -53,7 +53,7 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 <details>
 <summary>🚧 v1.4 Qwen Rerank Search (Phases 13–15) — PLANNED 2026-07-16</summary>
 
-- [ ] Phase 13: Rerank Client (2/2 plans)
+- [x] Phase 13: Rerank Client (2/2 plans)
 - [ ] Phase 14: Search Pipeline (3/3 plans)
 - [ ] Phase 15: Config & Documentation (2/2 plans)
 
@@ -72,9 +72,9 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 | 10. Mock Local Auth & Admin Bootstrap | v1.3 | 3/3 | Complete | 2026-07-07 |
 | 11. Admin REST API | v1.3 | 3/3 | Complete | 2026-07-07 |
 | 12. Web Admin Console | v1.3 | 3/3 | Complete | 2026-07-07 |
-| 13. Rerank Client | v1.4 | 0/2 | Planned | — |
+| 13. Rerank Client | v1.4 | 2/2 | Complete | 2026-07-16 |
 | 14. Search Pipeline | v1.4 | 0/3 | Planned | — |
 | 15. Config & Documentation | v1.4 | 0/2 | Planned | — |
 
 ---
-*Last updated: 2026-07-16 — v1.4 milestone planned*
+*Last updated: 2026-07-16 — Phase 13 complete*

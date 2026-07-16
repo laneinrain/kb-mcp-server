@@ -12,10 +12,10 @@ Add **two-stage retrieval** to search: Chroma vector recall followed by **Qwen3 
 
 ### Rerank Client (CherryIn)
 
-- [ ] **RETR-02**: `RerankClient` calls CherryIn rerank API at `{CHERRYIN_BASE_URL}/rerank` with model `qwen/qwen3-reranker-0.6b`
-- [ ] **RETR-03**: Reuses existing `CHERRYIN_API_KEY` and `CHERRYIN_BASE_URL` (same provider as embeddings)
-- [ ] **RETR-04**: Request shape: `query` + `documents[]` + optional `top_n`; response maps `index` + `relevance_score` per Cohere/Jina rerank convention
-- [ ] **RETR-05**: Rate-limit retry (429) with same backoff pattern as `EmbeddingClient`
+- [x] **RETR-02**: `RerankClient` calls CherryIn rerank API at `{CHERRYIN_BASE_URL}/rerank` with model `qwen/qwen3-reranker-0.6b`
+- [x] **RETR-03**: Reuses existing `CHERRYIN_API_KEY` and `CHERRYIN_BASE_URL` (same provider as embeddings)
+- [x] **RETR-04**: Request shape: `query` + `documents[]` + optional `top_n`; response maps `index` + `relevance_score` per Cohere/Jina rerank convention
+- [x] **RETR-05**: Rate-limit retry (429) with same backoff pattern as `EmbeddingClient`
 
 ### Search Pipeline Integration
 
@@ -35,10 +35,10 @@ Add **two-stage retrieval** to search: Chroma vector recall followed by **Qwen3 
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| RETR-02 | 13 | Pending |
-| RETR-03 | 13 | Pending |
-| RETR-04 | 13 | Pending |
-| RETR-05 | 13 | Pending |
+| RETR-02 | 13 | Complete |
+| RETR-03 | 13 | Complete |
+| RETR-04 | 13 | Complete |
+| RETR-05 | 13 | Complete |
 | RETR-06 | 14 | Pending |
 | RETR-07 | 14 | Pending |
 | RETR-08 | 14 | Pending |
@@ -48,7 +48,7 @@ Add **two-stage retrieval** to search: Chroma vector recall followed by **Qwen3 
 | RETR-12 | 15 | Pending |
 | RETR-13 | 15 | Pending |
 
-**Coverage:** 0/12
+**Coverage:** 4/12
 
 ## Out of Scope (v1.4)
 

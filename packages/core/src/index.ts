@@ -18,6 +18,9 @@ export type {
   RegisterDocumentInput,
 } from "./registry/types.js";
 export { EmbeddingClient } from "./embeddings/embedding-client.js";
+export { RerankClient } from "./rerank/rerank-client.js";
+export { RerankError } from "./rerank/errors.js";
+export type { RerankOptions, RerankResult } from "./rerank/types.js";
 export {
   ChromaVectorStore,
   buildChunkId,
