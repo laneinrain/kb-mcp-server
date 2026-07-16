@@ -63,7 +63,7 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 <details>
 <summary>🚧 v1.5 MCP User Isolation (Phases 16–18) — IN PROGRESS</summary>
 
-- [ ] Phase 16: MCP Request Identity (0/3 plans)
+- [ ] Phase 16: MCP Request Identity (0/3 plans) — **planned**
 - [ ] Phase 17: Scoped MCP Tools (0/3 plans)
 - [ ] Phase 18: Config, Docs & Verification (0/3 plans)
 
