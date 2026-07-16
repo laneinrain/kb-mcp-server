@@ -4,7 +4,7 @@
 
 A TypeScript/Node knowledge-base MCP server. AI clients connect via **stdio** or **Streamable HTTP** to **semantic-search** ingested documents and **expand hits** with `read_around` / `read_file`. Ingestion and administration happen through a Fastify REST API, Vite/React web admin (简体中文), and Commander CLI. Documents in txt, markdown, and text-layer PDF are chunked, embedded via CherryIn, and stored in local Chroma for semantic retrieval.
 
-**v1.3 adds:** Mock-mode user administration — local registration, admin account (工号 `00000`), cross-user document management, and 简体中文 admin console (gated to `CAS_MOCK=true`).
+**v1.4 adds:** Two-stage search with Qwen3 rerank (`qwen/qwen3-reranker-0.6b` via CherryIn) — recall 30 candidates, rerank to top-k.
 
 ## Core Value
 
@@ -27,19 +27,33 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - ✓ Admin REST: user directory + cross-user document management — v1.3 Phase 11
 - ✓ Register page + admin 用户管理 Web console — v1.3 Phase 12
 
+### Active (v1.4 — Qwen Rerank Search)
+
+- [ ] **RETR-02–05**: `RerankClient` — CherryIn `/v1/rerank`, model `qwen/qwen3-reranker-0.6b`
+- [ ] **RETR-06–10**: `SearchService` two-stage recall → ACL → rerank → topK with fallback
+- [ ] **RETR-11–13**: Env config (`RERANK_ENABLED`, `RERANK_CANDIDATES`) + docs
+
+### Active Milestone Scope
+
+Add cross-encoder reranking to search via CherryIn (same API key). Vector recall `RERANK_CANDIDATES` (default 30), rerank to final `topK`. Applies to REST and MCP. Graceful fallback when disabled or API unavailable.
+
 ### Out of Scope (carried forward)
 
 - OCR / scanned PDF — text-layer PDF only
 - Full OAuth/OIDC/LDAP implementation — interface + mock CAS shipped; production swap documented
 - Per-user MCP tool auth — MCP stays global corpus (PLAT-04)
-- Hybrid BM25 / rerank — deferred (RETR-01/02)
+- Hybrid BM25 — deferred (RETR-01); rerank in scope v1.4
 - Upload/CRUD via MCP tools — ingestion remains backend/CLI/Web
 - User account delete/disable — admin list + doc management only
 - Admin features when `CAS_MOCK=false` — production uses company CAS
 
-## Current State (2026-07-07)
+## Current State (2026-07-16)
 
 **Shipped milestones:** v1.0 (Phases 1–4) + v1.1 (Phases 5–6) + v1.2 (Phases 7–9) + v1.3 (Phases 10–12) — 12 phases, 36 plans.
+
+**Active milestone:** v1.4 Qwen Rerank Search — **PLANNED** (Phases 13–15, 0/12 requirements).
+
+**Search:** Vector recall via `qwen/qwen3-embedding-8b`; v1.4 adds rerank via `qwen/qwen3-reranker-0.6b`.
 
 **MCP tools:** `search_knowledge`, `read_around`, `read_file` — global corpus.
 
@@ -73,6 +87,7 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 | MCP global corpus | User isolation on REST/Web only | ✓ Good (by design) |
 | Admin only in `CAS_MOCK=true` | Scaffold operator console | ✓ Good (v1.3) |
 | `role` column + JWT claim | Simple RBAC without roles table | ✓ Good (v1.3) |
+| Two-stage recall + rerank | Precision boost without changing ingest | Planned (v1.4) |
 | Chroma local vector store | Lightweight single-machine scaffold | ✓ Good |
 | Text-layer PDF only | Reduces v1 complexity | ✓ Good |
 
@@ -88,4 +103,4 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 </details>
 
 ---
-*Last updated: 2026-07-07 — v1.3 milestone shipped*
+*Last updated: 2026-07-16 — v1.4 milestone planned*
