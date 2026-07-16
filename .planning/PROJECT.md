@@ -6,6 +6,8 @@ A TypeScript/Node knowledge-base MCP server. AI clients connect via **stdio** or
 
 **v1.4 adds:** Two-stage search with Qwen3 rerank (`qwen/qwen3-reranker-0.6b` via CherryIn) — recall 30 candidates, rerank to top-k.
 
+**v1.5 (in progress):** MCP per-user document isolation — JWT/API_KEY auth on HTTP `/mcp`, stdio `MCP_USER_TOKEN`, scoped `search_knowledge` / `read_around` / `read_file` (PLAT-04).
+
 ## Core Value
 
 An MCP client can reliably **semantic-search** ingested documents through a stable tool interface — if search works, the scaffold succeeds. Context expansion (`read_around`, `read_file`) extends search without changing the retrieval algorithm.
@@ -28,11 +30,16 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - ✓ Register page + admin 用户管理 Web console — v1.3 Phase 12
 - ✓ Qwen3 rerank two-stage search (`qwen/qwen3-reranker-0.6b`) — v1.4 Phases 13–15
 
+### Active (v1.5)
+
+- [ ] MCP per-user document isolation (PLAT-04) — JWT on HTTP, `MCP_USER_TOKEN` on stdio
+- [ ] Scoped `search_knowledge`, `read_around`, `read_file` with `allowedDocumentIds`
+- [ ] Service-account `API_KEY` global bypass parity with REST
+
 ### Out of Scope (carried forward)
 
 - OCR / scanned PDF — text-layer PDF only
 - Full OAuth/OIDC/LDAP implementation — interface + mock CAS shipped; production swap documented
-- Per-user MCP tool auth — MCP stays global corpus (PLAT-04)
 - Hybrid BM25 — deferred (RETR-01)
 - Upload/CRUD via MCP tools — ingestion remains backend/CLI/Web
 - User account delete/disable — admin list + doc management only
@@ -40,11 +47,12 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 
 ## Current State (2026-07-16)
 
-**Shipped milestones:** v1.0 (Phases 1–4) + v1.1 (Phases 5–6) + v1.2 (Phases 7–9) + v1.3 (Phases 10–12) + v1.4 (Phases 13–15) — 15 phases, 43 plans.
+**Shipped milestones:** v1.0–v1.4 (Phases 1–15) — 15 phases, 43 plans.  
+**Active:** v1.5 MCP User Isolation (Phases 16–18).
 
 **Search:** Two-stage retrieval — Chroma recall (`RERANK_CANDIDATES`) + CherryIn `qwen/qwen3-reranker-0.6b` rerank (default enabled).
 
-**MCP tools:** `search_knowledge`, `read_around`, `read_file` — global corpus.
+**MCP tools:** `search_knowledge`, `read_around`, `read_file` — global corpus today; v1.5 scopes to authenticated user.
 
 **Auth:** Optional `USER_AUTH_ENABLED` with JWT (Web) and `API_KEY` (CLI service ingest). Mock CAS for dev with local registration and admin console; `CAS_MOCK=false` + `CAS_SERVER_URL` for production.
 
@@ -73,7 +81,8 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 | Mock CAS + employeeId JIT users | Company auth pattern | ✓ Good |
 | Composite JWT + API_KEY | Web users vs CLI bulk ingest | ✓ Good (v1.2) |
 | Hash on parsed text, keyed by `(user_id, filename)` | Skip redundant embeds on re-upload | ✓ Good (v1.2) |
-| MCP global corpus | User isolation on REST/Web only | ✓ Good (by design) |
+| MCP global corpus | User isolation on REST/Web only | → v1.5 PLAT-04 |
+| MCP JWT + API_KEY composite auth | Parity with REST; Cursor headers | v1.5 target |
 | Admin only in `CAS_MOCK=true` | Scaffold operator console | ✓ Good (v1.3) |
 | `role` column + JWT claim | Simple RBAC without roles table | ✓ Good (v1.3) |
 | Two-stage recall + rerank | Precision boost without changing ingest | ✓ Good (v1.4) |
@@ -92,4 +101,4 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 </details>
 
 ---
-*Last updated: 2026-07-16 — v1.4 milestone shipped*
+*Last updated: 2026-07-16 — v1.5 milestone planning*
