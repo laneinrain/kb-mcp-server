@@ -117,6 +117,7 @@ describe("SearchService", () => {
       DEFAULT_COLLECTION: "custom",
       RERANK_ENABLED: true,
       RERANK_CANDIDATES: 30,
+      RERANK_MODEL: "qwen/qwen3-reranker-0.6b",
     } as never;
 
     const service = SearchService.create(config, {
@@ -136,7 +137,7 @@ describe("SearchService", () => {
       { query } as never,
       { embedQuery } as never,
       "default",
-      { client: { rerank } as never, enabled: true, candidates: 30 },
+      { client: { rerank } as never, enabled: true, candidates: 30, model: "qwen/qwen3-reranker-0.6b" },
     );
 
     await service.search("query", { topK: 5 });
@@ -155,12 +156,15 @@ describe("SearchService", () => {
       { query } as never,
       { embedQuery } as never,
       "default",
-      { client: { rerank } as never, enabled: true, candidates: 30 },
+      { client: { rerank } as never, enabled: true, candidates: 30, model: "qwen/qwen3-reranker-0.6b" },
     );
 
     const results = await service.search("query");
 
-    expect(rerank).toHaveBeenCalledWith("query", [fullText], { topN: 5 });
+    expect(rerank).toHaveBeenCalledWith("query", [fullText], {
+      topN: 5,
+      model: "qwen/qwen3-reranker-0.6b",
+    });
     expect(results[0]?.score).toBe(0.8765);
     expect(results[0]?.text).toHaveLength(501);
   });
@@ -176,14 +180,17 @@ describe("SearchService", () => {
       { query } as never,
       { embedQuery } as never,
       "default",
-      { client: { rerank } as never, enabled: true, candidates: 30 },
+      { client: { rerank } as never, enabled: true, candidates: 30, model: "qwen/qwen3-reranker-0.6b" },
     );
 
     const results = await service.search("query", {
       allowedDocumentIds: new Set(["allowed"]),
     });
 
-    expect(rerank).toHaveBeenCalledWith("query", ["allowed chunk"], { topN: 5 });
+    expect(rerank).toHaveBeenCalledWith("query", ["allowed chunk"], {
+      topN: 5,
+      model: "qwen/qwen3-reranker-0.6b",
+    });
     expect(results[0]?.documentId).toBe("allowed");
   });
 
@@ -195,7 +202,7 @@ describe("SearchService", () => {
       { query } as never,
       { embedQuery } as never,
       "default",
-      { client: { rerank } as never, enabled: true, candidates: 30 },
+      { client: { rerank } as never, enabled: true, candidates: 30, model: "qwen/qwen3-reranker-0.6b" },
     );
 
     const results = await service.search("query");
@@ -203,18 +210,50 @@ describe("SearchService", () => {
     expect(results[0]?.score).toBe(0.8);
   });
 
-  it("skips rerank when disabled in options", async () => {
+  it("SearchService.create skips rerank when RERANK_ENABLED is false", async () => {
     const embedQuery = vi.fn().mockResolvedValue([0.1]);
-    const query = vi.fn().mockResolvedValue([makeHit({ distance: 0.25 })]);
+    const query = vi.fn().mockResolvedValue([makeHit()]);
+    const rerank = vi.fn();
+    const config = {
+      DEFAULT_COLLECTION: "default",
+      RERANK_ENABLED: false,
+      RERANK_CANDIDATES: 30,
+      RERANK_MODEL: "qwen/qwen3-reranker-0.6b",
+    } as never;
+
+    const service = SearchService.create(config, {
+      vectorStore: { query } as never,
+      embeddingClient: { embedQuery } as never,
+      rerankClient: { rerank } as never,
+    });
+
+    await service.search("query");
+
+    expect(query).toHaveBeenCalledWith(expect.objectContaining({ topK: 5 }));
+    expect(rerank).not.toHaveBeenCalled();
+  });
+
+  it("passes configured rerank model to RerankClient", async () => {
+    const embedQuery = vi.fn().mockResolvedValue([0.1]);
+    const query = vi.fn().mockResolvedValue([makeHit({ text: "chunk" })]);
+    const rerank = vi.fn().mockResolvedValue([{ index: 0, relevanceScore: 0.9 }]);
     const service = new SearchService(
       { query } as never,
       { embedQuery } as never,
       "default",
+      {
+        client: { rerank } as never,
+        enabled: true,
+        candidates: 30,
+        model: "custom/rerank-model",
+      },
     );
 
-    const results = await service.search("query");
+    await service.search("query");
 
-    expect(results[0]?.score).toBe(0.75);
-    expect(query).toHaveBeenCalledWith(expect.objectContaining({ topK: 5 }));
+    expect(rerank).toHaveBeenCalledWith("query", ["chunk"], {
+      topN: 5,
+      model: "custom/rerank-model",
+    });
   });
 });

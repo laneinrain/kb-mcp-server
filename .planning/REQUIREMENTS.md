@@ -29,7 +29,7 @@ Add **two-stage retrieval** to search: Chroma vector recall followed by **Qwen3 
 
 - [x] **RETR-11**: Env config: `RERANK_ENABLED` (default `true`), `RERANK_MODEL`, `RERANK_CANDIDATES` (default 30, max 50)
 - [x] **RETR-12**: REST `POST /api/v1/search` and MCP `search_knowledge` both use reranked `SearchService` (no separate code paths)
-- [ ] **RETR-13**: README + `.env.example` document rerank settings and two-stage retrieval behavior
+- [x] **RETR-13**: README + `.env.example` document rerank settings and two-stage retrieval behavior
 
 ## Traceability
 
@@ -46,9 +46,9 @@ Add **two-stage retrieval** to search: Chroma vector recall followed by **Qwen3 
 | RETR-10 | 14 | Complete |
 | RETR-11 | 14 | Complete |
 | RETR-12 | 14 | Complete |
-| RETR-13 | 15 | Pending |
+| RETR-13 | 15 | Complete |
 
-**Coverage:** 11/12
+**Coverage:** 12/12
 
 ## Out of Scope (v1.4)
 

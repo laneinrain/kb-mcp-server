@@ -12,6 +12,7 @@ interface SearchRerankOptions {
   client: RerankClient;
   enabled: boolean;
   candidates: number;
+  model: string;
 }
 
 function formatScore(distance: number): number {
@@ -62,6 +63,7 @@ export class SearchService {
             client: deps.rerankClient ?? new RerankClient(config),
             enabled: true,
             candidates: config.RERANK_CANDIDATES,
+            model: config.RERANK_MODEL,
           }
         : undefined;
 
@@ -104,7 +106,7 @@ export class SearchService {
       const ranked = await this.rerank.client.rerank(
         query,
         filtered.map((hit) => hit.text),
-        { topN: topK },
+        { topN: topK, model: this.rerank.model },
       );
 
       return ranked.map((item) => {

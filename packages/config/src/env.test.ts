@@ -30,6 +30,7 @@ describe("loadConfig", () => {
     expect(config.CHERRYIN_BASE_URL).toBe("https://open.cherryin.cc/v1");
     expect(config.RERANK_ENABLED).toBe(true);
     expect(config.RERANK_CANDIDATES).toBe(30);
+    expect(config.RERANK_MODEL).toBe("qwen/qwen3-reranker-0.6b");
     expect(config.AUTH_ENABLED).toBe(false);
     expect(config.API_KEY).toBeUndefined();
     expect(path.isAbsolute(config.SQLITE_PATH)).toBe(true);

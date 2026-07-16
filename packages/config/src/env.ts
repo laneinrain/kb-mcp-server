@@ -142,6 +142,7 @@ const envSchema = z.object({
     .min(1)
     .max(50)
     .default(30),
+  RERANK_MODEL: z.string().default("qwen/qwen3-reranker-0.6b"),
   AUTH_ENABLED: z
     .union([z.boolean(), z.string()])
     .optional()

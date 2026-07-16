@@ -26,16 +26,7 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - ✓ Register API + JWT `role` claim — v1.3 Phase 10
 - ✓ Admin REST: user directory + cross-user document management — v1.3 Phase 11
 - ✓ Register page + admin 用户管理 Web console — v1.3 Phase 12
-
-### Active (v1.4 — Qwen Rerank Search)
-
-- [ ] **RETR-02–05**: `RerankClient` — CherryIn `/v1/rerank`, model `qwen/qwen3-reranker-0.6b`
-- [ ] **RETR-06–10**: `SearchService` two-stage recall → ACL → rerank → topK with fallback
-- [ ] **RETR-11–13**: Env config (`RERANK_ENABLED`, `RERANK_CANDIDATES`) + docs
-
-### Active Milestone Scope
-
-Add cross-encoder reranking to search via CherryIn (same API key). Vector recall `RERANK_CANDIDATES` (default 30), rerank to final `topK`. Applies to REST and MCP. Graceful fallback when disabled or API unavailable.
+- ✓ Qwen3 rerank two-stage search (`qwen/qwen3-reranker-0.6b`) — v1.4 Phases 13–15
 
 ### Out of Scope (carried forward)
 
@@ -49,11 +40,11 @@ Add cross-encoder reranking to search via CherryIn (same API key). Vector recall
 
 ## Current State (2026-07-16)
 
-**Shipped milestones:** v1.0 (Phases 1–4) + v1.1 (Phases 5–6) + v1.2 (Phases 7–9) + v1.3 (Phases 10–12) — 12 phases, 36 plans.
+**Shipped milestones:** v1.0–v1.3 + v1.4 (Phases 13–15) — 15 phases, 43 plans.
 
-**Active milestone:** v1.4 Qwen Rerank Search — **PLANNED** (Phases 13–15, 0/12 requirements).
+**Active milestone:** v1.4 Qwen Rerank Search — **COMPLETE** (12/12 requirements).
 
-**Search:** Vector recall via `qwen/qwen3-embedding-8b`; v1.4 adds rerank via `qwen/qwen3-reranker-0.6b`.
+**Search:** Two-stage retrieval — Chroma recall (`RERANK_CANDIDATES`) + CherryIn `qwen/qwen3-reranker-0.6b` rerank.
 
 **MCP tools:** `search_knowledge`, `read_around`, `read_file` — global corpus.
 

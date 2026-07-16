@@ -31,6 +31,7 @@ function makeConfig(dbPath: string, overrides: Partial<AppConfig> = {}): AppConf
     EMBEDDING_DIMENSIONS: 1024,
     RERANK_ENABLED: false,
     RERANK_CANDIDATES: 30,
+    RERANK_MODEL: "qwen/qwen3-reranker-0.6b",
     AUTH_ENABLED: false,
     USER_AUTH_ENABLED: false,
     JWT_EXPIRES_IN: 604800,
