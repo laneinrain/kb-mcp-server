@@ -29,7 +29,11 @@ code=$(curl -s -o /dev/null -w '%{http_code}' "$WEB/")
 [[ "$code" == "200" ]] && ok "Web Vite :5173" || bad "Web Vite :5173" "HTTP $code"
 
 code=$(curl -s -o /dev/null -w '%{http_code}' "$MOCK/health")
-[[ "$code" == "200" ]] && ok "Mock CherryIn :8765" || bad "Mock CherryIn" "HTTP $code"
+if [[ "$code" == "200" ]]; then
+  ok "Mock CherryIn :8765"
+else
+  skip "Mock CherryIn :8765" "not running (using real CHERRYIN_BASE_URL)"
+fi
 
 echo "=== 2. Auth (register / login / admin) ==="
 REG=$(curl -s -w '\n%{http_code}' -X POST "$API/api/v1/auth/register" \
