@@ -14,6 +14,7 @@ const SYSTEM_USER_ID = "system-user-uuid";
 function makeConfig(overrides: Partial<AppConfig> = {}): AppConfig {
   return {
     USER_AUTH_ENABLED: true,
+    MCP_AUTH_REQUIRED: true,
     AUTH_ENABLED: true,
     API_KEY,
     ...overrides,
@@ -120,5 +121,37 @@ describe("McpAuthResolver", () => {
     const ctx = await resolver.resolve(API_KEY);
     expect(ctx).toEqual({ authMode: "service" });
     expect(ctx.allowedDocumentIds).toBeUndefined();
+  });
+
+  it("returns global without token when MCP_AUTH_REQUIRED is false", async () => {
+    const resolver = new McpAuthResolver({
+      config: makeConfig({
+        USER_AUTH_ENABLED: true,
+        MCP_AUTH_REQUIRED: false,
+      }),
+      authProvider: createProvider(),
+      registry: mockRegistry(["doc-a"]),
+      systemUserId: SYSTEM_USER_ID,
+    });
+
+    const ctx = await resolver.resolve(undefined);
+    expect(ctx).toEqual({ authMode: "global" });
+  });
+
+  it("throws when both USER_AUTH_ENABLED and MCP_AUTH_REQUIRED are true", async () => {
+    const resolver = new McpAuthResolver({
+      config: makeConfig({
+        USER_AUTH_ENABLED: true,
+        MCP_AUTH_REQUIRED: true,
+      }),
+      authProvider: createProvider(),
+      registry: mockRegistry([]),
+      systemUserId: SYSTEM_USER_ID,
+    });
+
+    await expect(resolver.resolve(undefined)).rejects.toMatchObject({
+      message: "Missing Bearer token",
+      statusCode: 401,
+    });
   });
 });

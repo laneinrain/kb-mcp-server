@@ -28,8 +28,12 @@ export class McpAuthResolver {
 
   async resolve(token: string | undefined): Promise<McpCallerContext> {
     try {
+      const mcpAuthActive =
+        this.deps.config.USER_AUTH_ENABLED &&
+        this.deps.config.MCP_AUTH_REQUIRED;
+
       const result = await resolveBearerToken(token, {
-        userAuthEnabled: this.deps.config.USER_AUTH_ENABLED,
+        userAuthEnabled: mcpAuthActive,
         authEnabled: this.deps.config.AUTH_ENABLED,
         apiKey: this.deps.config.API_KEY,
         authProvider: this.deps.authProvider,

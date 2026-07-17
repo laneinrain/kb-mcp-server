@@ -31,6 +31,7 @@ describe("loadConfig", () => {
     expect(config.RERANK_ENABLED).toBe(true);
     expect(config.RERANK_CANDIDATES).toBe(30);
     expect(config.RERANK_MODEL).toBe("qwen/qwen3-reranker-0.6b");
+    expect(config.MCP_AUTH_REQUIRED).toBe(true);
     expect(config.AUTH_ENABLED).toBe(false);
     expect(config.API_KEY).toBeUndefined();
     expect(path.isAbsolute(config.SQLITE_PATH)).toBe(true);
@@ -113,6 +114,16 @@ describe("loadConfig", () => {
     expect(config.CAS_MOCK).toBe(true);
 
     process.env.NODE_ENV = prevNodeEnv;
+  });
+
+  it("parses MCP_AUTH_REQUIRED false from env", () => {
+    process.env.CHERRYIN_API_KEY = "test-key";
+    delete process.env.USER_AUTH_ENABLED;
+    delete process.env.JWT_SECRET;
+    process.env.MCP_AUTH_REQUIRED = "false";
+    const config = loadConfig();
+    expect(config.MCP_AUTH_REQUIRED).toBe(false);
+    delete process.env.MCP_AUTH_REQUIRED;
   });
 
   it("exits when USER_AUTH_ENABLED is true without JWT_SECRET", () => {

@@ -35,7 +35,7 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - [x] MCP auth layer (Phase 16) — JWT on HTTP, `MCP_USER_TOKEN` on stdio, ALS context
 - [x] Scoped `search_knowledge`, `read_around`, `read_file` with `allowedDocumentIds` (Phase 17)
 - [x] Service-account `API_KEY` global bypass parity with REST
-- [ ] Operator docs + `MCP_AUTH_REQUIRED` + two-user isolation harness (Phase 18)
+- [x] Operator docs + `MCP_AUTH_REQUIRED` + two-user isolation harness (Phase 18)
 
 ### Out of Scope (carried forward)
 
@@ -103,4 +103,4 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 </details>
 
 ---
-*Last updated: 2026-07-17 — Phase 17 complete*
+*Last updated: 2026-07-17 — Phase 18 complete; v1.5 ready to ship*

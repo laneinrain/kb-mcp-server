@@ -28,9 +28,9 @@ Close **PLAT-04**: scope MCP tools (`search_knowledge`, `read_around`, `read_fil
 
 ### Configuration & Documentation
 
-- [ ] **PLAT-14**: Env config: `MCP_AUTH_REQUIRED` (default `true` when `USER_AUTH_ENABLED=true`, ignored when false)
-- [ ] **PLAT-15**: README + `.env.example` document MCP auth, Cursor `mcp.json` `headers.Authorization`, and stdio `MCP_USER_TOKEN`
-- [ ] **PLAT-16**: Automated tests: two users with disjoint docs — user A cannot search/read user B's documents via MCP
+- [x] **PLAT-14**: Env config: `MCP_AUTH_REQUIRED` (default `true` when `USER_AUTH_ENABLED=true`, ignored when false)
+- [x] **PLAT-15**: README + `.env.example` document MCP auth, Cursor `mcp.json` `headers.Authorization`, and stdio `MCP_USER_TOKEN`
+- [x] **PLAT-16**: Automated tests: two users with disjoint docs — user A cannot search/read user B's documents via MCP
 
 ## Traceability
 
@@ -46,11 +46,11 @@ Close **PLAT-04**: scope MCP tools (`search_knowledge`, `read_around`, `read_fil
 | PLAT-11 | 17 | Complete |
 | PLAT-12 | 17 | Complete |
 | PLAT-13 | 17 | Complete |
-| PLAT-14 | 18 | Pending |
-| PLAT-15 | 18 | Pending |
-| PLAT-16 | 18 | Pending |
+| PLAT-14 | 18 | Complete |
+| PLAT-15 | 18 | Complete |
+| PLAT-16 | 18 | Complete |
 
-**Coverage:** 10/13 (docs + isolation harness remaining)
+**Coverage:** 13/13
 
 ## Out of Scope (v1.5)
 

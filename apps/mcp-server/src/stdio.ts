@@ -29,8 +29,10 @@ async function main(): Promise<void> {
   let callerContext: McpCallerContext;
 
   try {
+    const mcpAuthActive =
+      services.config.USER_AUTH_ENABLED && services.config.MCP_AUTH_REQUIRED;
     callerContext = await resolveStdioCallerContext(
-      services.config.USER_AUTH_ENABLED,
+      mcpAuthActive,
       (token) => services.authResolver.resolve(token),
     );
   } catch (error) {
