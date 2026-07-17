@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: MCP User Isolation
 status: shipped
-last_updated: "2026-07-17T02:10:00.000Z"
-last_activity: 2026-07-17 -- v1.5 milestone archived and tagged
+last_updated: "2026-07-17T02:10:30.000Z"
+last_activity: 2026-07-17 -- v1.5 merged to master via PR #8
 progress:
   total_phases: 3
   completed_phases: 3
@@ -27,7 +27,8 @@ See: .planning/PROJECT.md (updated 2026-07-17)
 
 Milestone: v1.5 — **SHIPPED** 2026-07-17  
 Tag: `v1.5`  
-Last activity: 2026-07-17 — milestone archived
+Merge: PR #8 → `master` (`673903b`)  
+Last activity: 2026-07-17 — `/gsd-ship` complete
 
 ## Performance Metrics
 
@@ -54,7 +55,6 @@ Last activity: 2026-07-17 — milestone archived
 
 ## Todos
 
-- [ ] `/gsd-ship` — merge PR #8 to master
 - [ ] `/gsd-new-milestone` — define next scope
 
 ## Blockers
