@@ -2,6 +2,42 @@
 
 Living document — append a section per shipped milestone.
 
+## Milestone: v1.5 — MCP User Isolation
+
+**Shipped:** 2026-07-17  
+**Phases:** 3 | **Plans:** 9
+
+### What Was Built
+
+- Shared `resolveBearerToken` + `McpAuthResolver` + AsyncLocalStorage context (Phase 16)
+- Tool ACL via `getToolAllowedDocumentIds` + `ContextService.allowedDocumentIds` (Phase 17)
+- `MCP_AUTH_REQUIRED`, README Cursor auth docs, two-user isolation tests (Phase 18)
+
+### What Worked
+
+- Reusing REST JWT/`API_KEY` composite auth avoided a second credential system
+- ALS kept `buildMcpServer` signature stable across HTTP and stdio
+- `document_not_found` for ACL deny matched REST 404 semantics without new error codes
+- Escape hatch `MCP_AUTH_REQUIRED=false` preserved single-tenant MCP while REST stays multi-user
+
+### What Was Inefficient
+
+- `MCP_AUTH_REQUIRED` required updating many `makeConfig()` test fixtures across `@kb/core`
+- stdio remains single-user per process — multi-session isolation only on HTTP
+
+### Patterns Established
+
+- Transport auth → ALS `McpCallerContext` → tool reads ACL helper
+- Effective gate: `USER_AUTH_ENABLED && MCP_AUTH_REQUIRED`
+- ContextService ACL mirrors SearchService optional `ReadonlySet`
+
+### Key Lessons
+
+- MCP Streamable HTTP is not legacy SSE; auth belongs on every HTTP method including session GET
+- Missing ALS store should mean global (tests), not throw — keeps InMemory unit tests simple
+
+---
+
 ## Milestone: v1.4 — Qwen Rerank Search
 
 **Shipped:** 2026-07-16  

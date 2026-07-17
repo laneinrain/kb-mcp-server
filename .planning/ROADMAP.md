@@ -9,9 +9,9 @@
 - ✅ **v1.2 Multi-User Auth & Hash Upload** — Phases 7–9 (shipped 2026-07-05)
 - ✅ **v1.3 Mock CAS Admin Console** — Phases 10–12 (shipped 2026-07-07)
 - ✅ **v1.4 Qwen Rerank Search** — Phases 13–15 (shipped 2026-07-16)
-- 🚧 **v1.5 MCP User Isolation** — Phases 16–18 (phases complete, ready to ship)
+- ✅ **v1.5 MCP User Isolation** — Phases 16–18 (shipped 2026-07-17)
 
-See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived milestone details. Active requirements: [REQUIREMENTS.md](REQUIREMENTS.md).
+See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived milestone details.
 
 ## Phases
 
@@ -61,7 +61,7 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 </details>
 
 <details>
-<summary>🚧 v1.5 MCP User Isolation (Phases 16–18) — IN PROGRESS</summary>
+<summary>✅ v1.5 MCP User Isolation (Phases 16–18) — SHIPPED 2026-07-17</summary>
 
 - [x] Phase 16: MCP Request Identity (3/3 plans)
 - [x] Phase 17: Scoped MCP Tools (3/3 plans)
@@ -90,4 +90,4 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 | 18. Config, Docs & Verification | v1.5 | 3/3 | Complete | 2026-07-17 |
 
 ---
-*Last updated: 2026-07-17 — Phase 18 complete; v1.5 ready to ship*
+*Last updated: 2026-07-17 — v1.5 milestone shipped*

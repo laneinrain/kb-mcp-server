@@ -6,7 +6,7 @@ A TypeScript/Node knowledge-base MCP server. AI clients connect via **stdio** or
 
 **v1.4 adds:** Two-stage search with Qwen3 rerank (`qwen/qwen3-reranker-0.6b` via CherryIn) — recall 30 candidates, rerank to top-k.
 
-**v1.5 (in progress):** MCP per-user document isolation — JWT/API_KEY auth on HTTP `/mcp`, stdio `MCP_USER_TOKEN`, scoped `search_knowledge` / `read_around` / `read_file` (PLAT-04).
+**v1.5 adds:** MCP per-user document isolation — JWT/API_KEY on HTTP `/mcp`, stdio `MCP_USER_TOKEN`, scoped tools (PLAT-04).
 
 ## Core Value
 
@@ -29,13 +29,7 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - ✓ Admin REST: user directory + cross-user document management — v1.3 Phase 11
 - ✓ Register page + admin 用户管理 Web console — v1.3 Phase 12
 - ✓ Qwen3 rerank two-stage search (`qwen/qwen3-reranker-0.6b`) — v1.4 Phases 13–15
-
-### Active (v1.5)
-
-- [x] MCP auth layer (Phase 16) — JWT on HTTP, `MCP_USER_TOKEN` on stdio, ALS context
-- [x] Scoped `search_knowledge`, `read_around`, `read_file` with `allowedDocumentIds` (Phase 17)
-- [x] Service-account `API_KEY` global bypass parity with REST
-- [x] Operator docs + `MCP_AUTH_REQUIRED` + two-user isolation harness (Phase 18)
+- ✓ MCP per-user document isolation (JWT/API_KEY, `MCP_USER_TOKEN`, tool ACL) — v1.5 Phases 16–18
 
 ### Out of Scope (carried forward)
 
@@ -46,16 +40,15 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - User account delete/disable — admin list + doc management only
 - Admin features when `CAS_MOCK=false` — production uses company CAS
 
-## Current State (2026-07-16)
+## Current State (2026-07-17)
 
-**Shipped milestones:** v1.0–v1.4 (Phases 1–15) — 15 phases, 43 plans.  
-**Active:** v1.5 MCP User Isolation (Phases 16–18).
+**Shipped milestones:** v1.0–v1.5 (Phases 1–18) — 18 phases, 52 plans.
 
 **Search:** Two-stage retrieval — Chroma recall (`RERANK_CANDIDATES`) + CherryIn `qwen/qwen3-reranker-0.6b` rerank (default enabled).
 
-**MCP tools:** `search_knowledge`, `read_around`, `read_file` — scoped to authenticated user when `USER_AUTH_ENABLED=true` (Phase 16–17).
+**MCP tools:** `search_knowledge`, `read_around`, `read_file` — scoped to authenticated user when `USER_AUTH_ENABLED` + `MCP_AUTH_REQUIRED` (v1.5).
 
-**Auth:** Optional `USER_AUTH_ENABLED` with JWT (Web) and `API_KEY` (CLI service ingest). Mock CAS for dev with local registration and admin console; `CAS_MOCK=false` + `CAS_SERVER_URL` for production.
+**Auth:** Optional `USER_AUTH_ENABLED` with JWT (Web/MCP) and `API_KEY` (CLI/MCP service). Mock CAS for dev; `CAS_MOCK=false` + `CAS_SERVER_URL` for production.
 
 **Upload dedup:** `(user_id, filename)` key; SHA-256 of normalized parsed text; outcomes surfaced in REST/Web/CLI.
 
@@ -103,4 +96,4 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 </details>
 
 ---
-*Last updated: 2026-07-17 — Phase 18 complete; v1.5 ready to ship*
+*Last updated: 2026-07-17 — v1.5 milestone shipped*
