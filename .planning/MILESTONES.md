@@ -1,5 +1,47 @@
 # Milestones: kb-mcp-server
 
+## v1.5 MCP User Isolation
+
+**Shipped:** 2026-07-17  
+**Timeline:** 2026-07-16 – 2026-07-17  
+**Phases:** 16–18 | **Plans:** 9
+
+### Delivered
+
+Per-user MCP document isolation matching REST/Web JWT semantics. HTTP `/mcp` validates Bearer JWT or service `API_KEY` on every request; stdio binds `MCP_USER_TOKEN` at process start. All three tools (`search_knowledge`, `read_around`, `read_file`) enforce `allowedDocumentIds`. Resolves long-deferred **PLAT-04**.
+
+### Key Accomplishments
+
+1. **Shared auth** — `resolveBearerToken` in `@kb/auth`; backend + MCP single source
+2. **McpAuthResolver + ALS** — `McpCallerContext` with precomputed document ACL
+3. **ContextService ACL** — optional `allowedDocumentIds`; deny → `document_not_found`
+4. **Config** — `MCP_AUTH_REQUIRED` escape hatch; README Cursor headers / stdio token docs
+5. **Isolation tests** — two-user suite proving cross-user search/read denial
+
+### Stats
+
+| Metric | Value |
+|--------|-------|
+| v1.5 requirements | 13/13 shipped |
+| Resolves v1.0 deferral | PLAT-04 per-user MCP auth |
+| Git range | v1.4 → feat(phase-18) |
+
+### Archives
+
+- [v1.5-ROADMAP.md](milestones/v1.5-ROADMAP.md)
+- [v1.5-REQUIREMENTS.md](milestones/v1.5-REQUIREMENTS.md)
+
+### Known Gaps
+
+- Hybrid BM25 deferred (RETR-01)
+- Multi-user stdio (one token per process by design)
+- Web MCP token management UI not built
+- Production CasAuthProvider still stub
+- CONF-03 bearer auth manual UAT still not run (carried from v1.0)
+
+---
+*Milestone completed via `/gsd-complete-milestone`*
+
 ## v1.4 Qwen Rerank Search
 
 **Shipped:** 2026-07-16  
@@ -36,7 +78,7 @@ Two-stage search retrieval: Chroma vector recall (`RERANK_CANDIDATES` default 30
 - Hybrid BM25 deferred (RETR-01)
 - Web settings rerank toggle deferred
 - Rerank evaluation harness not built
-- Per-user MCP auth deferred (PLAT-04)
+- Per-user MCP auth deferred (PLAT-04) → **resolved in v1.5**
 - CONF-03 bearer auth manual UAT still not run (carried from v1.0)
 
 ---

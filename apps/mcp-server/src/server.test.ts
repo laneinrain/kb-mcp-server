@@ -12,6 +12,10 @@ import {
 } from "@kb/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  enterMcpCallerContext,
+  runWithMcpCallerContext,
+} from "./auth/mcp-request-context.js";
+import {
   buildMcpServer,
   READ_AROUND_TOOL_NAME,
   READ_FILE_TOOL_NAME,
@@ -160,6 +164,7 @@ describe("buildMcpServer", () => {
     expect(search).toHaveBeenCalledWith("test query", {
       topK: 3,
       collection: "default",
+      allowedDocumentIds: undefined,
     });
 
     await client.close();
@@ -227,6 +232,7 @@ describe("buildMcpServer", () => {
     expect(readAround).toHaveBeenCalledWith("d1", 1, {
       window: 2,
       collection: "default",
+      allowedDocumentIds: undefined,
     });
 
     await client.close();
@@ -320,7 +326,10 @@ describe("buildMcpServer", () => {
       arguments: { document_id: "d1", collection: "default" },
     });
 
-    expect(readFile).toHaveBeenCalledWith("d1", { collection: "default" });
+    expect(readFile).toHaveBeenCalledWith("d1", {
+      collection: "default",
+      allowedDocumentIds: undefined,
+    });
 
     await client.close();
     await server.close();
@@ -364,5 +373,180 @@ describe("buildMcpServer", () => {
     expect(serverSource).not.toMatch(/ChromaVectorStore/);
     expect(serverSource).not.toMatch(/EmbeddingClient/);
     expect(serverSource).not.toMatch(/embedQuery/);
+  });
+
+  it("user authMode passes allowedDocumentIds to search and read tools", async () => {
+    const search = vi.fn().mockResolvedValue([]);
+    const readAround = vi.fn().mockResolvedValue({
+      documentId: "d1",
+      filename: "a.txt",
+      collection: "default",
+      chunkRange: { start: 0, end: 0 },
+      windowRequested: 1,
+      windowApplied: 1,
+      chunks: [],
+    });
+    const readFile = vi.fn().mockResolvedValue({
+      documentId: "d1",
+      filename: "a.txt",
+      collection: "default",
+      chunkCount: 1,
+      returnedChunks: 1,
+      chunks: [],
+    });
+    const searchService = mockSearchService(search);
+    const contextService = mockContextService({ readAround, readFile });
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
+    const allowed = new Set(["d1"]);
+
+    await runWithMcpCallerContext(
+      { authMode: "user", allowedDocumentIds: allowed },
+      async () => {
+        await client.callTool({
+          name: SEARCH_TOOL_NAME,
+          arguments: { query: "scoped" },
+        });
+        await client.callTool({
+          name: READ_AROUND_TOOL_NAME,
+          arguments: { document_id: "d1", chunk_index: 0 },
+        });
+        await client.callTool({
+          name: READ_FILE_TOOL_NAME,
+          arguments: { document_id: "d1" },
+        });
+      },
+    );
+
+    expect(search).toHaveBeenCalledWith("scoped", {
+      topK: undefined,
+      collection: undefined,
+      allowedDocumentIds: allowed,
+    });
+    expect(readAround).toHaveBeenCalledWith("d1", 0, {
+      window: undefined,
+      collection: undefined,
+      allowedDocumentIds: allowed,
+    });
+    expect(readFile).toHaveBeenCalledWith("d1", {
+      collection: undefined,
+      allowedDocumentIds: allowed,
+    });
+
+    await client.close();
+    await server.close();
+  });
+
+  it("service authMode omits allowedDocumentIds filter", async () => {
+    const search = vi.fn().mockResolvedValue([]);
+    const searchService = mockSearchService(search);
+    const contextService = mockContextService();
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
+
+    await runWithMcpCallerContext({ authMode: "service" }, async () => {
+      await client.callTool({
+        name: SEARCH_TOOL_NAME,
+        arguments: { query: "service" },
+      });
+    });
+
+    expect(search).toHaveBeenCalledWith("service", {
+      topK: undefined,
+      collection: undefined,
+      allowedDocumentIds: undefined,
+    });
+
+    await client.close();
+    await server.close();
+  });
+
+  it("global authMode omits allowedDocumentIds filter", async () => {
+    const search = vi.fn().mockResolvedValue([]);
+    const searchService = mockSearchService(search);
+    const contextService = mockContextService();
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
+
+    await runWithMcpCallerContext({ authMode: "global" }, async () => {
+      await client.callTool({
+        name: SEARCH_TOOL_NAME,
+        arguments: { query: "global" },
+      });
+    });
+
+    expect(search).toHaveBeenCalledWith("global", {
+      topK: undefined,
+      collection: undefined,
+      allowedDocumentIds: undefined,
+    });
+
+    await client.close();
+    await server.close();
+  });
+
+  it("user authMode with empty Set still passes empty Set", async () => {
+    const search = vi.fn().mockResolvedValue([]);
+    const searchService = mockSearchService(search);
+    const contextService = mockContextService();
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
+    const empty = new Set<string>();
+
+    await runWithMcpCallerContext(
+      { authMode: "user", allowedDocumentIds: empty },
+      async () => {
+        await client.callTool({
+          name: SEARCH_TOOL_NAME,
+          arguments: { query: "empty" },
+        });
+      },
+    );
+
+    expect(search).toHaveBeenCalledWith("empty", {
+      topK: undefined,
+      collection: undefined,
+      allowedDocumentIds: empty,
+    });
+
+    await client.close();
+    await server.close();
+  });
+
+  it("enterMcpCallerContext seeds tool ACL for subsequent calls", async () => {
+    const search = vi.fn().mockResolvedValue([]);
+    const searchService = mockSearchService(search);
+    const contextService = mockContextService();
+    const { client, server } = await connectTestClient(
+      searchService,
+      contextService,
+    );
+    const allowed = new Set(["only"]);
+
+    enterMcpCallerContext({
+      authMode: "user",
+      allowedDocumentIds: allowed,
+    });
+
+    await client.callTool({
+      name: SEARCH_TOOL_NAME,
+      arguments: { query: "enter" },
+    });
+
+    expect(search).toHaveBeenCalledWith(
+      "enter",
+      expect.objectContaining({ allowedDocumentIds: allowed }),
+    );
+
+    await client.close();
+    await server.close();
   });
 });

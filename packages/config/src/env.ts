@@ -129,6 +129,11 @@ const envSchema = z.object({
   BACKEND_PORT: z.coerce.number().default(3000),
   MCP_HTTP_HOST: z.string().default("127.0.0.1"),
   MCP_HTTP_PORT: z.coerce.number().default(3100),
+  MCP_AUTH_REQUIRED: z
+    .union([z.boolean(), z.string()])
+    .optional()
+    .transform((val) => booleanFromEnv(val, true))
+    .default(true),
   DEFAULT_COLLECTION: z.string().default("default"),
   EMBEDDING_MODEL: z.string().default("qwen/qwen3-embedding-8b"),
   EMBEDDING_DIMENSIONS: z.coerce.number().default(1024),

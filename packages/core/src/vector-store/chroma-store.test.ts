@@ -22,6 +22,7 @@ function makeTestConfig(overrides: Partial<AppConfig> = {}): AppConfig {
     BACKEND_PORT: 3000,
     MCP_HTTP_HOST: "127.0.0.1",
     MCP_HTTP_PORT: 3100,
+    MCP_AUTH_REQUIRED: true,
     DEFAULT_COLLECTION: "default",
     EMBEDDING_MODEL: "qwen/qwen3-embedding-8b",
     EMBEDDING_DIMENSIONS: 1024,

@@ -24,3 +24,10 @@ export { MockCasAuthProvider } from "./mock-cas-auth-provider.js";
 export { CasAuthProvider } from "./cas-auth-provider.js";
 export { createAuthProvider } from "./factory.js";
 export { createJwtPreHandler } from "./fastify.js";
+export {
+  BearerAuthError,
+  resolveBearerToken,
+  type BearerAuthMode,
+  type BearerAuthResult,
+  type ResolveBearerTokenDeps,
+} from "./bearer-resolver.js";

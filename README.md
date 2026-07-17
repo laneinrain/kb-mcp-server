@@ -10,9 +10,10 @@
 | CherryIn 嵌入（`qwen/qwen3-embedding-8b`） | ✅ |
 | 本地 Chroma 向量存储 | ✅ |
 | REST API（上传、列表、搜索、健康检查） | ✅ |
-| MCP 工具 `search_knowledge`（stdio + HTTP） | ✅ |
+| MCP 工具 `search_knowledge` / `read_around` / `read_file`（stdio + HTTP） | ✅ |
 | 两阶段检索 + Qwen3 Rerank（`qwen/qwen3-reranker-0.6b`） | ✅ v1.4 |
 | Web 管理界面、JWT 登录、可选 API Key（CLI/服务） | ✅ Phase 4–8 |
+| MCP 按用户文档隔离（JWT / API_KEY） | ✅ v1.5 |
 
 ## 架构
 
@@ -220,13 +221,27 @@ pnpm --filter @kb/web preview
 
 ## MCP 配置
 
-MCP 暴露单一工具 **`search_knowledge`**：
+MCP 暴露三个检索工具：
 
-| 参数 | 类型 | 说明 |
-|------|------|------|
-| `query` | string | 搜索问题（必填，1–2000 字符） |
-| `top_k` | number | 返回条数，1–10，默认 5 |
-| `collection` | string | 集合名，默认 `default` |
+| 工具 | 说明 |
+|------|------|
+| `search_knowledge` | 语义搜索；参数 `query`（必填）、`top_k`（1–10）、`collection` |
+| `read_around` | 按 `document_id` + `chunk_index` 展开邻近块 |
+| `read_file` | 按 `document_id` 读取有界全文（块序） |
+
+### MCP 用户隔离（v1.5）
+
+当 `USER_AUTH_ENABLED=true` 且 `MCP_AUTH_REQUIRED=true`（默认）时，MCP 与 REST 一样按用户隔离文档：
+
+| 凭据 | 文档范围 |
+|------|----------|
+| JWT（`Authorization: Bearer <accessToken>`） | 自己的文档 + 系统共享历史文档 |
+| `API_KEY`（`AUTH_ENABLED=true`） | 全局（服务账号） |
+| 无凭据 | HTTP 401 / stdio 启动失败 |
+
+JWT 可通过 Web 登录或 `POST /api/v1/auth/login` 获取。
+
+逃生阀：`MCP_AUTH_REQUIRED=false` 时 MCP 保持全局语料（不要求 token），REST/Web 仍可按 JWT 隔离。
 
 ### 方式一：stdio（Cursor 本地，推荐）
 
@@ -238,11 +253,16 @@ MCP 暴露单一工具 **`search_knowledge`**：
     "kb-mcp-server": {
       "command": "pnpm",
       "args": ["--filter", "@kb/mcp-server", "dev:stdio"],
-      "env": { "DOTENV_CONFIG_QUIET": "true" }
+      "env": {
+        "DOTENV_CONFIG_QUIET": "true",
+        "MCP_USER_TOKEN": "<jwt>"
+      }
     }
   }
 }
 ```
+
+当 `USER_AUTH_ENABLED=true` 且 `MCP_AUTH_REQUIRED=true` 时，必须设置 `MCP_USER_TOKEN`（进程级，单用户）。关闭用户认证或设置 `MCP_AUTH_REQUIRED=false` 时可省略。
 
 用 Cursor 打开本仓库根目录即可；工作区根目录即 `cwd`，会自动加载根目录 `.env`。
 
@@ -254,7 +274,10 @@ MCP 暴露单一工具 **`search_knowledge`**：
     "kb-mcp-server": {
       "command": "node",
       "args": ["apps/mcp-server/dist/stdio.js"],
-      "env": { "DOTENV_CONFIG_QUIET": "true" }
+      "env": {
+        "DOTENV_CONFIG_QUIET": "true",
+        "MCP_USER_TOKEN": "<jwt>"
+      }
     }
   }
 }
@@ -274,19 +297,24 @@ MCP 暴露单一工具 **`search_knowledge`**：
 pnpm --filter @kb/mcp-server dev
 ```
 
-Cursor MCP 配置示例：
+Cursor MCP 配置示例（用户认证开启时带 Bearer）：
 
 ```json
 {
   "mcpServers": {
     "kb-mcp-server": {
-      "url": "http://127.0.0.1:3100/mcp"
+      "url": "http://127.0.0.1:3100/mcp",
+      "headers": {
+        "Authorization": "Bearer <jwt-or-api-key>"
+      }
     }
   }
 }
 ```
 
-> 浏览器直接访问 `GET /mcp` 会返回 404，这是预期行为；MCP 仅接受 `POST /mcp`。
+每个 `/mcp` 请求都会校验 Bearer；会话内 SSE（`GET /mcp`）同样需要有效 token。
+
+> 浏览器直接访问未带 session 的 `GET /mcp` 可能返回 405/401，这是预期行为；请用 MCP 客户端连接。
 
 ## 环境变量
 
@@ -298,6 +326,8 @@ Cursor MCP 配置示例：
 | `CHROMA_HOST` / `CHROMA_PORT` | `localhost` / `8000` | Chroma 地址 |
 | `BACKEND_HOST` / `BACKEND_PORT` | `127.0.0.1` / `3000` | REST API |
 | `MCP_HTTP_HOST` / `MCP_HTTP_PORT` | `127.0.0.1` / `3100` | MCP HTTP |
+| `MCP_AUTH_REQUIRED` | `true` | `USER_AUTH_ENABLED=true` 时是否要求 MCP 鉴权；`false` 时 MCP 全局 |
+| `MCP_USER_TOKEN` | — | stdio 进程环境变量（JWT）；非 AppConfig 字段，见 `.env.example` |
 | `DEFAULT_COLLECTION` | `default` | 默认向量集合 |
 | `EMBEDDING_MODEL` | `qwen/qwen3-embedding-8b` | 嵌入模型 |
 | `RERANK_ENABLED` | `true` | 是否启用两阶段 rerank |
@@ -308,15 +338,16 @@ Cursor MCP 配置示例：
 | `AUTH_ENABLED` | `false` | 全局 API Key（CLI/服务访问） |
 | `USER_AUTH_ENABLED` | `false` | Web 工号登录 + JWT；与 `AUTH_ENABLED` 独立 |
 
-### 鉴权矩阵（Phase 8）
+### 鉴权矩阵
 
 | 客户端 | 凭据 | 文档范围 |
 |--------|------|----------|
 | **Web 管理界面** | JWT（`POST /api/v1/auth/login`） | 自己的文档 + 系统共享历史文档 |
 | **CLI / 自动化** | `AUTH_ENABLED` + `API_KEY`（Bearer） | 全局（服务账号） |
-| **MCP** | 无（本阶段未变） | 检索不受用户隔离限制 |
+| **MCP HTTP** | `Authorization: Bearer` JWT 或 `API_KEY` | JWT → 用户文档集；API_KEY → 全局 |
+| **MCP stdio** | 环境变量 `MCP_USER_TOKEN`（JWT） | 同上（进程绑定单用户） |
 
-当 `USER_AUTH_ENABLED=true` 时，Web 必须使用 JWT 登录；CLI 需同时设置 `AUTH_ENABLED=true` 与 `API_KEY` 才能通过 REST 入库。
+当 `USER_AUTH_ENABLED=true` 时，Web 必须使用 JWT 登录；CLI 需同时设置 `AUTH_ENABLED=true` 与 `API_KEY` 才能通过 REST 入库。MCP 默认同步要求鉴权（`MCP_AUTH_REQUIRED=true`）。
 
 **Mock 模式（`CAS_MOCK=true`）额外能力（v1.3）：**
 

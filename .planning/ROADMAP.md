@@ -9,6 +9,7 @@
 - ✅ **v1.2 Multi-User Auth & Hash Upload** — Phases 7–9 (shipped 2026-07-05)
 - ✅ **v1.3 Mock CAS Admin Console** — Phases 10–12 (shipped 2026-07-07)
 - ✅ **v1.4 Qwen Rerank Search** — Phases 13–15 (shipped 2026-07-16)
+- ✅ **v1.5 MCP User Isolation** — Phases 16–18 (shipped 2026-07-17)
 
 See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived milestone details.
 
@@ -59,6 +60,15 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 
 </details>
 
+<details>
+<summary>✅ v1.5 MCP User Isolation (Phases 16–18) — SHIPPED 2026-07-17</summary>
+
+- [x] Phase 16: MCP Request Identity (3/3 plans)
+- [x] Phase 17: Scoped MCP Tools (3/3 plans)
+- [x] Phase 18: Config, Docs & Verification (3/3 plans)
+
+</details>
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -75,6 +85,9 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 | 13. Rerank Client | v1.4 | 2/2 | Complete | 2026-07-16 |
 | 14. Search Pipeline | v1.4 | 3/3 | Complete | 2026-07-16 |
 | 15. Config & Documentation | v1.4 | 2/2 | Complete | 2026-07-16 |
+| 16. MCP Request Identity | v1.5 | 3/3 | Complete | 2026-07-16 |
+| 17. Scoped MCP Tools | v1.5 | 3/3 | Complete | 2026-07-17 |
+| 18. Config, Docs & Verification | v1.5 | 3/3 | Complete | 2026-07-17 |
 
 ---
-*Last updated: 2026-07-16 — v1.4 milestone shipped*
+*Last updated: 2026-07-17 — v1.5 milestone shipped*

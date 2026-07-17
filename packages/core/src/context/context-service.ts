@@ -117,6 +117,18 @@ export class ContextService {
     );
   }
 
+  private assertDocumentAllowed(
+    documentId: string,
+    allowedDocumentIds?: ReadonlySet<string>,
+  ): void {
+    if (allowedDocumentIds && !allowedDocumentIds.has(documentId)) {
+      throw contextError(
+        "document_not_found",
+        `Document ${documentId} not found`,
+      );
+    }
+  }
+
   async readAround(
     documentId: string,
     chunkIndex: number,
@@ -131,6 +143,8 @@ export class ContextService {
         `Document ${documentId} not found`,
       );
     }
+
+    this.assertDocumentAllowed(documentId, options?.allowedDocumentIds);
 
     const chromaIds = this.registry.getChunkIds(documentId);
     if (chunkIndex < 0 || chunkIndex >= chromaIds.length) {
@@ -201,6 +215,8 @@ export class ContextService {
         `Document ${documentId} not found`,
       );
     }
+
+    this.assertDocumentAllowed(documentId, options?.allowedDocumentIds);
 
     const chromaIds = this.registry.getChunkIds(documentId);
     const collection =

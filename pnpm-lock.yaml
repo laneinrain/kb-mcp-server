@@ -109,6 +109,9 @@ importers:
 
   apps/mcp-server:
     dependencies:
+      '@kb/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@kb/config':
         specifier: workspace:*
         version: link:../../packages/config
