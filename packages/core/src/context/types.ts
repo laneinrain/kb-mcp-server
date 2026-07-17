@@ -9,10 +9,14 @@ export interface ContextChunk {
 export interface ReadAroundOptions {
   window?: number;
   collection?: string;
+  /** When set, documentId must be in the set or read fails with document_not_found */
+  allowedDocumentIds?: ReadonlySet<string>;
 }
 
 export interface ReadFileOptions {
   collection?: string;
+  /** When set, documentId must be in the set or read fails with document_not_found */
+  allowedDocumentIds?: ReadonlySet<string>;
 }
 
 export interface ReadAroundResult {

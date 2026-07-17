@@ -32,9 +32,10 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 
 ### Active (v1.5)
 
-- [~] MCP auth layer (Phase 16) — JWT on HTTP, `MCP_USER_TOKEN` on stdio, ALS context
-- [ ] Scoped `search_knowledge`, `read_around`, `read_file` with `allowedDocumentIds` (Phase 17)
-- [x] Service-account `API_KEY` global bypass parity with REST (resolver)
+- [x] MCP auth layer (Phase 16) — JWT on HTTP, `MCP_USER_TOKEN` on stdio, ALS context
+- [x] Scoped `search_knowledge`, `read_around`, `read_file` with `allowedDocumentIds` (Phase 17)
+- [x] Service-account `API_KEY` global bypass parity with REST
+- [ ] Operator docs + `MCP_AUTH_REQUIRED` + two-user isolation harness (Phase 18)
 
 ### Out of Scope (carried forward)
 
@@ -52,7 +53,7 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 
 **Search:** Two-stage retrieval — Chroma recall (`RERANK_CANDIDATES`) + CherryIn `qwen/qwen3-reranker-0.6b` rerank (default enabled).
 
-**MCP tools:** `search_knowledge`, `read_around`, `read_file` — global corpus today; v1.5 scopes to authenticated user.
+**MCP tools:** `search_knowledge`, `read_around`, `read_file` — scoped to authenticated user when `USER_AUTH_ENABLED=true` (Phase 16–17).
 
 **Auth:** Optional `USER_AUTH_ENABLED` with JWT (Web) and `API_KEY` (CLI service ingest). Mock CAS for dev with local registration and admin console; `CAS_MOCK=false` + `CAS_SERVER_URL` for production.
 
@@ -81,8 +82,9 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 | Mock CAS + employeeId JIT users | Company auth pattern | ✓ Good |
 | Composite JWT + API_KEY | Web users vs CLI bulk ingest | ✓ Good (v1.2) |
 | Hash on parsed text, keyed by `(user_id, filename)` | Skip redundant embeds on re-upload | ✓ Good (v1.2) |
-| MCP global corpus | User isolation on REST/Web only | → v1.5 PLAT-04 |
-| MCP JWT + API_KEY composite auth | Parity with REST; Cursor headers | v1.5 target |
+| MCP global corpus | User isolation on REST/Web only | → v1.5 PLAT-04 ✓ |
+| MCP JWT + API_KEY composite auth | Parity with REST; Cursor headers | ✓ Good (v1.5) |
+| ContextService ACL via allowedDocumentIds | Same pattern as SearchService | ✓ Good (v1.5) |
 | Admin only in `CAS_MOCK=true` | Scaffold operator console | ✓ Good (v1.3) |
 | `role` column + JWT claim | Simple RBAC without roles table | ✓ Good (v1.3) |
 | Two-stage recall + rerank | Precision boost without changing ingest | ✓ Good (v1.4) |
@@ -101,4 +103,4 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 </details>
 
 ---
-*Last updated: 2026-07-16 — v1.5 milestone planning*
+*Last updated: 2026-07-17 — Phase 17 complete*

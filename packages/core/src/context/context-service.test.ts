@@ -370,6 +370,53 @@ describe("ContextService", () => {
     expect(getContextConfig).toHaveBeenCalledTimes(2);
   });
 
+  it("readAround succeeds when document is in allowedDocumentIds", async () => {
+    const { service, getByIds } = createService();
+
+    await expect(
+      service.readAround("doc-1", 1, {
+        allowedDocumentIds: new Set(["doc-1", "other"]),
+      }),
+    ).resolves.toMatchObject({ documentId: "doc-1" });
+    expect(getByIds).toHaveBeenCalled();
+  });
+
+  it("readAround throws document_not_found when document outside allowed set", async () => {
+    const { service, getByIds } = createService();
+
+    await expect(
+      service.readAround("doc-1", 1, {
+        allowedDocumentIds: new Set(["other-doc"]),
+      }),
+    ).rejects.toMatchObject({
+      name: "ContextError",
+      code: "document_not_found",
+    });
+    expect(getByIds).not.toHaveBeenCalled();
+  });
+
+  it("readFile throws document_not_found when document outside allowed set", async () => {
+    const { service, getByIds } = createService();
+
+    await expect(
+      service.readFile("doc-1", {
+        allowedDocumentIds: new Set(["other-doc"]),
+      }),
+    ).rejects.toMatchObject({
+      name: "ContextError",
+      code: "document_not_found",
+    });
+    expect(getByIds).not.toHaveBeenCalled();
+  });
+
+  it("readAround/readFile without allowedDocumentIds keep global access", async () => {
+    const { service, getByIds } = createService();
+
+    await service.readAround("doc-1", 1);
+    await service.readFile("doc-1");
+    expect(getByIds).toHaveBeenCalledTimes(2);
+  });
+
   it("ContextService.create factory mirrors SearchService.create", () => {
     const registry = { getDocument: vi.fn(), getChunkIds: vi.fn() } as never;
     const vectorStore = { getByIds: vi.fn() } as never;

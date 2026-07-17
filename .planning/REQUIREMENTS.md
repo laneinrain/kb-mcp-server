@@ -12,7 +12,7 @@ Close **PLAT-04**: scope MCP tools (`search_knowledge`, `read_around`, `read_fil
 
 ### MCP Authentication
 
-- [~] **PLAT-04**: MCP tools respect per-user document isolation (auth layer done Phase 16; tool ACL Phase 17)
+- [x] **PLAT-04**: MCP tools respect per-user document isolation (resolves v1.0–v1.4 deferral)
 - [x] **PLAT-05**: HTTP `/mcp` validates `Authorization: Bearer <token>` on every request when user auth is active
 - [x] **PLAT-06**: stdio transport reads `MCP_USER_TOKEN` env at startup to bind a single user scope (documented dev/single-user path)
 - [x] **PLAT-07**: Valid `API_KEY` bearer acts as service account with global corpus access (parity with REST composite auth)
@@ -21,10 +21,10 @@ Close **PLAT-04**: scope MCP tools (`search_knowledge`, `read_around`, `read_fil
 
 ### Tool Scoping
 
-- [ ] **PLAT-10**: `search_knowledge` passes `allowedDocumentIds` from `registry.listDocumentsForUser(userId, systemUserId)` — same set as REST `POST /api/v1/search`
-- [ ] **PLAT-11**: `read_around` denies documents outside the caller's allowed set (not found / forbidden semantics)
-- [ ] **PLAT-12**: `read_file` denies documents outside the caller's allowed set
-- [ ] **PLAT-13**: `ContextService` accepts optional `allowedDocumentIds` on `readAround` / `readFile` (parallel to `SearchService`)
+- [x] **PLAT-10**: `search_knowledge` passes `allowedDocumentIds` from `registry.listDocumentsForUser(userId, systemUserId)` — same set as REST `POST /api/v1/search`
+- [x] **PLAT-11**: `read_around` denies documents outside the caller's allowed set (not found / forbidden semantics)
+- [x] **PLAT-12**: `read_file` denies documents outside the caller's allowed set
+- [x] **PLAT-13**: `ContextService` accepts optional `allowedDocumentIds` on `readAround` / `readFile` (parallel to `SearchService`)
 
 ### Configuration & Documentation
 
@@ -36,21 +36,21 @@ Close **PLAT-04**: scope MCP tools (`search_knowledge`, `read_around`, `read_fil
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PLAT-04 | 16–17 | Partial (auth done) |
+| PLAT-04 | 16–17 | Complete |
 | PLAT-05 | 16 | Complete |
 | PLAT-06 | 16 | Complete |
-| PLAT-07 | 16–17 | Complete (resolver) |
-| PLAT-08 | 16–17 | Complete (resolver) |
+| PLAT-07 | 16–17 | Complete |
+| PLAT-08 | 16–17 | Complete |
 | PLAT-09 | 16 | Complete |
-| PLAT-10 | 17 | Pending |
-| PLAT-11 | 17 | Pending |
-| PLAT-12 | 17 | Pending |
-| PLAT-13 | 17 | Pending |
+| PLAT-10 | 17 | Complete |
+| PLAT-11 | 17 | Complete |
+| PLAT-12 | 17 | Complete |
+| PLAT-13 | 17 | Complete |
 | PLAT-14 | 18 | Pending |
 | PLAT-15 | 18 | Pending |
 | PLAT-16 | 18 | Pending |
 
-**Coverage:** 5/13 (auth layer); tool ACL + docs remaining
+**Coverage:** 10/13 (docs + isolation harness remaining)
 
 ## Out of Scope (v1.5)
 

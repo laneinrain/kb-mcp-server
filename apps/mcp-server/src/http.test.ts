@@ -220,6 +220,7 @@ describe("MCP HTTP /mcp", () => {
     expect(services.contextService.readAround).toHaveBeenCalledWith("d1", 0, {
       window: undefined,
       collection: undefined,
+      allowedDocumentIds: undefined,
     });
   });
 

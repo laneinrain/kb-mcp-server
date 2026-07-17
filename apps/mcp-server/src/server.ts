@@ -5,6 +5,7 @@ import {
   type SearchService,
 } from "@kb/core";
 import { z } from "zod";
+import { getToolAllowedDocumentIds } from "./auth/mcp-request-context.js";
 
 export const SEARCH_TOOL_NAME = "search_knowledge";
 export const READ_AROUND_TOOL_NAME = "read_around";
@@ -53,6 +54,7 @@ export function buildMcpServer(
         const results = await searchService.search(query, {
           topK: top_k,
           collection,
+          allowedDocumentIds: getToolAllowedDocumentIds(),
         });
         return {
           content: [
@@ -81,6 +83,7 @@ export function buildMcpServer(
         const result = await contextService.readAround(document_id, chunk_index, {
           window,
           collection,
+          allowedDocumentIds: getToolAllowedDocumentIds(),
         });
         return {
           content: [
@@ -106,7 +109,10 @@ export function buildMcpServer(
     },
     async ({ document_id, collection }) => {
       try {
-        const result = await contextService.readFile(document_id, { collection });
+        const result = await contextService.readFile(document_id, {
+          collection,
+          allowedDocumentIds: getToolAllowedDocumentIds(),
+        });
         return {
           content: [
             { type: "text" as const, text: JSON.stringify(result, null, 2) },

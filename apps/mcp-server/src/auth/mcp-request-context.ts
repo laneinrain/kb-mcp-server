@@ -21,3 +21,12 @@ export function runWithMcpCallerContext<T>(
 export function enterMcpCallerContext(ctx: McpCallerContext): void {
   mcpCallerStorage.enterWith(ctx);
 }
+
+/** ACL set for tool handlers; undefined = no filter (service/global/missing store). */
+export function getToolAllowedDocumentIds(): ReadonlySet<string> | undefined {
+  const ctx = mcpCallerStorage.getStore();
+  if (!ctx || ctx.authMode !== "user") {
+    return undefined;
+  }
+  return ctx.allowedDocumentIds;
+}
