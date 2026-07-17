@@ -64,7 +64,7 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 <summary>🚧 v1.5 MCP User Isolation (Phases 16–18) — IN PROGRESS</summary>
 
 - [x] Phase 16: MCP Request Identity (3/3 plans)
-- [ ] Phase 17: Scoped MCP Tools (0/3 plans)
+- [ ] Phase 17: Scoped MCP Tools (0/3 plans) — **planned**
 - [ ] Phase 18: Config, Docs & Verification (0/3 plans)
 
 </details>
@@ -86,7 +86,7 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 | 14. Search Pipeline | v1.4 | 3/3 | Complete | 2026-07-16 |
 | 15. Config & Documentation | v1.4 | 2/2 | Complete | 2026-07-16 |
 | 16. MCP Request Identity | v1.5 | 3/3 | Complete | 2026-07-16 |
-| 17. Scoped MCP Tools | v1.5 | 0/3 | Planning | — |
+| 17. Scoped MCP Tools | v1.5 | 0/3 | Planned | — |
 | 18. Config, Docs & Verification | v1.5 | 0/3 | Planning | — |
 
 ---

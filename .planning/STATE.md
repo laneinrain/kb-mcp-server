@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.5
 milestone_name: MCP User Isolation
 status: in_progress
-last_updated: "2026-07-16T16:10:00.000Z"
-last_activity: 2026-07-16 -- Phase 16 complete
+last_updated: "2026-07-17T01:58:00.000Z"
+last_activity: 2026-07-17 -- Phase 17 planned
 progress:
   total_phases: 3
   completed_phases: 1
@@ -21,13 +21,14 @@ See: .planning/PROJECT.md (updated 2026-07-16)
 
 **Core value:** An MCP client can reliably semantic-search ingested documents through a stable tool interface.
 
-**Current focus:** v1.5 Phase 17 — Scoped MCP Tools
+**Current focus:** v1.5 Phase 17 — Scoped MCP Tools (planned, ready to execute)
 
 ## Current Position
 
 Milestone: v1.5 — **IN PROGRESS**  
-Phase 16: **COMPLETE** (identity/auth layer)  
-Next: `/gsd-plan-phase 17` or `/gsd-execute-phase 17` if plans exist  
+Phase 16: **COMPLETE**  
+Phase 17: **PLANNED** (3 plans)  
+Next: `/gsd-execute-phase 17`
 
 ## Performance Metrics
 
@@ -51,7 +52,7 @@ Next: `/gsd-plan-phase 17` or `/gsd-execute-phase 17` if plans exist
 
 - [x] `/gsd-plan-phase 16` — MCP Request Identity
 - [x] `/gsd-execute-phase 16` — auth layer shipped
-- [ ] `/gsd-plan-phase 17` — Scoped MCP Tools
+- [x] `/gsd-plan-phase 17` — Scoped MCP Tools (3 plans)
 - [ ] `/gsd-execute-phase 17`
 - [ ] `/gsd-execute-phase 18` — config, docs, tests
 
