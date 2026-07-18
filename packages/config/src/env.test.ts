@@ -15,10 +15,16 @@ describe("findMonorepoRoot", () => {
 describe("loadConfig", () => {
   it("returns typed config when required vars are set", () => {
     process.env.CHERRYIN_API_KEY = "test-key";
+    // Ignore workspace .env overrides so defaults are asserted.
+    delete process.env.CHERRYIN_BASE_URL;
     delete process.env.AUTH_ENABLED;
     delete process.env.API_KEY;
     delete process.env.USER_AUTH_ENABLED;
     delete process.env.JWT_SECRET;
+    delete process.env.MCP_AUTH_REQUIRED;
+    delete process.env.RERANK_ENABLED;
+    delete process.env.RERANK_CANDIDATES;
+    delete process.env.RERANK_MODEL;
     const config = loadConfig();
     expect(config.CHUNK_SIZE).toBe(1024);
     expect(config.CHUNK_OVERLAP).toBe(154);
