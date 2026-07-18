@@ -4,4 +4,5 @@ packages:
 
 allowBuilds:
   esbuild: true
-  better-sqlite3: true
+  # Native binary comes from vendor/better-sqlite3 via postinstall (no GitHub).
+  better-sqlite3: false

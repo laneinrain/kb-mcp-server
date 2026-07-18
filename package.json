@@ -8,7 +8,8 @@
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",
-    "dev": "pnpm --filter @kb/config build && pnpm --filter @kb/core build && concurrently -k \"tsx scripts/start-chroma.ts\" \"pnpm wait:chroma && turbo run dev --filter=@kb/backend --filter=@kb/mcp-server --filter=@kb/web\"",
+    "postinstall": "node scripts/apply-better-sqlite3-prebuild.mjs",
+    "dev": "pnpm --filter @kb/config build && pnpm --filter @kb/auth build && pnpm --filter @kb/core build && concurrently -k \"tsx scripts/start-chroma.ts\" \"pnpm wait:chroma && turbo run dev --filter=@kb/backend --filter=@kb/mcp-server --filter=@kb/web\"",
     "start:prod": "tsx scripts/start-prod.ts",
     "dev:web": "pnpm --filter @kb/web dev",
     "ingest": "pnpm --filter @kb/cli cli -- ingest",
