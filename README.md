@@ -72,6 +72,8 @@ cd kb-mcp-server
 pnpm install
 ```
 
+`better-sqlite3` 使用仓内 [`vendor/better-sqlite3`](vendor/better-sqlite3/) 预编译包（Linux/Windows x64 + Node 24 ABI 137），`postinstall` 自动解压；私网安装无需访问 GitHub Releases。
+
 ### 2. 配置环境变量
 
 ```bash
