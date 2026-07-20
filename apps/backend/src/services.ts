@@ -71,9 +71,13 @@ export async function createAppServices(): Promise<AppServices> {
   );
   const registry = getDocumentRegistry(settingsStore.db);
   const vectorStore = new ChromaVectorStore(config);
-  const embeddingClient = new EmbeddingClient(config, undefined, () =>
-    settingsStore.getModelConfig().embeddingModel,
-  );
+  const embeddingClient = new EmbeddingClient(config, undefined, () => {
+    const models = settingsStore.getModelConfig();
+    return {
+      model: models.embeddingModel,
+      baseURL: models.embeddingBaseUrl,
+    };
+  });
 
   const ingestionService = IngestionService.create(config, {
     registry,

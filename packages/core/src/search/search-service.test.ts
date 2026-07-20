@@ -262,8 +262,10 @@ describe("SearchService", () => {
     const query = vi.fn().mockResolvedValue([makeHit({ text: "chunk" })]);
     const rerank = vi.fn().mockResolvedValue([{ index: 0, relevanceScore: 0.9 }]);
     const modelState = {
+      embeddingBaseUrl: "https://embed.example/v1",
       embeddingModel: "embed",
       rerankEnabled: true,
+      rerankBaseUrl: "https://rerank.example/v1",
       rerankModel: "settings/rerank",
       rerankCandidates: 30,
     };

@@ -12,8 +12,12 @@ export interface ContextConfig {
 }
 
 export interface ModelConfig {
+  /** OpenAI-compatible embeddings base URL (typically ends with /v1). */
+  embeddingBaseUrl: string;
   embeddingModel: string;
   rerankEnabled: boolean;
+  /** Provider base URL for POST {base}/rerank (OpenAI-compatible style). */
+  rerankBaseUrl: string;
   rerankModel: string;
   rerankCandidates: number;
 }

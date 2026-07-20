@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: null
 milestone_name: null
 status: between_milestones
-last_updated: "2026-07-20T16:00:00.000Z"
-last_activity: 2026-07-20 -- /gsd-complete-milestone shipped v1.6
+last_updated: "2026-07-20T19:05:00.000Z"
+last_activity: 2026-07-20 -- Completed quick task 260720-ffeb: custom model baseurl
 progress:
   total_phases: 0
   completed_phases: 0
@@ -28,6 +28,8 @@ See: .planning/PROJECT.md (updated 2026-07-20)
 **Last shipped:** v1.6 Web Usability — Model Settings & MCP User Guide (2026-07-20)  
 Phases 1–21 complete across v1.0–v1.6 (60 plans total).
 
+Last activity: 2026-07-20 - Completed quick task 260720-ffeb: custom model baseurl
+
 ## Performance Metrics
 
 | Metric | Value |
@@ -45,3 +47,9 @@ Phases 1–21 complete across v1.0–v1.6 (60 plans total).
 ## Blockers
 
 None
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260720-ffeb | 向量/Rerank 自定义 Base URL + 模型名（管理员） | 2026-07-20 | pending | [260720-ffeb-custom-model-baseurl](./quick/260720-ffeb-custom-model-baseurl/) |

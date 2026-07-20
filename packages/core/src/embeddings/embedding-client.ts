@@ -22,23 +22,52 @@ function sleep(ms: number): Promise<void> {
   });
 }
 
+export type EmbeddingEndpointResolver = () => {
+  model: string;
+  baseURL: string;
+};
+
 export class EmbeddingClient {
-  private client: OpenAI;
-  private readonly getEmbeddingModel: () => string;
+  private client: OpenAI | null;
+  private cachedBaseURL: string | null = null;
+  private readonly apiKey: string;
+  private readonly resolveEndpoint: EmbeddingEndpointResolver;
+  private readonly injectedClient: OpenAI | null;
 
   constructor(
     config: AppConfig,
     client?: OpenAI,
-    getEmbeddingModel?: () => string,
+    resolveEndpoint?: EmbeddingEndpointResolver | (() => string),
   ) {
-    this.client =
-      client ??
-      new OpenAI({
-        apiKey: config.CHERRYIN_API_KEY,
-        baseURL: config.CHERRYIN_BASE_URL,
+    this.apiKey = config.CHERRYIN_API_KEY;
+    this.injectedClient = client ?? null;
+    this.client = client ?? null;
+
+    if (resolveEndpoint) {
+      // Back-compat: old callers passed () => model string only
+      this.resolveEndpoint = () => {
+        const value = resolveEndpoint();
+        if (typeof value === "string") {
+          return {
+            model: value,
+            baseURL: config.CHERRYIN_BASE_URL.replace(/\/+$/, ""),
+          };
+        }
+        return {
+          model: value.model,
+          baseURL: value.baseURL.replace(/\/+$/, ""),
+        };
+      };
+    } else {
+      this.resolveEndpoint = () => ({
+        model: config.EMBEDDING_MODEL,
+        baseURL: config.CHERRYIN_BASE_URL.replace(/\/+$/, ""),
       });
-    this.getEmbeddingModel =
-      getEmbeddingModel ?? (() => config.EMBEDDING_MODEL);
+    }
+  }
+
+  getEmbeddingModel(): string {
+    return this.resolveEndpoint().model;
   }
 
   formatQuery(text: string): string {
@@ -68,20 +97,36 @@ export class EmbeddingClient {
     await this.embedDocuments(["health-check"]);
   }
 
+  private getClient(baseURL: string): OpenAI {
+    if (this.injectedClient) {
+      return this.injectedClient;
+    }
+    if (!this.client || this.cachedBaseURL !== baseURL) {
+      this.client = new OpenAI({
+        apiKey: this.apiKey,
+        baseURL,
+      });
+      this.cachedBaseURL = baseURL;
+    }
+    return this.client;
+  }
+
   private async embedBatchWithRetry(batch: string[]): Promise<number[][]> {
     let attempt = 0;
+    const { model, baseURL } = this.resolveEndpoint();
+    const client = this.getClient(baseURL);
 
     while (true) {
       try {
-        const response = await this.client.embeddings.create({
-          model: this.getEmbeddingModel(),
+        const response = await client.embeddings.create({
+          model,
           input: batch,
           dimensions: EMBEDDING_DIMENSIONS,
         });
 
         if (!response.data) {
           throw new Error(
-            "Embedding API returned an unexpected response (missing data). Check CHERRYIN_BASE_URL (should end with /v1).",
+            "Embedding API returned an unexpected response (missing data). Check embedding Base URL (should end with /v1).",
           );
         }
 

@@ -126,6 +126,19 @@ describe("RerankClient", () => {
     });
   });
 
+  it("uses getBaseUrl resolver when provided", async () => {
+    const fetchFn = vi.fn(async () =>
+      jsonResponse({ results: [{ index: 0, relevance_score: 0.5 }] }),
+    );
+    const client = new RerankClient(makeConfig(), fetchFn, () =>
+      "https://custom.rerank/v1",
+    );
+
+    await client.rerank("q", ["d"]);
+
+    expect(getFetchCall(fetchFn).url).toBe("https://custom.rerank/v1/rerank");
+  });
+
   it("retries on 429 and succeeds on the next attempt", async () => {
     const fetchFn = vi
       .fn()

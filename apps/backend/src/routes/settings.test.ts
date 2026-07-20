@@ -17,8 +17,10 @@ const DEFAULT_CONTEXT = {
 };
 
 const DEFAULT_MODELS = {
+  embeddingBaseUrl: "https://open.cherryin.cc/v1",
   embeddingModel: "qwen/qwen3-embedding-8b",
   rerankEnabled: true,
+  rerankBaseUrl: "https://open.cherryin.cc/v1",
   rerankModel: "qwen/qwen3-reranker-0.6b",
   rerankCandidates: 30,
 };

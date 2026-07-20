@@ -44,7 +44,9 @@ function migrateSettingsColumns(db: Database.Database, config: AppConfig): void 
   }
 
   const textAdditions: [string, string][] = [
+    ["embedding_base_url", config.CHERRYIN_BASE_URL],
     ["embedding_model", config.EMBEDDING_MODEL],
+    ["rerank_base_url", config.CHERRYIN_BASE_URL],
     ["rerank_model", config.RERANK_MODEL],
   ];
 
@@ -73,8 +75,9 @@ function seedSettingsIfMissing(db: Database.Database, config: AppConfig): void {
         id, chunk_size, chunk_overlap,
         read_around_window_default, read_around_window_max,
         read_around_max_chars, read_file_max_chunks, read_file_max_chars,
-        embedding_model, rerank_enabled, rerank_model, rerank_candidates
-      ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        embedding_base_url, embedding_model, rerank_enabled,
+        rerank_base_url, rerank_model, rerank_candidates
+      ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).run(
       config.CHUNK_SIZE,
       config.CHUNK_OVERLAP,
@@ -83,16 +86,40 @@ function seedSettingsIfMissing(db: Database.Database, config: AppConfig): void {
       config.READ_AROUND_MAX_CHARS,
       config.READ_FILE_MAX_CHUNKS,
       config.READ_FILE_MAX_CHARS,
+      config.CHERRYIN_BASE_URL,
       config.EMBEDDING_MODEL,
       config.RERANK_ENABLED ? 1 : 0,
+      config.CHERRYIN_BASE_URL,
       config.RERANK_MODEL,
       config.RERANK_CANDIDATES,
     );
   }
 }
 
+function normalizeBaseUrl(value: string, field: string): string {
+  const trimmed = value.trim().replace(/\/+$/, "");
+  if (!trimmed) {
+    throw new Error(`${field} must be a non-empty URL`);
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    throw new Error(`${field} must be a valid http(s) URL`);
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    throw new Error(`${field} must use http or https`);
+  }
+  return trimmed;
+}
+
 function normalizeModelConfig(input: ModelConfig): ModelConfig {
+  const embeddingBaseUrl = normalizeBaseUrl(
+    input.embeddingBaseUrl,
+    "embeddingBaseUrl",
+  );
   const embeddingModel = input.embeddingModel.trim();
+  const rerankBaseUrl = normalizeBaseUrl(input.rerankBaseUrl, "rerankBaseUrl");
   const rerankModel = input.rerankModel.trim();
 
   if (!embeddingModel) {
@@ -112,8 +139,10 @@ function normalizeModelConfig(input: ModelConfig): ModelConfig {
   }
 
   return {
+    embeddingBaseUrl,
     embeddingModel,
     rerankEnabled: input.rerankEnabled,
+    rerankBaseUrl,
     rerankModel,
     rerankCandidates: input.rerankCandidates,
   };
@@ -193,22 +222,28 @@ export function getSettingsStore(
       const row = db
         .prepare(
           `SELECT
+            embedding_base_url AS embeddingBaseUrl,
             embedding_model AS embeddingModel,
             rerank_enabled AS rerankEnabled,
+            rerank_base_url AS rerankBaseUrl,
             rerank_model AS rerankModel,
             rerank_candidates AS rerankCandidates
           FROM settings WHERE id = 1`,
         )
         .get() as {
+        embeddingBaseUrl: string;
         embeddingModel: string;
         rerankEnabled: number;
+        rerankBaseUrl: string;
         rerankModel: string;
         rerankCandidates: number;
       };
 
       return {
+        embeddingBaseUrl: row.embeddingBaseUrl,
         embeddingModel: row.embeddingModel,
         rerankEnabled: row.rerankEnabled === 1,
+        rerankBaseUrl: row.rerankBaseUrl,
         rerankModel: row.rerankModel,
         rerankCandidates: row.rerankCandidates,
       };
@@ -221,14 +256,18 @@ export function getSettingsStore(
 
       db.prepare(
         `UPDATE settings SET
+          embedding_base_url = ?,
           embedding_model = ?,
           rerank_enabled = ?,
+          rerank_base_url = ?,
           rerank_model = ?,
           rerank_candidates = ?
         WHERE id = 1`,
       ).run(
+        updated.embeddingBaseUrl,
         updated.embeddingModel,
         updated.rerankEnabled ? 1 : 0,
+        updated.rerankBaseUrl,
         updated.rerankModel,
         updated.rerankCandidates,
       );

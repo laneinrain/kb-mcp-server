@@ -9,8 +9,10 @@ export interface ContextSettings {
 }
 
 export interface ModelSettings {
+  embeddingBaseUrl: string;
   embeddingModel: string;
   rerankEnabled: boolean;
+  rerankBaseUrl: string;
   rerankModel: string;
   rerankCandidates: number;
 }

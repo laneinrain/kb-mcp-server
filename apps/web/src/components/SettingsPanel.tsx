@@ -19,8 +19,10 @@ const EMPTY_CONTEXT: ContextSettings = {
 };
 
 const EMPTY_MODELS: ModelSettings = {
+  embeddingBaseUrl: "",
   embeddingModel: "",
   rerankEnabled: true,
+  rerankBaseUrl: "",
   rerankModel: "",
   rerankCandidates: 30,
 };
@@ -48,6 +50,7 @@ export function SettingsPanel() {
   const [contextForm, setContextForm] = useState<ContextSettings>(EMPTY_CONTEXT);
   const [modelForm, setModelForm] = useState<ModelSettings>(EMPTY_MODELS);
   const [savedEmbeddingModel, setSavedEmbeddingModel] = useState("");
+  const [savedEmbeddingBaseUrl, setSavedEmbeddingBaseUrl] = useState("");
   const [contextError, setContextError] = useState<string | null>(null);
   const [contextSuccess, setContextSuccess] = useState<string | null>(null);
   const [modelError, setModelError] = useState<string | null>(null);
@@ -65,6 +68,7 @@ export function SettingsPanel() {
     if (settingsQuery.data?.models) {
       setModelForm(settingsQuery.data.models);
       setSavedEmbeddingModel(settingsQuery.data.models.embeddingModel);
+      setSavedEmbeddingBaseUrl(settingsQuery.data.models.embeddingBaseUrl);
     }
   }, [settingsQuery.data]);
 
@@ -88,6 +92,7 @@ export function SettingsPanel() {
       setModelError(null);
       setModelSuccess("已保存模型设置");
       setSavedEmbeddingModel(result.models.embeddingModel);
+      setSavedEmbeddingBaseUrl(result.models.embeddingBaseUrl);
       setModelForm(result.models);
       void queryClient.invalidateQueries({ queryKey: ["settings"] });
       setTimeout(() => setModelSuccess(null), 3000);
@@ -134,13 +139,25 @@ export function SettingsPanel() {
       return;
     }
 
+    const embeddingBaseUrl = modelForm.embeddingBaseUrl.trim();
     const embeddingModel = modelForm.embeddingModel.trim();
+    const rerankBaseUrl = modelForm.rerankBaseUrl.trim();
     const rerankModel = modelForm.rerankModel.trim();
     const { rerankCandidates, rerankEnabled } = modelForm;
 
+    if (!embeddingBaseUrl) {
+      setModelSuccess(null);
+      setModelError("Embedding Base URL 不能为空");
+      return;
+    }
     if (!embeddingModel) {
       setModelSuccess(null);
       setModelError("Embedding 模型不能为空");
+      return;
+    }
+    if (!rerankBaseUrl) {
+      setModelSuccess(null);
+      setModelError("Rerank Base URL 不能为空");
       return;
     }
     if (!rerankModel) {
@@ -160,8 +177,10 @@ export function SettingsPanel() {
 
     setModelError(null);
     modelMutation.mutate({
+      embeddingBaseUrl,
       embeddingModel,
       rerankEnabled,
+      rerankBaseUrl,
       rerankModel,
       rerankCandidates,
     });
@@ -190,10 +209,12 @@ export function SettingsPanel() {
   const chunk = settingsQuery.data?.chunk;
   const embeddingDimensions = settingsQuery.data?.embeddingDimensions;
   const canEditModels = canEditModelSettings();
-  const embeddingChanged =
+  const embeddingEndpointChanged =
     canEditModels &&
-    modelForm.embeddingModel.trim() !== savedEmbeddingModel.trim() &&
-    savedEmbeddingModel.trim() !== "";
+    savedEmbeddingModel.trim() !== "" &&
+    (modelForm.embeddingModel.trim() !== savedEmbeddingModel.trim() ||
+      modelForm.embeddingBaseUrl.trim().replace(/\/+$/, "") !==
+        savedEmbeddingBaseUrl.trim().replace(/\/+$/, ""));
 
   return (
     <div className="panel-stack">
@@ -224,10 +245,29 @@ export function SettingsPanel() {
         <h2>Embedding / Rerank</h2>
         <p className="muted">
           {canEditModels
-            ? "检索所用模型（保存后对新的搜索立即生效）"
-            : "检索所用模型（只读；仅管理员可修改 Embedding / Rerank）"}
+            ? "检索所用端点与模型（可接任意 OpenAI 兼容 Embedding / Rerank；保存后对新的搜索立即生效）"
+            : "检索所用端点与模型（只读；仅管理员可修改）"}
         </p>
         <form className="search-form" onSubmit={onModelSubmit}>
+          <div className="field">
+            <label htmlFor="embedding-base-url">Embedding Base URL</label>
+            <input
+              id="embedding-base-url"
+              type="url"
+              value={modelForm.embeddingBaseUrl}
+              readOnly={!canEditModels}
+              disabled={!canEditModels}
+              onChange={(event) =>
+                updateModelField("embeddingBaseUrl", event.target.value)
+              }
+              placeholder="https://api.example.com/v1"
+              autoComplete="off"
+            />
+            <p className="muted">
+              OpenAI 兼容 Embeddings 根路径（通常以 <code className="mono">/v1</code>{" "}
+              结尾）
+            </p>
+          </div>
           <div className="field">
             <label htmlFor="embedding-model">Embedding 模型</label>
             <input
@@ -242,9 +282,9 @@ export function SettingsPanel() {
               autoComplete="off"
             />
           </div>
-          {embeddingChanged ? (
+          {embeddingEndpointChanged ? (
             <div className="banner-warning" role="status">
-              更改 Embedding 模型后，已入库向量可能与新模型不兼容。建议对重要文档重新上传/入库；本系统不会自动重建
+              更改 Embedding Base URL 或模型后，已入库向量可能与新端点不兼容。建议对重要文档重新上传/入库；本系统不会自动重建
               Chroma 集合。
             </div>
           ) : null}
@@ -274,6 +314,24 @@ export function SettingsPanel() {
               />{" "}
               启用 Rerank（两阶段精排）
             </label>
+          </div>
+          <div className="field">
+            <label htmlFor="rerank-base-url">Rerank Base URL</label>
+            <input
+              id="rerank-base-url"
+              type="url"
+              value={modelForm.rerankBaseUrl}
+              disabled={!canEditModels || !modelForm.rerankEnabled}
+              onChange={(event) =>
+                updateModelField("rerankBaseUrl", event.target.value)
+              }
+              placeholder="https://api.example.com/v1"
+              autoComplete="off"
+            />
+            <p className="muted">
+              精排服务根路径（请求 <code className="mono">{"{base}/rerank"}</code>
+              ）
+            </p>
           </div>
           <div className="field">
             <label htmlFor="rerank-model">Rerank 模型</label>
@@ -306,6 +364,10 @@ export function SettingsPanel() {
             />
             <p className="muted">向量召回条数（1–50），再精排为搜索 topK</p>
           </div>
+          <p className="muted">
+            API Key 仍由环境变量 <code className="mono">CHERRYIN_API_KEY</code>{" "}
+            提供（任意兼容服务的 Bearer token）。
+          </p>
           {canEditModels ? (
             <button
               type="submit"

@@ -167,8 +167,10 @@ describe("SettingsStore", () => {
       readFileMaxChars: 64000,
     });
     expect(store.getModelConfig()).toEqual({
+      embeddingBaseUrl: "https://open.cherryin.cc",
       embeddingModel: "qwen/qwen3-embedding-8b",
       rerankEnabled: false,
+      rerankBaseUrl: "https://open.cherryin.cc",
       rerankModel: "qwen/qwen3-reranker-0.6b",
       rerankCandidates: 30,
     });
@@ -187,8 +189,10 @@ describe("SettingsStore", () => {
     );
 
     expect(store.getModelConfig()).toEqual({
+      embeddingBaseUrl: "https://open.cherryin.cc",
       embeddingModel: "custom/embed",
       rerankEnabled: true,
+      rerankBaseUrl: "https://open.cherryin.cc",
       rerankModel: "custom/rerank",
       rerankCandidates: 20,
     });
@@ -199,14 +203,18 @@ describe("SettingsStore", () => {
     const store = getSettingsStore(dbPath, makeConfig(dbPath));
 
     const updated = store.updateModelConfig({
+      embeddingBaseUrl: "https://api.example.com/v1",
       embeddingModel: "other/embed",
       rerankEnabled: true,
+      rerankBaseUrl: "https://rerank.example.com/v1",
       rerankCandidates: 15,
     });
 
     expect(updated).toEqual({
+      embeddingBaseUrl: "https://api.example.com/v1",
       embeddingModel: "other/embed",
       rerankEnabled: true,
+      rerankBaseUrl: "https://rerank.example.com/v1",
       rerankModel: "qwen/qwen3-reranker-0.6b",
       rerankCandidates: 15,
     });
@@ -232,6 +240,12 @@ describe("SettingsStore", () => {
     );
     expect(() => store.updateModelConfig({ rerankModel: "" })).toThrow(
       /rerankModel/,
+    );
+    expect(() =>
+      store.updateModelConfig({ embeddingBaseUrl: "not-a-url" }),
+    ).toThrow(/embeddingBaseUrl/);
+    expect(() => store.updateModelConfig({ rerankBaseUrl: "ftp://x" })).toThrow(
+      /rerankBaseUrl/,
     );
 
     expect(store.getModelConfig().rerankCandidates).toBe(30);
@@ -274,8 +288,10 @@ describe("SettingsStore", () => {
       chunkOverlap: 64,
     });
     expect(store.getModelConfig()).toEqual({
+      embeddingBaseUrl: "https://open.cherryin.cc",
       embeddingModel: "migrated/embed",
       rerankEnabled: true,
+      rerankBaseUrl: "https://open.cherryin.cc",
       rerankModel: "migrated/rerank",
       rerankCandidates: 25,
     });

@@ -66,7 +66,15 @@ export class SearchService {
       settingsStore?: Pick<SettingsStore, "getModelConfig">;
     },
   ): SearchService {
-    const rerankClient = deps.rerankClient ?? new RerankClient(config);
+    const rerankClient =
+      deps.rerankClient ??
+      new RerankClient(
+        config,
+        undefined,
+        deps.settingsStore
+          ? () => deps.settingsStore!.getModelConfig().rerankBaseUrl
+          : undefined,
+      );
 
     if (deps.settingsStore) {
       return new SearchService(

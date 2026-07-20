@@ -19,8 +19,10 @@ const ContextSettingsSchema = z
   );
 
 const ModelSettingsSchema = z.object({
+  embeddingBaseUrl: z.string().trim().min(1).url(),
   embeddingModel: z.string().trim().min(1),
   rerankEnabled: z.boolean(),
+  rerankBaseUrl: z.string().trim().min(1).url(),
   rerankModel: z.string().trim().min(1),
   rerankCandidates: z.number().int().min(1).max(50),
 });

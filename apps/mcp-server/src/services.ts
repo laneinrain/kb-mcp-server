@@ -65,9 +65,13 @@ export async function createMcpServices(): Promise<McpServices> {
   );
   const registry = getDocumentRegistry(settingsStore.db);
   const vectorStore = new ChromaVectorStore(config);
-  const embeddingClient = new EmbeddingClient(config, undefined, () =>
-    settingsStore.getModelConfig().embeddingModel,
-  );
+  const embeddingClient = new EmbeddingClient(config, undefined, () => {
+    const models = settingsStore.getModelConfig();
+    return {
+      model: models.embeddingModel,
+      baseURL: models.embeddingBaseUrl,
+    };
+  });
   const searchService = SearchService.create(config, {
     vectorStore,
     embeddingClient,

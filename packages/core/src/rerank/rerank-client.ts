@@ -29,7 +29,7 @@ function parseRelevanceScore(value: unknown): number {
 function parseResults(payload: RerankApiResponse): RerankResult[] {
   if (!Array.isArray(payload.results)) {
     throw new RerankError(
-      "Rerank API returned an unexpected response (missing results array). Check CHERRYIN_BASE_URL.",
+      "Rerank API returned an unexpected response (missing results array). Check rerank Base URL.",
     );
   }
 
@@ -42,14 +42,22 @@ function parseResults(payload: RerankApiResponse): RerankResult[] {
     .sort((a, b) => b.relevanceScore - a.relevanceScore);
 }
 
+export type RerankBaseUrlResolver = () => string;
+
 export class RerankClient {
   private readonly fetchFn: FetchFn;
+  private readonly getBaseUrl: RerankBaseUrlResolver;
+  private readonly apiKey: string;
 
   constructor(
     private readonly config: AppConfig,
     fetchFn: FetchFn = globalThis.fetch.bind(globalThis),
+    getBaseUrl?: RerankBaseUrlResolver,
   ) {
     this.fetchFn = fetchFn;
+    this.apiKey = config.CHERRYIN_API_KEY;
+    this.getBaseUrl =
+      getBaseUrl ?? (() => config.CHERRYIN_BASE_URL.replace(/\/+$/, ""));
   }
 
   async rerank(
@@ -61,7 +69,8 @@ export class RerankClient {
       return [];
     }
 
-    const url = `${this.config.CHERRYIN_BASE_URL}/rerank`;
+    const base = this.getBaseUrl().replace(/\/+$/, "");
+    const url = `${base}/rerank`;
     const body: Record<string, unknown> = {
       model: options?.model ?? RERANK_MODEL,
       query,
@@ -90,7 +99,7 @@ export class RerankClient {
       const response = await this.fetchFn(url, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${this.config.CHERRYIN_API_KEY}`,
+          Authorization: `Bearer ${this.apiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
