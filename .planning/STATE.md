@@ -52,4 +52,4 @@ None
 
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
-| 260720-ffeb | 向量/Rerank 自定义 Base URL + 模型名（管理员） | 2026-07-20 | pending | [260720-ffeb-custom-model-baseurl](./quick/260720-ffeb-custom-model-baseurl/) |
+| 260720-ffeb | 向量/Rerank 自定义 Base URL + 模型名（管理员） | 2026-07-20 | d638b81 | [260720-ffeb-custom-model-baseurl](./quick/260720-ffeb-custom-model-baseurl/) |
