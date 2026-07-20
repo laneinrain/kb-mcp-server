@@ -41,8 +41,9 @@ function main(): void {
   );
 
   // Single shell command (matches package.json "dev") — avoids Windows argv/shell quoting bugs.
+  // concurrently is vendored (file:vendor/concurrently/…) for private-network installs.
   const runCmd =
-    'concurrently -k -n chroma,backend,mcp -c blue,green,magenta ' +
+    'pnpm exec concurrently -k -n chroma,backend,mcp -c blue,green,magenta ' +
     '"tsx scripts/start-chroma.ts" ' +
     '"pnpm wait:chroma && pnpm --filter @kb/backend start" ' +
     '"pnpm wait:chroma && pnpm --filter @kb/mcp-server start"';

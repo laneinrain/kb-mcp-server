@@ -74,6 +74,8 @@ pnpm install
 
 `better-sqlite3` 使用仓内 [`vendor/better-sqlite3`](vendor/better-sqlite3/) 预编译包（Linux/Windows x64 + Node 24 ABI 137），`postinstall` 自动解压；私网安装无需访问 GitHub Releases。
 
+`concurrently@10.0.1` 使用仓内 [`vendor/concurrently/concurrently-10.0.1.tgz`](vendor/concurrently/)（`package.json` 的 `file:` 依赖），私网 `pnpm install` 无需从公网拉取该包。
+
 ### 2. 配置环境变量
 
 ```bash
