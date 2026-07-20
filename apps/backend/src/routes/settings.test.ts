@@ -16,12 +16,24 @@ const DEFAULT_CONTEXT = {
   readFileMaxChars: 64000,
 };
 
+const DEFAULT_MODELS = {
+  embeddingModel: "qwen/qwen3-embedding-8b",
+  rerankEnabled: true,
+  rerankModel: "qwen/qwen3-reranker-0.6b",
+  rerankCandidates: 30,
+};
+
 async function buildApp() {
   const settingsStore = {
     getChunkConfig: vi.fn().mockReturnValue({ chunkSize: 1024, chunkOverlap: 154 }),
     getContextConfig: vi.fn().mockReturnValue(DEFAULT_CONTEXT),
     updateContextConfig: vi.fn().mockImplementation((patch) => ({
       ...DEFAULT_CONTEXT,
+      ...patch,
+    })),
+    getModelConfig: vi.fn().mockReturnValue(DEFAULT_MODELS),
+    updateModelConfig: vi.fn().mockImplementation((patch) => ({
+      ...DEFAULT_MODELS,
       ...patch,
     })),
   };
@@ -47,13 +59,16 @@ async function buildApp() {
     };
   });
 
-  await registerSettingsRoutes(app, { settingsStore: settingsStore as never });
+  await registerSettingsRoutes(app, {
+    settingsStore: settingsStore as never,
+    embeddingDimensions: 1024,
+  });
 
   return { app, settingsStore };
 }
 
 describe("registerSettingsRoutes", () => {
-  it("GET /api/v1/settings returns chunk and context groups", async () => {
+  it("GET /api/v1/settings returns chunk, context, models, and embeddingDimensions", async () => {
     const { app, settingsStore } = await buildApp();
 
     const response = await app.inject({
@@ -64,9 +79,12 @@ describe("registerSettingsRoutes", () => {
     expect(response.statusCode).toBe(200);
     expect(settingsStore.getChunkConfig).toHaveBeenCalled();
     expect(settingsStore.getContextConfig).toHaveBeenCalled();
+    expect(settingsStore.getModelConfig).toHaveBeenCalled();
     expect(response.json()).toEqual({
       chunk: { chunkSize: 1024, chunkOverlap: 154 },
       context: DEFAULT_CONTEXT,
+      models: DEFAULT_MODELS,
+      embeddingDimensions: 1024,
     });
   });
 
@@ -112,6 +130,107 @@ describe("registerSettingsRoutes", () => {
       error: "validation_error",
     });
   });
+
+  it("PATCH /api/v1/settings/models with valid body returns updated models", async () => {
+    const { app, settingsStore } = await buildApp();
+
+    const payload = {
+      ...DEFAULT_MODELS,
+      embeddingModel: "custom/embed",
+      rerankCandidates: 20,
+    };
+
+    const response = await app.inject({
+      method: "PATCH",
+      url: "/api/v1/settings/models",
+      payload,
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(settingsStore.updateModelConfig).toHaveBeenCalledWith(payload);
+    expect(response.json()).toEqual({
+      models: {
+        ...DEFAULT_MODELS,
+        embeddingModel: "custom/embed",
+        rerankCandidates: 20,
+      },
+    });
+  });
+
+  it("PATCH /api/v1/settings/models with invalid candidates returns 400", async () => {
+    const { app } = await buildApp();
+
+    const response = await app.inject({
+      method: "PATCH",
+      url: "/api/v1/settings/models",
+      payload: {
+        ...DEFAULT_MODELS,
+        rerankCandidates: 51,
+      },
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json()).toMatchObject({
+      error: "validation_error",
+    });
+  });
+
+  it("PATCH /api/v1/settings/models maps store validation errors to 400", async () => {
+    const { app, settingsStore } = await buildApp();
+    settingsStore.updateModelConfig.mockImplementation(() => {
+      throw new Error(
+        "rerankCandidates must be an integer between 1 and 50",
+      );
+    });
+
+    const response = await app.inject({
+      method: "PATCH",
+      url: "/api/v1/settings/models",
+      payload: DEFAULT_MODELS,
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json()).toMatchObject({
+      error: "validation_error",
+      message: expect.stringContaining("rerankCandidates"),
+    });
+  });
+
+  it("PATCH /api/v1/settings/models uses modelsRouteOpts (admin gate)", async () => {
+    const settingsStore = {
+      getChunkConfig: vi.fn().mockReturnValue({ chunkSize: 1024, chunkOverlap: 154 }),
+      getContextConfig: vi.fn().mockReturnValue(DEFAULT_CONTEXT),
+      updateContextConfig: vi.fn(),
+      getModelConfig: vi.fn().mockReturnValue(DEFAULT_MODELS),
+      updateModelConfig: vi.fn(),
+    };
+
+    const app = Fastify().withTypeProvider<ZodTypeProvider>();
+    app.setValidatorCompiler(validatorCompiler);
+    app.setSerializerCompiler(serializerCompiler);
+
+    await registerSettingsRoutes(app, {
+      settingsStore: settingsStore as never,
+      embeddingDimensions: 1024,
+      modelsRouteOpts: {
+        preHandler: async (_request, reply) => {
+          return reply.code(403).send({
+            error: "forbidden",
+            message: "Admin access required",
+          });
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "PATCH",
+      url: "/api/v1/settings/models",
+      payload: DEFAULT_MODELS,
+    });
+
+    expect(response.statusCode).toBe(403);
+    expect(settingsStore.updateModelConfig).not.toHaveBeenCalled();
+  });
 });
 
 describe("createAppServices", () => {
@@ -120,6 +239,7 @@ describe("createAppServices", () => {
 
     expect(services.settingsStore).toBeDefined();
     expect(typeof services.settingsStore.getContextConfig).toBe("function");
+    expect(typeof services.settingsStore.getModelConfig).toBe("function");
     expect(services.contextService).toBeDefined();
     expect(typeof services.contextService.readAround).toBe("function");
     expect(typeof services.contextService.readFile).toBe("function");

@@ -1,5 +1,40 @@
 # Milestones: kb-mcp-server
 
+## v1.6 Web Usability — Model Settings & MCP User Guide
+
+**Shipped:** 2026-07-20  
+**Timeline:** 2026-07-20  
+**Phases:** 19–21 | **Plans:** 8
+
+### Delivered
+
+Runtime embedding/rerank model settings in Web「设置」（SQLite + REST + search/ingest wiring），and a structured MCP User Guide in「使用说明」for Cursor / CodeBuddy with JWT (including copy-current-login JWT). Embedding and rerank edits are **admin-only** when user auth is enabled.
+
+### Key Accomplishments
+
+1. **ModelConfig in SettingsStore** — seed from env; `getModelConfig` / `updateModelConfig`
+2. **REST** — `GET /settings` includes `models`; `PATCH /settings/models` (admin-gated)
+3. **Runtime clients** — `EmbeddingClient` / `SearchService` read settings per request (not frozen boot env)
+4. **Web Settings UI** — form + embedding-change warning; non-admin read-only models section
+5. **Help User Guide** — auth matrix, Cursor/CodeBuddy recipes, clipboard JWT (token not rendered in DOM)
+
+### Stats
+
+| Metric | Value |
+|--------|-------|
+| v1.6 requirements | 10/10 shipped |
+| Resolves v1.4 deferral | Web model / rerank settings |
+| Resolves v1.5 deferral (slice) | Copy current JWT for MCP clients |
+| Plans | 8 (Phases 19–21) |
+
+### Archives
+
+- [v1.6-ROADMAP.md](milestones/v1.6-ROADMAP.md)
+- [v1.6-REQUIREMENTS.md](milestones/v1.6-REQUIREMENTS.md)
+
+---
+*Milestone completed via `/gsd-complete-milestone`*
+
 ## v1.5 MCP User Isolation
 
 **Shipped:** 2026-07-17  

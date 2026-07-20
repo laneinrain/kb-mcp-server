@@ -98,10 +98,48 @@ describe("EmbeddingClient", () => {
 
     expect(spy).toHaveBeenCalledWith(["health-check"]);
   });
+
+  it("uses config.EMBEDDING_MODEL by default", async () => {
+    const mockClient = createMockClient();
+    const client = new EmbeddingClient(
+      makeConfig(),
+      mockClient,
+    );
+
+    await client.embedDocuments(["hello"]);
+
+    expect(mockClient.embeddings.create).toHaveBeenCalledWith(
+      expect.objectContaining({ model: "qwen/qwen3-embedding-8b" }),
+    );
+  });
+
+  it("uses getEmbeddingModel getter on each call", async () => {
+    const mockClient = createMockClient();
+    let model = "model-a";
+    const client = new EmbeddingClient(makeConfig(), mockClient, () => model);
+
+    await client.embedDocuments(["one"]);
+    model = "model-b";
+    await client.embedDocuments(["two"]);
+
+    expect(mockClient.embeddings.create).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ model: "model-a" }),
+    );
+    expect(mockClient.embeddings.create).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ model: "model-b" }),
+    );
+  });
 });
 
 describe("EmbeddingClient integration", () => {
-  it.skipIf(!process.env.CHERRYIN_API_KEY)(
+  const liveKey = process.env.CHERRYIN_API_KEY;
+  const baseUrl = process.env.CHERRYIN_BASE_URL ?? "";
+  const isLocalMock =
+    baseUrl.includes("127.0.0.1") || baseUrl.includes("localhost");
+
+  it.skipIf(!liveKey || isLocalMock)(
     "embeds live when CHERRYIN_API_KEY is set",
     async () => {
       const client = new EmbeddingClient(loadConfig());

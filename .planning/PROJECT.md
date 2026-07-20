@@ -8,6 +8,8 @@ A TypeScript/Node knowledge-base MCP server. AI clients connect via **stdio** or
 
 **v1.5 adds:** MCP per-user document isolation — JWT/API_KEY on HTTP `/mcp`, stdio `MCP_USER_TOKEN`, scoped tools (PLAT-04).
 
+**v1.6 adds:** Web runtime embedding/rerank settings (admin-only when auth on) + MCP User Guide (Cursor / CodeBuddy + copy JWT).
+
 ## Core Value
 
 An MCP client can reliably **semantic-search** ingested documents through a stable tool interface — if search works, the scaffold succeeds. Context expansion (`read_around`, `read_file`) extends search without changing the retrieval algorithm.
@@ -30,6 +32,8 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - ✓ Register page + admin 用户管理 Web console — v1.3 Phase 12
 - ✓ Qwen3 rerank two-stage search (`qwen/qwen3-reranker-0.6b`) — v1.4 Phases 13–15
 - ✓ MCP per-user document isolation (JWT/API_KEY, `MCP_USER_TOKEN`, tool ACL) — v1.5 Phases 16–18
+- ✓ Runtime model settings (SQLite + REST + Web) — v1.6 Phases 19–20
+- ✓ MCP User Guide (Cursor/CodeBuddy JWT + copy token) — v1.6 Phase 21
 
 ### Out of Scope (carried forward)
 
@@ -40,13 +44,15 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 - User account delete/disable — admin list + doc management only
 - Admin features when `CAS_MOCK=false` — production uses company CAS
 
-## Current State (2026-07-17)
+## Current State (2026-07-20)
 
-**Shipped milestones:** v1.0–v1.5 (Phases 1–18) — 18 phases, 52 plans.
+**Shipped milestones:** v1.0–v1.6 (Phases 1–21) — 21 phases, 60 plans.
 
-**Search:** Two-stage retrieval — Chroma recall (`RERANK_CANDIDATES`) + CherryIn `qwen/qwen3-reranker-0.6b` rerank (default enabled).
+**Between milestones:** run `/gsd-new-milestone` for the next goal.
 
-**MCP tools:** `search_knowledge`, `read_around`, `read_file` — scoped to authenticated user when `USER_AUTH_ENABLED` + `MCP_AUTH_REQUIRED` (v1.5).
+**Search:** Two-stage retrieval — Chroma recall + CherryIn rerank; model IDs / toggle / candidates configurable in Web「设置」(admin-only when auth on; dimensions still env-only).
+
+**MCP tools:** `search_knowledge`, `read_around`, `read_file` — scoped to authenticated user when `USER_AUTH_ENABLED` + `MCP_AUTH_REQUIRED` (v1.5). Web Help documents Cursor/CodeBuddy JWT setup and can copy the current session JWT.
 
 **Auth:** Optional `USER_AUTH_ENABLED` with JWT (Web/MCP) and `API_KEY` (CLI/MCP service). Mock CAS for dev; `CAS_MOCK=false` + `CAS_SERVER_URL` for production.
 
@@ -81,6 +87,9 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 | Admin only in `CAS_MOCK=true` | Scaffold operator console | ✓ Good (v1.3) |
 | `role` column + JWT claim | Simple RBAC without roles table | ✓ Good (v1.3) |
 | Two-stage recall + rerank | Precision boost without changing ingest | ✓ Good (v1.4) |
+| Model config in SQLite settings | Hot-change embedding/rerank without restart | ✓ Good (v1.6) |
+| Embedding + Rerank admin-only | Global retrieval quality; non-admin read-only | ✓ Good (v1.6) |
+| Help copy-current-JWT | Minimal MCP client onboarding without token product | ✓ Good (v1.6) |
 | Chroma local vector store | Lightweight single-machine scaffold | ✓ Good |
 | Text-layer PDF only | Reduces v1 complexity | ✓ Good |
 
@@ -96,4 +105,4 @@ An MCP client can reliably **semantic-search** ingested documents through a stab
 </details>
 
 ---
-*Last updated: 2026-07-17 — v1.5 milestone shipped*
+*Last updated: 2026-07-20 — v1.6 shipped via `/gsd-complete-milestone`*

@@ -21,7 +21,7 @@ import "./types.js";
 
 async function main(): Promise<void> {
   const services = await createAppServices();
-  const { config, vectorStore, embeddingClient } = services;
+  const { config, vectorStore, embeddingClient, settingsStore } = services;
 
   const app = Fastify({ logger: true }).withTypeProvider<ZodTypeProvider>();
   app.setValidatorCompiler(validatorCompiler);
@@ -48,13 +48,20 @@ async function main(): Promise<void> {
     },
   });
 
-  await registerHealthRoutes(app, { vectorStore, embeddingClient });
+  await registerHealthRoutes(app, {
+    vectorStore,
+    embeddingClient,
+    getEmbeddingModel: () => settingsStore.getModelConfig().embeddingModel,
+  });
   await registerAuthRoutes(app, {
     authProvider: services.authProvider,
     casMock: config.CAS_MOCK,
   });
   await registerBearerAuthIfEnabled(app, config);
   const routeOpts = createProtectedRouteOpts(config, app, services.authProvider);
+  const modelsRouteOpts = config.USER_AUTH_ENABLED
+    ? createAdminRouteOpts(config, app, services.authProvider)
+    : routeOpts;
   if (config.USER_AUTH_ENABLED) {
     const adminRouteOpts = createAdminRouteOpts(
       config,
@@ -89,7 +96,9 @@ async function main(): Promise<void> {
   });
   await registerSettingsRoutes(app, {
     settingsStore: services.settingsStore,
+    embeddingDimensions: services.config.EMBEDDING_DIMENSIONS,
     routeOpts,
+    modelsRouteOpts,
   });
 
   await registerWebStatic(app);

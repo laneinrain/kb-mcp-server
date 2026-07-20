@@ -1,8 +1,6 @@
 import OpenAI from "openai";
 import { EMBEDDING_DIMENSIONS, type AppConfig } from "@kb/config";
 
-const EMBEDDING_MODEL = "qwen/qwen3-embedding-8b";
-
 const QUERY_INSTRUCTION =
   "Given a user question, retrieve relevant passages from the knowledge base";
 const QUERY_PREFIX = `Instruct: ${QUERY_INSTRUCTION}\nQuery:`;
@@ -26,14 +24,21 @@ function sleep(ms: number): Promise<void> {
 
 export class EmbeddingClient {
   private client: OpenAI;
+  private readonly getEmbeddingModel: () => string;
 
-  constructor(config: AppConfig, client?: OpenAI) {
+  constructor(
+    config: AppConfig,
+    client?: OpenAI,
+    getEmbeddingModel?: () => string,
+  ) {
     this.client =
       client ??
       new OpenAI({
         apiKey: config.CHERRYIN_API_KEY,
         baseURL: config.CHERRYIN_BASE_URL,
       });
+    this.getEmbeddingModel =
+      getEmbeddingModel ?? (() => config.EMBEDDING_MODEL);
   }
 
   formatQuery(text: string): string {
@@ -69,7 +74,7 @@ export class EmbeddingClient {
     while (true) {
       try {
         const response = await this.client.embeddings.create({
-          model: EMBEDDING_MODEL,
+          model: this.getEmbeddingModel(),
           input: batch,
           dimensions: EMBEDDING_DIMENSIONS,
         });

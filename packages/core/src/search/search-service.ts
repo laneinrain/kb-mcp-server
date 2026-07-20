@@ -1,6 +1,7 @@
 import { DEFAULT_COLLECTION, type AppConfig } from "@kb/config";
 import type { EmbeddingClient } from "../embeddings/embedding-client.js";
 import { RerankClient } from "../rerank/rerank-client.js";
+import type { SettingsStore } from "../registry/settings-store.js";
 import type { ChromaVectorStore, QueryHit } from "../vector-store/chroma-store.js";
 import type { SearchOptions, SearchResult } from "./types.js";
 
@@ -13,6 +14,12 @@ interface SearchRerankOptions {
   enabled: boolean;
   candidates: number;
   model: string;
+}
+
+interface SearchRuntimeOptions {
+  config: AppConfig;
+  rerankClient: RerankClient;
+  settingsStore: Pick<SettingsStore, "getModelConfig">;
 }
 
 function formatScore(distance: number): number {
@@ -47,6 +54,7 @@ export class SearchService {
     private readonly embeddingClient: EmbeddingClient,
     private readonly defaultCollection: string = DEFAULT_COLLECTION,
     private readonly rerank?: SearchRerankOptions,
+    private readonly runtime?: SearchRuntimeOptions,
   ) {}
 
   static create(
@@ -55,17 +63,33 @@ export class SearchService {
       vectorStore: ChromaVectorStore;
       embeddingClient: EmbeddingClient;
       rerankClient?: RerankClient;
+      settingsStore?: Pick<SettingsStore, "getModelConfig">;
     },
   ): SearchService {
-    const rerank =
-      config.RERANK_ENABLED
-        ? {
-            client: deps.rerankClient ?? new RerankClient(config),
-            enabled: true,
-            candidates: config.RERANK_CANDIDATES,
-            model: config.RERANK_MODEL,
-          }
-        : undefined;
+    const rerankClient = deps.rerankClient ?? new RerankClient(config);
+
+    if (deps.settingsStore) {
+      return new SearchService(
+        deps.vectorStore,
+        deps.embeddingClient,
+        config.DEFAULT_COLLECTION,
+        undefined,
+        {
+          config,
+          rerankClient,
+          settingsStore: deps.settingsStore,
+        },
+      );
+    }
+
+    const rerank = config.RERANK_ENABLED
+      ? {
+          client: rerankClient,
+          enabled: true,
+          candidates: config.RERANK_CANDIDATES,
+          model: config.RERANK_MODEL,
+        }
+      : undefined;
 
     return new SearchService(
       deps.vectorStore,
@@ -75,15 +99,32 @@ export class SearchService {
     );
   }
 
+  private resolveRerank(): SearchRerankOptions | undefined {
+    if (this.runtime) {
+      const models = this.runtime.settingsStore.getModelConfig();
+      if (!models.rerankEnabled) {
+        return undefined;
+      }
+      return {
+        client: this.runtime.rerankClient,
+        enabled: true,
+        candidates: models.rerankCandidates,
+        model: models.rerankModel,
+      };
+    }
+    return this.rerank;
+  }
+
   async search(
     query: string,
     options?: SearchOptions,
   ): Promise<SearchResult[]> {
     const collection = options?.collection ?? this.defaultCollection;
     const topK = Math.min(options?.topK ?? DEFAULT_TOP_K, MAX_TOP_K);
+    const rerank = this.resolveRerank();
     const recallK =
-      this.rerank?.enabled === true
-        ? Math.max(topK, this.rerank.candidates)
+      rerank?.enabled === true
+        ? Math.max(topK, rerank.candidates)
         : topK;
 
     const embedding = await this.embeddingClient.embedQuery(query);
@@ -98,15 +139,15 @@ export class SearchService {
       ? hits.filter((hit) => allowed.has(hit.documentId))
       : hits;
 
-    if (!this.rerank?.enabled || filtered.length === 0) {
+    if (!rerank?.enabled || filtered.length === 0) {
       return mapVectorHits(filtered, topK);
     }
 
     try {
-      const ranked = await this.rerank.client.rerank(
+      const ranked = await rerank.client.rerank(
         query,
         filtered.map((hit) => hit.text),
-        { topN: topK, model: this.rerank.model },
+        { topN: topK, model: rerank.model },
       );
 
       return ranked.map((item) => {

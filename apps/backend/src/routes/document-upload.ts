@@ -11,7 +11,15 @@ import { mapIngestError } from "../lib/errors.js";
 const ALLOWED_MIME = new Set([
   "text/plain",
   "text/markdown",
+  "text/x-markdown",
   "application/pdf",
+]);
+
+/** Browsers often label .md/.txt as this instead of text/markdown. */
+const GENERIC_MIME = new Set([
+  "application/octet-stream",
+  "binary/octet-stream",
+  "",
 ]);
 
 const ALLOWED_EXTENSIONS = new Set([
@@ -21,9 +29,33 @@ const ALLOWED_EXTENSIONS = new Set([
   ".pdf",
 ]);
 
+function normalizeMime(mimetype: string): string {
+  return mimetype.split(";")[0]!.trim().toLowerCase();
+}
+
+/**
+ * Extension is authoritative (same as @kb/core parsers). MIME must be a known
+ * type, a generic browser fallback, or text/* for text extensions.
+ */
 export function isAllowedUpload(filename: string, mimetype: string): boolean {
   const ext = extname(filename).toLowerCase();
-  return ALLOWED_MIME.has(mimetype) && ALLOWED_EXTENSIONS.has(ext);
+  if (!ALLOWED_EXTENSIONS.has(ext)) {
+    return false;
+  }
+
+  const mime = normalizeMime(mimetype);
+  if (ALLOWED_MIME.has(mime) || GENERIC_MIME.has(mime)) {
+    return true;
+  }
+
+  if (
+    (ext === ".txt" || ext === ".md" || ext === ".markdown") &&
+    mime.startsWith("text/")
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 export function toPublicDocument<T extends { sourcePath: string }>(

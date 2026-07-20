@@ -12,6 +12,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(__dirname, "..");
 
 function needsPythonChroma(): boolean {
+  // Explicit override (e.g. Linux with old libstdc++ where npm chroma bindings fail)
+  if (process.env.CHROMA_FORCE_PYTHON === "true" || process.env.CHROMA_FORCE_PYTHON === "1") {
+    return true;
+  }
+  if (process.env.CHROMA_PYTHON_CLI) {
+    return true;
+  }
+  // Windows x64: npm chroma CLI is ARM64-only
   return os.platform() === "win32" && os.arch() !== "arm64";
 }
 
@@ -79,7 +87,7 @@ function main(): void {
   if (needsPythonChroma()) {
     const chromaCli = resolvePythonChromaCli();
     console.error(
-      `[start-chroma] Windows x64 — Python CLI: ${chromaCli} run --path ${pathArg}`,
+      `[start-chroma] Python CLI: ${chromaCli} run --path ${pathArg}`,
     );
     spawnChroma(chromaCli, ["run", "--path", pathArg], { shell: false });
     return;

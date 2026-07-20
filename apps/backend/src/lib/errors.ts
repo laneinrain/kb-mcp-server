@@ -112,7 +112,12 @@ export function mapContextSettingsError(error: unknown): {
 } {
   const message = error instanceof Error ? error.message : String(error);
 
-  if (message.includes("must be >=")) {
+  if (
+    message.includes("must be >=") ||
+    message.includes("rerankCandidates") ||
+    message.includes("embeddingModel") ||
+    message.includes("rerankModel")
+  ) {
     return {
       statusCode: 400,
       body: { error: "validation_error", message },

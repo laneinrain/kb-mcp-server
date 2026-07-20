@@ -166,6 +166,119 @@ describe("SettingsStore", () => {
       readFileMaxChunks: 50,
       readFileMaxChars: 64000,
     });
+    expect(store.getModelConfig()).toEqual({
+      embeddingModel: "qwen/qwen3-embedding-8b",
+      rerankEnabled: false,
+      rerankModel: "qwen/qwen3-reranker-0.6b",
+      rerankCandidates: 30,
+    });
+    store.db.close();
+  });
+
+  it("seeds model columns from env defaults on first boot", () => {
+    const store = getSettingsStore(
+      dbPath,
+      makeConfig(dbPath, {
+        EMBEDDING_MODEL: "custom/embed",
+        RERANK_ENABLED: true,
+        RERANK_MODEL: "custom/rerank",
+        RERANK_CANDIDATES: 20,
+      }),
+    );
+
+    expect(store.getModelConfig()).toEqual({
+      embeddingModel: "custom/embed",
+      rerankEnabled: true,
+      rerankModel: "custom/rerank",
+      rerankCandidates: 20,
+    });
+    store.db.close();
+  });
+
+  it("updateModelConfig persists patch and returns updated config", () => {
+    const store = getSettingsStore(dbPath, makeConfig(dbPath));
+
+    const updated = store.updateModelConfig({
+      embeddingModel: "other/embed",
+      rerankEnabled: true,
+      rerankCandidates: 15,
+    });
+
+    expect(updated).toEqual({
+      embeddingModel: "other/embed",
+      rerankEnabled: true,
+      rerankModel: "qwen/qwen3-reranker-0.6b",
+      rerankCandidates: 15,
+    });
+    expect(store.getModelConfig()).toEqual(updated);
+
+    store.db.close();
+    const reopened = getSettingsStore(dbPath, makeConfig(dbPath));
+    expect(reopened.getModelConfig()).toEqual(updated);
+    reopened.db.close();
+  });
+
+  it("updateModelConfig rejects invalid candidates and empty model names", () => {
+    const store = getSettingsStore(dbPath, makeConfig(dbPath));
+
+    expect(() => store.updateModelConfig({ rerankCandidates: 0 })).toThrow(
+      /rerankCandidates/,
+    );
+    expect(() => store.updateModelConfig({ rerankCandidates: 51 })).toThrow(
+      /rerankCandidates/,
+    );
+    expect(() => store.updateModelConfig({ embeddingModel: "  " })).toThrow(
+      /embeddingModel/,
+    );
+    expect(() => store.updateModelConfig({ rerankModel: "" })).toThrow(
+      /rerankModel/,
+    );
+
+    expect(store.getModelConfig().rerankCandidates).toBe(30);
+    store.db.close();
+  });
+
+  it("migrates legacy settings table without model columns", () => {
+    const db = new BetterSqlite3(dbPath);
+    db.exec(`
+      CREATE TABLE settings (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        chunk_size INTEGER NOT NULL,
+        chunk_overlap INTEGER NOT NULL,
+        read_around_window_default INTEGER NOT NULL DEFAULT 1,
+        read_around_window_max INTEGER NOT NULL DEFAULT 3,
+        read_around_max_chars INTEGER NOT NULL DEFAULT 32000,
+        read_file_max_chunks INTEGER NOT NULL DEFAULT 50,
+        read_file_max_chars INTEGER NOT NULL DEFAULT 64000
+      );
+      INSERT INTO settings (
+        id, chunk_size, chunk_overlap,
+        read_around_window_default, read_around_window_max,
+        read_around_max_chars, read_file_max_chunks, read_file_max_chars
+      ) VALUES (1, 512, 64, 1, 3, 32000, 50, 64000);
+    `);
+    db.close();
+
+    const store = getSettingsStore(
+      dbPath,
+      makeConfig(dbPath, {
+        EMBEDDING_MODEL: "migrated/embed",
+        RERANK_ENABLED: true,
+        RERANK_MODEL: "migrated/rerank",
+        RERANK_CANDIDATES: 25,
+      }),
+    );
+
+    expect(store.getChunkConfig()).toEqual({
+      chunkSize: 512,
+      chunkOverlap: 64,
+    });
+    expect(store.getModelConfig()).toEqual({
+      embeddingModel: "migrated/embed",
+      rerankEnabled: true,
+      rerankModel: "migrated/rerank",
+      rerankCandidates: 25,
+    });
     store.db.close();
   });
 });

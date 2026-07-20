@@ -10,10 +10,21 @@
 - ✅ **v1.3 Mock CAS Admin Console** — Phases 10–12 (shipped 2026-07-07)
 - ✅ **v1.4 Qwen Rerank Search** — Phases 13–15 (shipped 2026-07-16)
 - ✅ **v1.5 MCP User Isolation** — Phases 16–18 (shipped 2026-07-17)
+- ✅ **v1.6 Web Usability — Model Settings & MCP User Guide** — Phases 19–21 (shipped 2026-07-20)
 
-See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived milestone details.
+See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived milestone details.  
+Between milestones — next: `/gsd-new-milestone`.
 
 ## Phases
+
+<details>
+<summary>✅ v1.6 Web Usability (Phases 19–21) — SHIPPED 2026-07-20</summary>
+
+- [x] Phase 19: Model Settings Core — **3/3 complete**
+- [x] Phase 20: Web Model Settings UI — **2/2 complete**
+- [x] Phase 21: MCP User Guide / Help — **3/3 complete**
+
+</details>
 
 <details>
 <summary>✅ v1.0 Initial Release (Phases 1–4) — SHIPPED 2026-07-05</summary>
@@ -73,6 +84,9 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
+| 19. Model Settings Core | v1.6 | 3/3 | Complete | 2026-07-20 |
+| 20. Web Model Settings UI | v1.6 | 2/2 | Complete | 2026-07-20 |
+| 21. MCP User Guide | v1.6 | 3/3 | Complete | 2026-07-20 |
 | 1–4 | v1.0 | 13/13 | Complete | 2026-07-05 |
 | 5. Context Retrieval Core | v1.1 | 3/3 | Complete | 2026-07-05 |
 | 6. MCP Read Tools | v1.1 | 2/2 | Complete | 2026-07-05 |
@@ -90,4 +104,4 @@ See [MILESTONES.md](MILESTONES.md) and [milestones/](milestones/) for archived m
 | 18. Config, Docs & Verification | v1.5 | 3/3 | Complete | 2026-07-17 |
 
 ---
-*Last updated: 2026-07-17 — v1.5 milestone shipped*
+*Last updated: 2026-07-20 — v1.6 shipped via `/gsd-complete-milestone`*

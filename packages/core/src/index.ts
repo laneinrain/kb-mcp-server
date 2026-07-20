@@ -1,6 +1,7 @@
 export {
   getChunkConfig,
   getContextConfig,
+  getModelConfig,
   getSettingsStore,
   initSettingsStore,
   type SettingsStore,
@@ -13,6 +14,7 @@ export {
 export type {
   ChunkConfig,
   ContextConfig,
+  ModelConfig,
   DocumentRecord,
   DocumentStatus,
   RegisterDocumentInput,

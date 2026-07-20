@@ -256,4 +256,44 @@ describe("SearchService", () => {
       model: "custom/rerank-model",
     });
   });
+
+  it("reads settingsStore.getModelConfig per search when wired via create", async () => {
+    const embedQuery = vi.fn().mockResolvedValue([0.1]);
+    const query = vi.fn().mockResolvedValue([makeHit({ text: "chunk" })]);
+    const rerank = vi.fn().mockResolvedValue([{ index: 0, relevanceScore: 0.9 }]);
+    const modelState = {
+      embeddingModel: "embed",
+      rerankEnabled: true,
+      rerankModel: "settings/rerank",
+      rerankCandidates: 30,
+    };
+    const settingsStore = {
+      getModelConfig: vi.fn(() => ({ ...modelState })),
+    };
+    const config = {
+      DEFAULT_COLLECTION: "default",
+      RERANK_ENABLED: false,
+      RERANK_CANDIDATES: 10,
+      RERANK_MODEL: "env/rerank",
+      EMBEDDING_MODEL: "env/embed",
+    } as never;
+
+    const service = SearchService.create(config, {
+      vectorStore: { query } as never,
+      embeddingClient: { embedQuery } as never,
+      rerankClient: { rerank } as never,
+      settingsStore,
+    });
+
+    await service.search("query");
+    expect(rerank).toHaveBeenCalledTimes(1);
+    expect(query).toHaveBeenCalledWith(expect.objectContaining({ topK: 30 }));
+
+    modelState.rerankEnabled = false;
+    rerank.mockClear();
+    query.mockClear();
+    await service.search("query");
+    expect(rerank).not.toHaveBeenCalled();
+    expect(query).toHaveBeenCalledWith(expect.objectContaining({ topK: 5 }));
+  });
 });

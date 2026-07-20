@@ -6,7 +6,11 @@ CREATE TABLE IF NOT EXISTS settings (
   read_around_window_max INTEGER NOT NULL DEFAULT 3,
   read_around_max_chars INTEGER NOT NULL DEFAULT 32000,
   read_file_max_chunks INTEGER NOT NULL DEFAULT 50,
-  read_file_max_chars INTEGER NOT NULL DEFAULT 64000
+  read_file_max_chars INTEGER NOT NULL DEFAULT 64000,
+  embedding_model TEXT NOT NULL DEFAULT 'qwen/qwen3-embedding-8b',
+  rerank_enabled INTEGER NOT NULL DEFAULT 1,
+  rerank_model TEXT NOT NULL DEFAULT 'qwen/qwen3-reranker-0.6b',
+  rerank_candidates INTEGER NOT NULL DEFAULT 30
 );
 
 CREATE TABLE IF NOT EXISTS documents (

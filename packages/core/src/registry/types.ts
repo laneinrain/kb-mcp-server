@@ -11,6 +11,13 @@ export interface ContextConfig {
   readFileMaxChars: number;
 }
 
+export interface ModelConfig {
+  embeddingModel: string;
+  rerankEnabled: boolean;
+  rerankModel: string;
+  rerankCandidates: number;
+}
+
 export type DocumentStatus = "pending" | "processing" | "indexed" | "failed";
 
 export interface DocumentRecord {

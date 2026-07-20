@@ -174,7 +174,12 @@ describe("RerankClient", () => {
 });
 
 describe("RerankClient integration", () => {
-  it.skipIf(!process.env.CHERRYIN_API_KEY)(
+  const liveKey = process.env.CHERRYIN_API_KEY;
+  const baseUrl = process.env.CHERRYIN_BASE_URL ?? "";
+  const isLocalMock =
+    baseUrl.includes("127.0.0.1") || baseUrl.includes("localhost");
+
+  it.skipIf(!liveKey || isLocalMock)(
     "reranks live when CHERRYIN_API_KEY is set",
     async () => {
       const client = new RerankClient(loadConfig());

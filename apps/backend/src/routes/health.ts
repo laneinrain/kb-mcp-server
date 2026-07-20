@@ -1,11 +1,11 @@
 import type { FastifyInstance } from "fastify";
-import { EMBEDDING_MODEL } from "@kb/config";
 import type { ChromaVectorStore } from "@kb/core";
 import type { EmbeddingClient } from "@kb/core";
 
 export interface HealthDeps {
   vectorStore: ChromaVectorStore;
   embeddingClient: EmbeddingClient;
+  getEmbeddingModel: () => string;
 }
 
 export async function registerHealthRoutes(
@@ -28,14 +28,15 @@ export async function registerHealthRoutes(
   });
 
   app.get("/health/embeddings", async (_request, reply) => {
+    const model = deps.getEmbeddingModel();
     try {
       await deps.embeddingClient.ping();
-      return { status: "ok", model: EMBEDDING_MODEL };
+      return { status: "ok", model };
     } catch (error) {
       reply.code(503);
       return {
         status: "error",
-        model: EMBEDDING_MODEL,
+        model,
         message: error instanceof Error ? error.message : String(error),
       };
     }

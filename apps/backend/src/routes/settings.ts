@@ -18,21 +18,37 @@ const ContextSettingsSchema = z
     { message: "readAroundWindowMax must be >= readAroundWindowDefault" },
   );
 
+const ModelSettingsSchema = z.object({
+  embeddingModel: z.string().trim().min(1),
+  rerankEnabled: z.boolean(),
+  rerankModel: z.string().trim().min(1),
+  rerankCandidates: z.number().int().min(1).max(50),
+});
+
 const SettingsResponseSchema = z.object({
   chunk: z.object({
     chunkSize: z.number(),
     chunkOverlap: z.number(),
   }),
   context: ContextSettingsSchema,
+  models: ModelSettingsSchema,
+  embeddingDimensions: z.number().int().positive(),
 });
 
 const ContextPatchResponseSchema = z.object({
   context: ContextSettingsSchema,
 });
 
+const ModelPatchResponseSchema = z.object({
+  models: ModelSettingsSchema,
+});
+
 export interface SettingsDeps {
   settingsStore: SettingsStore;
+  embeddingDimensions: number;
   routeOpts?: ApiRouteOpts;
+  /** Admin (or service) only — PATCH /settings/models */
+  modelsRouteOpts?: ApiRouteOpts;
 }
 
 export async function registerSettingsRoutes(
@@ -40,6 +56,7 @@ export async function registerSettingsRoutes(
   deps: SettingsDeps,
 ): Promise<void> {
   const opts = deps.routeOpts ?? {};
+  const modelsOpts = deps.modelsRouteOpts ?? opts;
 
   app.withTypeProvider<ZodTypeProvider>().get(
     "/api/v1/settings",
@@ -54,6 +71,8 @@ export async function registerSettingsRoutes(
     async () => ({
       chunk: deps.settingsStore.getChunkConfig(),
       context: deps.settingsStore.getContextConfig(),
+      models: deps.settingsStore.getModelConfig(),
+      embeddingDimensions: deps.embeddingDimensions,
     }),
   );
 
@@ -72,6 +91,28 @@ export async function registerSettingsRoutes(
       try {
         const updated = deps.settingsStore.updateContextConfig(request.body);
         return { context: updated };
+      } catch (error) {
+        const mapped = mapContextSettingsError(error);
+        return (reply as FastifyReply).status(mapped.statusCode).send(mapped.body);
+      }
+    },
+  );
+
+  app.withTypeProvider<ZodTypeProvider>().patch(
+    "/api/v1/settings/models",
+    {
+      ...modelsOpts,
+      schema: {
+        body: ModelSettingsSchema,
+        response: {
+          200: ModelPatchResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      try {
+        const updated = deps.settingsStore.updateModelConfig(request.body);
+        return { models: updated };
       } catch (error) {
         const mapped = mapContextSettingsError(error);
         return (reply as FastifyReply).status(mapped.statusCode).send(mapped.body);

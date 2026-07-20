@@ -28,6 +28,7 @@ async function buildProtectedApp(config: AppConfig) {
   await registerHealthRoutes(app, {
     vectorStore: { heartbeat: vi.fn() } as never,
     embeddingClient: { ping: vi.fn() } as never,
+    getEmbeddingModel: () => "test-embed-model",
   });
   await registerBearerAuthIfEnabled(app, config);
   const routeOpts = apiRouteOpts(config, app);
